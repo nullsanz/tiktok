@@ -20,8 +20,8 @@
   }
 
   // Regexes for detecting and cleaning signatures
-  const sigRegex = /(?:\s*✦?\s*(?:ADJN\s*)?Method\s*by\s*F\s*R\s*Y\s*60fps\s*✦?(?:\s*(?:<m[^>]*>)?\s*@[A-Za-z0-9._]+\s*(?:<\/m>)?)+)/gi;
-  const prefixRegex = /(?:\s*✦?\s*(?:ADJN\s*)?Method\s*by\s*F\s*R\s*Y\s*60fps\s*✦?\s*)/gi;
+  const sigRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?(?:\s*(?:<m[^>]*>)?\s*@[A-Za-z0-9._]+\s*(?:<\/m>)?)+)/gi;
+  const prefixRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?\s*)/gi;
 
   // WeakSets for payload deduplication
   const processedWeakSet = new WeakSet();
@@ -42,7 +42,7 @@
         watermarkEnabled = !!data.settings.watermarkEnabled;
       }
     }
-    if ((data.source === 'NULLSANZ_CONTENT' || data.source === 'ADJN_CONTENT') && data.type === 'STORE_ORIGINAL_FILE') {
+    if (data.source === 'NULLSANZ_CONTENT' && data.type === 'STORE_ORIGINAL_FILE') {
       originalFilesMap.set(data.patchedName, data.originalFile);
       console.info('[Nullsanz Inject] Stored original file for safe preview:', data.patchedName);
     }

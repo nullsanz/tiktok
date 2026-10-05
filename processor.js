@@ -343,7 +343,7 @@
     const selectedEngine = ['2.1.5','2.3','3.0'].includes(String(data.engine || '')) ? String(data.engine) : '2.1.5';
     const engineVersion = selectedEngine === '2.3' ? '5.5' : selectedEngine === '3.0' ? '6.0' : null;
     const requestId = data.requestId;
-    const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core || globalThis.FRYOriginalMp4Core || globalThis.ADJNOriginalMp4Core;
+    const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core;
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {
       throw new Error('Nullsanz Media Core tidak termuat.');
     }
@@ -358,7 +358,7 @@
     // compatibility/layout validator, while keeping the actual mutation local
     // in Nullsanz Core. No external engine watermark/branding is written by this extension.
     let engineProfile = { id: selectedEngine, source: 'Nullsanz Core v6.0' };
-    const engineChecker = globalThis.NullsanzEngines || globalThis.ADJNEngines;
+    const engineChecker = globalThis.NullsanzEngines;
     if (engineVersion && engineChecker?.[engineVersion]?.checkLayout) {
       try {
         const check = await engineChecker[engineVersion].checkLayout(new Blob([original], { type: data.fileType || 'video/mp4' }));
@@ -521,12 +521,11 @@
     validateMediaInfo,
     verifyMediaContract
   };
-  globalThis.ADJNVideoProcessor = globalThis.NullsanzVideoProcessor;
 
   if (typeof window !== 'undefined') {
     window.addEventListener('message', async (event) => {
       const data = event.data;
-      if (!data || (data.source !== 'NULLSANZ_CONTENT' && data.source !== 'FRY_CONTENT') || data.type !== 'PROCESS') return;
+      if (!data || data.source !== 'NULLSANZ_CONTENT' || data.type !== 'PROCESS') return;
       if (busy) return send('ERROR', { requestId: data.requestId, message: 'Processor masih sibuk.' });
       busy = true;
       try {

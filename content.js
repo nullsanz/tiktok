@@ -166,8 +166,8 @@
   let pageHookInjectedOk = false;
   function injectHookScript() {
     try {
-      if (document.documentElement && !document.documentElement.dataset.adjnHookInjected) {
-        document.documentElement.dataset.adjnHookInjected = '1';
+      if (document.documentElement && !document.documentElement.dataset.nullsanzHookInjected) {
+        document.documentElement.dataset.nullsanzHookInjected = '1';
         const script = document.createElement('script');
         script.src = chrome.runtime.getURL('page-hook.js');
         script.onload = () => { script.remove(); pageHookInjectedOk = true; };
@@ -182,15 +182,15 @@
     }
   }
   injectHookScript();
-  if (!document.documentElement?.dataset?.adjnHookInjected) {
+  if (!document.documentElement?.dataset?.nullsanzHookInjected) {
     document.addEventListener('DOMContentLoaded', injectHookScript, { once: true });
   }
 
   function syncDataset() {
     try {
       if (document.documentElement) {
-        document.documentElement.dataset.adjnWatermark = watermarkEnabled ? '1' : '0';
-        document.documentElement.dataset.adjnUploader = uploaderEnabled ? '1' : '0';
+        document.documentElement.dataset.nullsanzWatermark = watermarkEnabled ? '1' : '0';
+        document.documentElement.dataset.nullsanzUploader = uploaderEnabled ? '1' : '0';
       }
       window.postMessage({
         source: 'Nullsanz_METHOD',
@@ -388,7 +388,7 @@
         border-radius: 50%;
         background: #5fae6f;
         box-shadow: 0 0 8px #5fae6f;
-        animation: adjnPulse 2s infinite;
+        animation: nullsanzPulse 2s infinite;
       }
       #nullsanz-method-pill .nullsanz-spec {
         display: block;
@@ -397,7 +397,7 @@
         color: #a8d5b2;
         letter-spacing: 0.3px;
       }
-      @keyframes adjnPulse {
+      @keyframes nullsanzPulse {
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.25); opacity: 0.65; }
       }
@@ -474,7 +474,7 @@
         transition:.2s ease;
       }
       .nullsanz-access-input:focus { border-color:#8c806c; box-shadow:0 0 0 3px rgba(140,128,108,.12); }
-      .nullsanz-access-input.shake { animation: adjnShake .35s ease; }
+      .nullsanz-access-input.shake { animation: nullsanzShake .35s ease; }
       .nullsanz-access-btn {
         width:100%; margin-top:10px; border:1px solid #2f2b24; background:#302d27; color:#fffaf0;
         border-radius:12px; padding:12px 14px; cursor:pointer; font:800 12px/1 -apple-system,sans-serif;
@@ -501,7 +501,7 @@
       .nullsanz-engine-buttons { display:flex; gap:6px; margin-top:10px; }
       .nullsanz-engine-btn { flex:1; border:1px solid #d8cdbb; background:#f7f1e6; color:#5f574b; border-radius:9px; padding:8px 6px; font:700 10px/1 -apple-system,sans-serif; cursor:pointer; }
       .nullsanz-engine-btn.active { background:#dcecdf; border-color:#78b486; color:#3f7a4d; box-shadow:inset 0 0 0 1px #78b486; }
-      @keyframes adjnShake { 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
+      @keyframes nullsanzShake { 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
 
       /* Cream upload surface — fills the TikTok upload container */
       /* Upload Zone Custom Decoration */
@@ -1359,7 +1359,7 @@
       return;
     }
 
-    if ((data.source !== 'NULLSANZ_PROCESSOR' && data.source !== 'FRY_PROCESSOR')) return;
+    if (data.source !== 'NULLSANZ_PROCESSOR') return;
     if (data.type === 'READY') { processorReady = true; return; }
     if (!pending || (data.requestId && data.requestId !== pending.requestId)) return;
 

@@ -10,8 +10,6 @@
   if (root) {
     root.NullsanzOriginalMp4Core = api;
     root.NullsanzMp4Core = api;
-    root.FRYOriginalMp4Core = api;
-    root.ADJNOriginalMp4Core = api;
     root.NullsanzMp4Patcher = api;
     root.HazePatch = api;
   }
