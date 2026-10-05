@@ -30,19 +30,42 @@
 
 ---
 
-## 📦 Panduan Instalasi (Chrome & Microsoft Edge)
+## 📱 Panduan Mutlak Upload di Android (Anti-Kompres & Bebas Eror)
+
+> ⚠️ **ATURAN MUTLAK:** JANGAN upload lewat aplikasi TikTok HP biasa karena server TikTok otomatis mengompres paksa video jadi 720p 30 FPS dan memburamkan visual.
+
+1. **Gunakan Browser yang Mendukung Ekstensi Chrome:**
+   - Unduh **Quetta Browser**, **Lemur Browser**, atau **Kiwi Browser** dari Google Play Store.
+2. **Download File Ekstensi Ini:**
+   - Klik tombol hijau **Code** di atas, lalu pilih **Download ZIP** (atau klik [Direct Download ZIP](https://github.com/nullsanz/tiktok/archive/refs/heads/main.zip)).
+   - Ekstrak file ZIP tersebut di memori internal HP Anda.
+3. **Pasang Ekstensi di Browser:**
+   - Buka menu ekstensi di browser (atau ketik `chrome://extensions` di address bar).
+   - Aktifkan toggle **Developer Mode** (Mode Pengembang).
+   - Klik tombol **Load unpacked** / **from (.zip/.crx/.user.js)**, lalu pilih folder hasil ekstrak tadi.
+4. **Buka TikTok Studio dalam Mode Desktop:**
+   - Aktifkan centang **Situs Desktop / Desktop Site** pada pengaturan browser Anda.
+   - Buka link resmi [TikTok Studio Upload](https://www.tiktok.com/tiktokstudio/upload).
+   - Login ke akun TikTok Anda.
+   - Dropzone kustom **Nullsanz Studio** akan muncul otomatis. Unggah video Anda di sana dan video akan diproses tanpa kompresi server!
+
+---
+
+## 💻 Panduan Instalasi di PC / Laptop (Chrome, Edge, Brave)
 
 1. Unduh atau clone repository ini:
    ```bash
    git clone https://github.com/nullsanz/tiktok.git
    ```
+   *Atau klik tombol **Code** > **Download ZIP** dan ekstrak foldernya.*
 2. Buka browser Chromium favorit Anda:
    - **Google Chrome:** Buka `chrome://extensions`
    - **Microsoft Edge:** Buka `edge://extensions`
-3. Aktifkan **Developer Mode** (Mode Pengembang) di bagian kanan atas atau kiri bawah.
+   - **Brave Browser:** Buka `brave://extensions`
+3. Aktifkan toggle **Developer Mode** (Mode Pengembang).
 4. Klik tombol **Load unpacked** (Muat yang belum dibongkar).
-5. Pilih folder repository ini (`tiktok`).
-6. Buka [TikTok Studio](https://studio.tiktok.com) dan unggah video Anda seperti biasa. Pill dan banner **Nullsanz TikTok Studio** akan aktif otomatis di layar upload!
+5. Pilih folder repository ini.
+6. Buka [TikTok Studio Upload](https://www.tiktok.com/tiktokstudio/upload) dan unggah video Anda seperti biasa. Pill dan banner **Nullsanz TikTok Studio** akan aktif otomatis di layar upload!
 
 ---
 
