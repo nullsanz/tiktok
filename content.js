@@ -1,7 +1,7 @@
 (() => {
   'use strict';
-  if (window.__ADJN_METHOD_V20__) return;
-  window.__ADJN_METHOD_V20__ = true;
+  if (window.__Nullsanz_METHOD_V20__) return;
+  window.__Nullsanz_METHOD_V20__ = true;
 
   let processorReady = false;
   let pageHookReady = false;
@@ -23,7 +23,7 @@
 
   // ================= ACCESS CONTROL =================
   const ACCESS_USERS = {
-    'TIKTOKADJN': { name: 'Nullsanz Studio', tier: 3, limit: 2000 * 1024 * 1024 }
+    'TIKTOKNullsanz': { name: 'Nullsanz Studio', tier: 3, limit: 2000 * 1024 * 1024 }
   };
   const MAX_FILE_BYTES = 2000 * 1024 * 1024;
   let selectedEngine = '3.0';
@@ -57,21 +57,21 @@
     if (!uploaderEnabled) return;
     if (!accessUnlocked || !activeAccess) {
       pill.innerHTML = `
-        <span class="adjn-line1">
-          <span class="adjn-dot adjn-locked-dot"></span>
+        <span class="nullsanz-line1">
+          <span class="nullsanz-dot nullsanz-locked-dot"></span>
           <span>Nullsanz TikTok Studio v3.0 • READY</span>
         </span>
-        <span class="adjn-spec">Masukkan password untuk mengaktifkan Auto-Patch</span>
+        <span class="nullsanz-spec">Masukkan password untuk mengaktifkan Auto-Patch</span>
       `;
       pill.title = 'Nullsanz Studio • Ready';
       return;
     }
     pill.innerHTML = `
-      <span class="adjn-line1">
-        <span class="adjn-dot"></span>
+      <span class="nullsanz-line1">
+        <span class="nullsanz-dot"></span>
         <span>Nullsanz Studio v3.0 • Engine ${selectedEngine}</span>
       </span>
-      <span class="adjn-spec">Auto-Patch ACTIVE • ${accessLimitLabel(activeAccess.limit)} • Key ${maskKey(activeAccess.key)}</span>
+      <span class="nullsanz-spec">Auto-Patch ACTIVE • ${accessLimitLabel(activeAccess.limit)} • Key ${maskKey(activeAccess.key)}</span>
     `;
     pill.title = `Nullsanz Studio v3.0 • Engine ${selectedEngine} • Full Unlimited`;
   }
@@ -144,20 +144,20 @@
     if (!pill) return;
     if (!uploaderEnabled) {
       pill.innerHTML = `
-        <span class="adjn-line1">
-          <span class="adjn-dot" style="background:#9e9483;box-shadow:none"></span>
+        <span class="nullsanz-line1">
+          <span class="nullsanz-dot" style="background:#9e9483;box-shadow:none"></span>
           <span style="color:#6b6252">Nullsanz Studio (Nonaktif)</span>
         </span>
-        <span class="adjn-spec" style="color:#9e9483">Patcher dimatikan lewat popup ekstensi</span>
+        <span class="nullsanz-spec" style="color:#9e9483">Patcher dimatikan lewat popup ekstensi</span>
       `;
       pill.title = 'Nullsanz Studio Nonaktif • Buka icon ekstensi untuk mengaktifkan';
     } else {
       pill.innerHTML = `
-        <span class="adjn-line1">
-          <span class="adjn-dot"></span>
+        <span class="nullsanz-line1">
+          <span class="nullsanz-dot"></span>
           <span>Nullsanz TikTok Studio v3.0 Active</span>
         </span>
-        <span class="adjn-spec">Auto-Patch 4K 120FPS • Sound Safe (Anti-Kompres)</span>
+        <span class="nullsanz-spec">Auto-Patch 4K 120FPS • Sound Safe (Anti-Kompres)</span>
       `;
       pill.title = 'Nullsanz TikTok Studio v3.0 | Auto-Patch & Sound Safe Active';
     }
@@ -193,8 +193,8 @@
         document.documentElement.dataset.adjnUploader = uploaderEnabled ? '1' : '0';
       }
       window.postMessage({
-        source: 'ADJN_METHOD',
-        type: 'ADJN_SETTINGS',
+        source: 'Nullsanz_METHOD',
+        type: 'Nullsanz_SETTINGS',
         settings: {
           watermarkEnabled: !!watermarkEnabled,
           uploaderEnabled: !!uploaderEnabled
@@ -263,7 +263,7 @@
     const ua = String(navigator?.userAgent || '');
     return /iP(hone|ad|od)/.test(ua) ||
            (navigator?.platform === 'MacIntel' && (navigator?.maxTouchPoints || 0) > 1) ||
-           Boolean(window.__ADJN_ORION_COMPAT__);
+           Boolean(window.__NULLSANZ_ORION_COMPAT__);
   };
 
   function findActiveFileInput() {
@@ -281,13 +281,13 @@
     if (!(input instanceof HTMLInputElement) || input.type !== 'file' || !input.files?.length) return;
 
     // Synthetic event replayed to TikTok: let it pass through to TikTok's native listeners!
-    if (input.dataset.adjnReady) {
-      delete input.dataset.adjnReady;
+    if (input.dataset.nullsanzReady) {
+      delete input.dataset.nullsanzReady;
       return;
     }
 
     // Already processing
-    if (input.dataset.adjnProcessing) return;
+    if (input.dataset.nullsanzProcessing) return;
 
     const files = Array.from(input.files || []);
     if (!files.some(isVideoFile)) return;
@@ -339,7 +339,7 @@
 
     const style = document.createElement('style');
     style.textContent = `
-      #adjn-method-pill {
+      #nullsanz-method-pill {
         position: fixed;
         left: 50%;
         top: 18px;
@@ -360,21 +360,21 @@
         transition: all 0.25s ease;
       }
       @media (max-width: 700px) {
-        #adjn-method-pill {
+        #nullsanz-method-pill {
           top: 10px;
           padding: 7px 12px;
           min-width: min(290px, calc(100vw - 20px));
           max-width: calc(100vw - 20px);
         }
-        #adjn-toast {
+        #nullsanz-toast {
           top: 72px;
         }
       }
-      #adjn-method-pill:hover {
+      #nullsanz-method-pill:hover {
         transform: translateX(-50%) translateY(-2px);
         box-shadow: 0 16px 42px rgba(0,0,0,0.3), 0 0 20px rgba(95, 174, 111, 0.35);
       }
-      #adjn-method-pill .adjn-line1 {
+      #nullsanz-method-pill .nullsanz-line1 {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -382,7 +382,7 @@
         font: 700 12px/1.2 -apple-system, sans-serif;
         color: #fff;
       }
-      #adjn-method-pill .adjn-dot {
+      #nullsanz-method-pill .nullsanz-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -390,7 +390,7 @@
         box-shadow: 0 0 8px #5fae6f;
         animation: adjnPulse 2s infinite;
       }
-      #adjn-method-pill .adjn-spec {
+      #nullsanz-method-pill .nullsanz-spec {
         display: block;
         margin-top: 4px;
         font: 600 10px/1.25 -apple-system, sans-serif;
@@ -401,7 +401,7 @@
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.25); opacity: 0.65; }
       }
-      #adjn-toast {
+      #nullsanz-toast {
         position: fixed;
         z-index: 2147483647;
         top: 90px;
@@ -419,7 +419,7 @@
         word-break: break-word;
         text-align: center;
       }
-      #adjn-toast {
+      #nullsanz-toast {
         position: fixed;
         z-index: 2147483647;
         top: 86px;
@@ -437,75 +437,75 @@
         word-break: break-word;
         text-align: center;
       }
-      #adjn-toast.show { display: block; }
-      #adjn-toast.err { background: #241416; border-color: #e05d5d; color: #fce8e8; }
+      #nullsanz-toast.show { display: block; }
+      #nullsanz-toast.err { background: #241416; border-color: #e05d5d; color: #fce8e8; }
       
       /* ================= PASSWORD ACCESS MODAL ================= */
-      #adjn-access-modal {
+      #nullsanz-access-modal {
         position: fixed; inset: 0; z-index: 2147483647;
         display: none; align-items: center; justify-content: center;
         padding: 20px; background: rgba(32, 29, 24, 0.42);
         backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
-      #adjn-access-modal.show { display: flex; }
-      #adjn-access-card {
+      #nullsanz-access-modal.show { display: flex; }
+      #nullsanz-access-card {
         width: min(430px, 100%); background: #fdfaf3; color: #28251f;
         border: 1px solid #e5ded0; border-radius: 22px; padding: 26px;
         box-shadow: 0 28px 80px rgba(55,48,37,.24); text-align: center;
       }
-      .adjn-access-icon {
+      .nullsanz-access-icon {
         width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 14px;
         display:flex; align-items:center; justify-content:center;
         background:#eee7d8; color:#4b463d; border:1px solid #ddd3c1;
       }
-      .adjn-access-title { font: 800 19px/1.2 -apple-system, sans-serif; margin-bottom:5px; }
-      .adjn-access-sub { font: 500 12px/1.5 -apple-system, sans-serif; color:#7b7468; margin-bottom:18px; }
-      .adjn-access-status {
+      .nullsanz-access-title { font: 800 19px/1.2 -apple-system, sans-serif; margin-bottom:5px; }
+      .nullsanz-access-sub { font: 500 12px/1.5 -apple-system, sans-serif; color:#7b7468; margin-bottom:18px; }
+      .nullsanz-access-status {
         display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
         background:#f1ece2; border:1px solid #e2d9ca; color:#756c5d;
         font:700 9px/1 -apple-system, sans-serif; letter-spacing:.7px; text-transform:uppercase; margin-bottom:15px;
       }
-      .adjn-access-status i { width:7px; height:7px; border-radius:50%; background:#b06b5d; display:block; }
-      .adjn-access-input {
+      .nullsanz-access-status i { width:7px; height:7px; border-radius:50%; background:#b06b5d; display:block; }
+      .nullsanz-access-input {
         width:100%; box-sizing:border-box; border:1px solid #d8cfbf; background:#fffdf8;
         color:#29261f; border-radius:12px; padding:12px 13px; outline:none;
         font:700 13px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:.5px; padding-right:42px;
         transition:.2s ease;
       }
-      .adjn-access-input:focus { border-color:#8c806c; box-shadow:0 0 0 3px rgba(140,128,108,.12); }
-      .adjn-access-input.shake { animation: adjnShake .35s ease; }
-      .adjn-access-btn {
+      .nullsanz-access-input:focus { border-color:#8c806c; box-shadow:0 0 0 3px rgba(140,128,108,.12); }
+      .nullsanz-access-input.shake { animation: adjnShake .35s ease; }
+      .nullsanz-access-btn {
         width:100%; margin-top:10px; border:1px solid #2f2b24; background:#302d27; color:#fffaf0;
         border-radius:12px; padding:12px 14px; cursor:pointer; font:800 12px/1 -apple-system,sans-serif;
         transition:.2s ease; box-shadow:0 7px 18px rgba(48,45,39,.18);
       }
-      .adjn-access-btn:hover { transform:translateY(-1px); background:#403b33; }
-      .adjn-access-error { display:none; color:#a33e34; font:600 10.5px/1.4 -apple-system,sans-serif; margin-top:9px; }
-      .adjn-access-error.show { display:block; }
-      .adjn-public-option {
+      .nullsanz-access-btn:hover { transform:translateY(-1px); background:#403b33; }
+      .nullsanz-access-error { display:none; color:#a33e34; font:600 10.5px/1.4 -apple-system,sans-serif; margin-top:9px; }
+      .nullsanz-access-error.show { display:block; }
+      .nullsanz-public-option {
         margin-top:12px; padding:10px 12px; border:1px solid #e5ded0; background:#f6f0e5;
         border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
         text-align:left; cursor:pointer;
       }
-      .adjn-public-meta { min-width:0; }
-      .adjn-public-title { display:block; color:#302c25; font:800 11px/1.2 -apple-system,sans-serif; }
-      .adjn-public-sub { display:block; margin-top:3px; color:#8b8172; font:600 9.5px/1.3 -apple-system,sans-serif; }
-      .adjn-public-switch { position:relative; width:40px; height:22px; flex:0 0 auto; }
-      .adjn-public-switch input { opacity:0; width:0; height:0; position:absolute; }
-      .adjn-public-slider { position:absolute; inset:0; border-radius:999px; background:#d8cfbf; transition:.2s ease; }
-      .adjn-public-slider:before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; border-radius:50%; background:#fffdf8; box-shadow:0 1px 4px rgba(0,0,0,.18); transition:.2s ease; }
-      .adjn-public-switch input:checked + .adjn-public-slider { background:#7c9a78; }
-      .adjn-public-switch input:checked + .adjn-public-slider:before { transform:translateX(18px); }
-      .adjn-access-note { margin-top:14px; color:#9a9285; font:500 10px/1.45 -apple-system,sans-serif; }
-      .adjn-engine-buttons { display:flex; gap:6px; margin-top:10px; }
-      .adjn-engine-btn { flex:1; border:1px solid #d8cdbb; background:#f7f1e6; color:#5f574b; border-radius:9px; padding:8px 6px; font:700 10px/1 -apple-system,sans-serif; cursor:pointer; }
-      .adjn-engine-btn.active { background:#dcecdf; border-color:#78b486; color:#3f7a4d; box-shadow:inset 0 0 0 1px #78b486; }
+      .nullsanz-public-meta { min-width:0; }
+      .nullsanz-public-title { display:block; color:#302c25; font:800 11px/1.2 -apple-system,sans-serif; }
+      .nullsanz-public-sub { display:block; margin-top:3px; color:#8b8172; font:600 9.5px/1.3 -apple-system,sans-serif; }
+      .nullsanz-public-switch { position:relative; width:40px; height:22px; flex:0 0 auto; }
+      .nullsanz-public-switch input { opacity:0; width:0; height:0; position:absolute; }
+      .nullsanz-public-slider { position:absolute; inset:0; border-radius:999px; background:#d8cfbf; transition:.2s ease; }
+      .nullsanz-public-slider:before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; border-radius:50%; background:#fffdf8; box-shadow:0 1px 4px rgba(0,0,0,.18); transition:.2s ease; }
+      .nullsanz-public-switch input:checked + .nullsanz-public-slider { background:#7c9a78; }
+      .nullsanz-public-switch input:checked + .nullsanz-public-slider:before { transform:translateX(18px); }
+      .nullsanz-access-note { margin-top:14px; color:#9a9285; font:500 10px/1.45 -apple-system,sans-serif; }
+      .nullsanz-engine-buttons { display:flex; gap:6px; margin-top:10px; }
+      .nullsanz-engine-btn { flex:1; border:1px solid #d8cdbb; background:#f7f1e6; color:#5f574b; border-radius:9px; padding:8px 6px; font:700 10px/1 -apple-system,sans-serif; cursor:pointer; }
+      .nullsanz-engine-btn.active { background:#dcecdf; border-color:#78b486; color:#3f7a4d; box-shadow:inset 0 0 0 1px #78b486; }
       @keyframes adjnShake { 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
 
       /* Cream upload surface — fills the TikTok upload container */
       /* Upload Zone Custom Decoration */
-      .adjn-upload-zone {
+      .nullsanz-upload-zone {
         position: relative !important;
         overflow: hidden !important;
         border: 2px solid #e4dccd !important;
@@ -519,7 +519,7 @@
       }
       /* Hide native TikTok upload elements inside the container so no dashed lines or ghost text bleed */
       /* NOTE: Use clip-path instead of display:none to avoid breaking React component initialization */
-      .adjn-upload-zone > *:not(.adjn-zone-overlay):not(input[type="file"]) {
+      .nullsanz-upload-zone > *:not(.nullsanz-zone-overlay):not(input[type="file"]) {
         clip-path: inset(100%) !important;
         overflow: hidden !important;
         position: absolute !important;
@@ -528,12 +528,12 @@
         opacity: 0 !important;
         pointer-events: none !important;
       }
-      .adjn-upload-zone.adjn-drag-over {
+      .nullsanz-upload-zone.nullsanz-drag-over {
         border-color: #a79a84 !important;
         box-shadow: 0 0 0 3px rgba(167,154,132,.12), inset 0 0 0 1px rgba(255,255,255,.65) !important;
         transform: scale(1.006);
       }
-      .adjn-zone-overlay {
+      .nullsanz-zone-overlay {
         position: absolute;
         inset: 0 !important;
         width: 100% !important;
@@ -549,7 +549,7 @@
         border-radius: inherit;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
-      .adjn-zone-bg {
+      .nullsanz-zone-bg {
         position: absolute;
         inset: 0;
         width: 100%;
@@ -561,10 +561,10 @@
         transition: transform 0.6s ease;
         opacity: 0;
       }
-      .adjn-zone-overlay:hover .adjn-zone-bg {
+      .nullsanz-zone-overlay:hover .nullsanz-zone-bg {
         transform: scale(1.03);
       }
-      .adjn-zone-gradient {
+      .nullsanz-zone-gradient {
         position: absolute;
         inset: 0;
         background: linear-gradient(135deg, #fdfaf3, #f4ede0);
@@ -572,7 +572,7 @@
       }
       
       /* Cyber Corner Reticles */
-      .adjn-bracket {
+      .nullsanz-bracket {
         position: absolute;
         width: 22px;
         height: 22px;
@@ -582,13 +582,13 @@
         box-shadow: 0 0 8px rgba(139,126,103,.25);
         pointer-events: none;
       }
-      .adjn-bracket-tl { top: 14px; left: 14px; border-width: 2.5px 0 0 2.5px; border-top-left-radius: 6px; }
-      .adjn-bracket-tr { top: 14px; right: 14px; border-width: 2.5px 2.5px 0 0; border-top-right-radius: 6px; }
-      .adjn-bracket-bl { bottom: 14px; left: 14px; border-width: 0 0 2.5px 2.5px; border-bottom-left-radius: 6px; }
-      .adjn-bracket-br { bottom: 14px; right: 14px; border-width: 0 2.5px 2.5px 0; border-bottom-right-radius: 6px; }
+      .nullsanz-bracket-tl { top: 14px; left: 14px; border-width: 2.5px 0 0 2.5px; border-top-left-radius: 6px; }
+      .nullsanz-bracket-tr { top: 14px; right: 14px; border-width: 2.5px 2.5px 0 0; border-top-right-radius: 6px; }
+      .nullsanz-bracket-bl { bottom: 14px; left: 14px; border-width: 0 0 2.5px 2.5px; border-bottom-left-radius: 6px; }
+      .nullsanz-bracket-br { bottom: 14px; right: 14px; border-width: 0 2.5px 2.5px 0; border-bottom-right-radius: 6px; }
 
       /* Floating Glass Center Card */
-      .adjn-zone-card {
+      .nullsanz-zone-card {
         position: relative;
         z-index: 14;
         width: min(440px, calc(100% - 40px));
@@ -602,12 +602,12 @@
         box-shadow: 0 20px 50px rgba(72,63,49,.12), 0 0 25px rgba(150,137,113,.08);
         transition: all 0.25s ease;
       }
-      .adjn-zone-card:hover {
+      .nullsanz-zone-card:hover {
         border-color: #b2a58f;
         transform: translateY(-2px);
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(84, 190, 104, 0.25);
       }
-      .adjn-card-logo-img {
+      .nullsanz-card-logo-img {
         width: 46px;
         height: 46px;
         border-radius: 12px;
@@ -616,13 +616,13 @@
         object-fit: cover;
         box-shadow: 0 6px 18px rgba(62,55,44,.12);
       }
-      .adjn-card-title {
+      .nullsanz-card-title {
         font: 800 17px/1.25 -apple-system, BlinkMacSystemFont, sans-serif;
         letter-spacing: -0.2px;
         color: #29261f;
         margin-bottom: 4px;
       }
-      .adjn-card-tag {
+      .nullsanz-card-tag {
         display: inline-block;
         font: 700 9.5px/1 -apple-system, sans-serif;
         letter-spacing: 0.6px;
@@ -634,12 +634,12 @@
         border-radius: 20px;
         margin-bottom: 12px;
       }
-      .adjn-card-prompt {
+      .nullsanz-card-prompt {
         font: 500 12.5px/1.4 -apple-system, sans-serif;
         color: #756e62;
         margin-bottom: 14px;
       }
-      .adjn-card-btn {
+      .nullsanz-card-btn {
         border: none;
         background: #302d27;
         color: #ffffff;
@@ -653,11 +653,11 @@
         align-items: center;
         gap: 7px;
       }
-      .adjn-card-btn:hover {
+      .nullsanz-card-btn:hover {
         filter: brightness(1.1);
         transform: scale(1.03);
       }
-      .adjn-card-specs {
+      .nullsanz-card-specs {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -666,43 +666,43 @@
         font: 600 10.5px/1 -apple-system, sans-serif;
         color: #8d8577;
       }
-      .adjn-card-specs span:not(:last-child)::after {
+      .nullsanz-card-specs span:not(:last-child)::after {
         content: "•";
         margin-left: 8px;
         opacity: 0.6;
       }
 
       /* In-Card Circular Progress Ring (Matching Screenshot 2) */
-      .adjn-ring-container {
+      .nullsanz-ring-container {
         display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 10px 0;
       }
-      .adjn-zone-card.is-processing .adjn-idle-content {
+      .nullsanz-zone-card.is-processing .nullsanz-idle-content {
         display: none;
       }
-      .adjn-zone-card.is-processing .adjn-ring-container {
+      .nullsanz-zone-card.is-processing .nullsanz-ring-container {
         display: flex;
       }
-      .adjn-ring-wrap {
+      .nullsanz-ring-wrap {
         position: relative;
         width: 86px;
         height: 86px;
         margin: 0 auto 14px;
       }
-      .adjn-ring-svg {
+      .nullsanz-ring-svg {
         width: 100%;
         height: 100%;
         transform: rotate(-90deg);
       }
-      .adjn-ring-circle-bg {
+      .nullsanz-ring-circle-bg {
         fill: none;
         stroke: rgba(255, 255, 255, 0.1);
         stroke-width: 6;
       }
-      .adjn-ring-circle-bar {
+      .nullsanz-ring-circle-bar {
         fill: none;
         stroke: #8f856f;
         stroke-width: 6;
@@ -712,7 +712,7 @@
         transition: stroke-dashoffset 0.2s ease;
         filter: drop-shadow(0 0 5px rgba(143,133,111,.35));
       }
-      .adjn-ring-percentage {
+      .nullsanz-ring-percentage {
         position: absolute;
         inset: 0;
         display: flex;
@@ -722,20 +722,20 @@
         color: #ffffff;
         letter-spacing: -0.5px;
       }
-      .adjn-ring-title {
+      .nullsanz-ring-title {
         font: 800 14px/1.3 -apple-system, sans-serif;
         color: #ffffff;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         margin-bottom: 4px;
       }
-      .adjn-ring-detail {
+      .nullsanz-ring-detail {
         font: 500 11.5px/1.4 -apple-system, sans-serif;
         color: #a49e92;
       }
 
       /* Fallback Overlay */
-      #adjn-process-overlay {
+      #nullsanz-process-overlay {
         position: fixed;
         inset: 0;
         z-index: 2147483645;
@@ -747,8 +747,8 @@
         -webkit-backdrop-filter: blur(10px);
         font-family: -apple-system, sans-serif;
       }
-      #adjn-process-overlay.show { display: flex; }
-      #adjn-process-card {
+      #nullsanz-process-overlay.show { display: flex; }
+      #nullsanz-process-card {
         width: min(500px, calc(100vw - 36px));
         padding: 30px 32px 26px;
         border-radius: 22px;
@@ -758,37 +758,37 @@
         color: #fff;
         text-align: center;
       }
-      #adjn-process-logo {
+      #nullsanz-process-logo {
         font: 800 22px/1 -apple-system, sans-serif;
         color: #54be68;
         margin-bottom: 16px;
         letter-spacing: -0.2px;
       }
-      #adjn-process-title {
+      #nullsanz-process-title {
         font: 700 16px/1.25 -apple-system, sans-serif;
         color: #ffffff;
         margin-bottom: 6px;
       }
-      #adjn-process-detail {
+      #nullsanz-process-detail {
         min-height: 18px;
         font: 500 12px/1.4 -apple-system, sans-serif;
         color: #a49e92;
         margin-bottom: 18px;
       }
-      #adjn-process-track {
+      #nullsanz-process-track {
         height: 8px;
         border-radius: 999px;
         background: #2a3039;
         overflow: hidden;
       }
-      #adjn-process-bar {
+      #nullsanz-process-bar {
         height: 100%;
         width: 0;
         background: #54be68;
         border-radius: 999px;
         transition: width .22s ease;
       }
-      #adjn-process-note {
+      #nullsanz-process-note {
         margin-top: 14px;
         font: 600 11px/1.4 -apple-system, sans-serif;
         color: #797368;
@@ -797,14 +797,14 @@
     document.documentElement.appendChild(style);
 
     pill = document.createElement('button');
-    pill.id = 'adjn-method-pill';
+    pill.id = 'nullsanz-method-pill';
     pill.type = 'button';
     pill.innerHTML = `
-      <span class="adjn-line1">
-        <span class="adjn-dot"></span>
+      <span class="nullsanz-line1">
+        <span class="nullsanz-dot"></span>
         <span>✦ ✦ Nullsanz Studio v3.0 ✦ ✦ — AKTIF</span>
       </span>
-      <span class="adjn-spec">Auto-Patch 4K 120FPS • Sound Safe by F R Y 60fps</span>
+      <span class="nullsanz-spec">Auto-Patch 4K 120FPS • Sound Safe by F R Y 60fps</span>
     `;
     pill.title = 'Nullsanz TikTok Studio v3.0 | Auto-Patch & Sound Safe Active';
     pill.addEventListener('click', () => {
@@ -822,37 +822,37 @@
     refreshPillUI();
 
     accessModal = document.createElement('div');
-    accessModal.id = 'adjn-access-modal';
+    accessModal.id = 'nullsanz-access-modal';
     accessModal.innerHTML = `
-      <div id="adjn-access-card" role="dialog" aria-modal="true" aria-labelledby="adjn-access-title">
-        <div class="adjn-access-icon">
+      <div id="nullsanz-access-card" role="dialog" aria-modal="true" aria-labelledby="nullsanz-access-title">
+        <div class="nullsanz-access-icon">
           <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
         </div>
-        <div class="adjn-access-title" id="adjn-access-title">Nullsanz Studio • Engine Selector</div>
-        <div class="adjn-access-sub">Pilih engine kalibrasi video sebelum upload (Maks. 2 GB).</div>
-        <div class="adjn-access-status" style="color:#2e7d32;"><i></i> AUTO-PATCH UNLOCKED • UNLIMITED</div>
-        <input id="adjn-access-input" class="adjn-access-input" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan password…">
-        <button id="adjn-access-btn" class="adjn-access-btn" type="button">UNLOCK AUTO-PATCH</button>
-        <div id="adjn-access-error" class="adjn-access-error"></div>
-        <div class="adjn-public-option" id="adjn-engine-selector">
-          <span class="adjn-public-meta">
-            <span class="adjn-public-title">Nullsanz Engine</span>
-            <span class="adjn-public-sub">Pilih engine sebelum Auto-Patch (Default 3.0 Dolby Vision &amp; HEVC)</span>
+        <div class="nullsanz-access-title" id="nullsanz-access-title">Nullsanz Studio • Engine Selector</div>
+        <div class="nullsanz-access-sub">Pilih engine kalibrasi video sebelum upload (Maks. 2 GB).</div>
+        <div class="nullsanz-access-status" style="color:#2e7d32;"><i></i> AUTO-PATCH UNLOCKED • UNLIMITED</div>
+        <input id="nullsanz-access-input" class="nullsanz-access-input" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan password…">
+        <button id="nullsanz-access-btn" class="nullsanz-access-btn" type="button">UNLOCK AUTO-PATCH</button>
+        <div id="nullsanz-access-error" class="nullsanz-access-error"></div>
+        <div class="nullsanz-public-option" id="nullsanz-engine-selector">
+          <span class="nullsanz-public-meta">
+            <span class="nullsanz-public-title">Nullsanz Engine</span>
+            <span class="nullsanz-public-sub">Pilih engine sebelum Auto-Patch (Default 3.0 Dolby Vision &amp; HEVC)</span>
           </span>
-          <div class="adjn-engine-buttons">
-            <button type="button" data-engine="2.1.5" class="adjn-engine-btn active">2.1.5</button>
-            <button type="button" data-engine="2.3" class="adjn-engine-btn">2.3</button>
-            <button type="button" data-engine="3.0" class="adjn-engine-btn">3.0</button>
+          <div class="nullsanz-engine-buttons">
+            <button type="button" data-engine="2.1.5" class="nullsanz-engine-btn active">2.1.5</button>
+            <button type="button" data-engine="2.3" class="nullsanz-engine-btn">2.3</button>
+            <button type="button" data-engine="3.0" class="nullsanz-engine-btn">3.0</button>
           </div>
         </div>
-        <div class="adjn-access-note">Akses Full Unlimited • Engine dapat diganti kapan saja sebelum memilih video.</div>
+        <div class="nullsanz-access-note">Akses Full Unlimited • Engine dapat diganti kapan saja sebelum memilih video.</div>
       </div>`;
     document.documentElement.appendChild(accessModal);
-    accessInput = accessModal.querySelector('#adjn-access-input');
-    accessError = accessModal.querySelector('#adjn-access-error');
-    const accessButton = accessModal.querySelector('#adjn-access-btn');
+    accessInput = accessModal.querySelector('#nullsanz-access-input');
+    accessError = accessModal.querySelector('#nullsanz-access-error');
+    const accessButton = accessModal.querySelector('#nullsanz-access-btn');
     if (accessButton) accessButton.addEventListener('click', unlockAccess);
     if (accessInput) accessInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') { e.preventDefault(); unlockAccess(); }
@@ -881,30 +881,30 @@
     accessModal.querySelectorAll('[data-engine]').forEach(btn => btn.addEventListener('click', () => {
       selectedEngine = btn.dataset.engine || '2.1.5';
       accessModal.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b === btn));
-      try { chrome.storage.local.set({ adjnEngine: selectedEngine }); } catch (_) {}
+      try { chrome.storage.local.set({ nullsanzEngine: selectedEngine }); } catch (_) {}
       showToast(`✓ Engine Nullsanz ${selectedEngine} dipilih.`, 'ok');
     }));
     accessModal.addEventListener('click', e => { if (e.target === accessModal && !accessUnlocked) showAccessModal(); });
 
     toast = document.createElement('div');
-    toast.id = 'adjn-toast';
+    toast.id = 'nullsanz-toast';
     document.documentElement.appendChild(toast);
 
     overlay = document.createElement('div');
-    overlay.id = 'adjn-process-overlay';
+    overlay.id = 'nullsanz-process-overlay';
     overlay.innerHTML = `
-      <div id="adjn-process-card">
+      <div id="nullsanz-process-card">
         <img src="${chrome.runtime.getURL('icon128.png')}" alt="Logo" style="width:56px;height:56px;border-radius:14px;margin:0 auto 12px;display:block;box-shadow:0 6px 18px rgba(0,0,0,0.18);">
-        <div id="adjn-process-logo">Nullsanz Video Studio v3.0</div>
-        <div id="adjn-process-title">Membaca video…</div>
-        <div id="adjn-process-detail">TikTok ditahan sampai proses kalibrasi selesai.</div>
-        <div id="adjn-process-track"><div id="adjn-process-bar"></div></div>
-        <div id="adjn-process-note">Nullsanz Ultra HD Studio • Local container processing (No upload to external servers)</div>
+        <div id="nullsanz-process-logo">Nullsanz Video Studio v3.0</div>
+        <div id="nullsanz-process-title">Membaca video…</div>
+        <div id="nullsanz-process-detail">TikTok ditahan sampai proses kalibrasi selesai.</div>
+        <div id="nullsanz-process-track"><div id="nullsanz-process-bar"></div></div>
+        <div id="nullsanz-process-note">Nullsanz Ultra HD Studio • Local container processing (No upload to external servers)</div>
       </div>`;
     document.documentElement.appendChild(overlay);
-    overlayTitle = overlay.querySelector('#adjn-process-title');
-    overlayDetail = overlay.querySelector('#adjn-process-detail');
-    overlayBar = overlay.querySelector('#adjn-process-bar');
+    overlayTitle = overlay.querySelector('#nullsanz-process-title');
+    overlayDetail = overlay.querySelector('#nullsanz-process-detail');
+    overlayBar = overlay.querySelector('#nullsanz-process-bar');
 
     try {
       frame = document.createElement('iframe');
@@ -915,7 +915,7 @@
     } catch (_) {}
 
     // Regularly ensure upload zone is decorated on TikTok Studio
-    try { chrome.storage.local.get(['adjnEngine'], r => { if (r?.adjnEngine && ['2.1.5','2.3','3.0'].includes(r.adjnEngine)) { selectedEngine = r.adjnEngine; accessModal?.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b.dataset.engine === selectedEngine)); } }); } catch (_) {}
+    try { chrome.storage.local.get(['nullsanzEngine'], r => { if (r?.nullsanzEngine && ['2.1.5','2.3','3.0'].includes(r.nullsanzEngine)) { selectedEngine = r.nullsanzEngine; accessModal?.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b.dataset.engine === selectedEngine)); } }); } catch (_) {}
     const restored = restoreAccessSession();
     updateAccessPill();
     decorateUploadZone();
@@ -925,14 +925,14 @@
   }
 
   function updateUploadZoneAccess() {
-    const zone = document.querySelector('.adjn-upload-zone');
-    const card = document.querySelector('#adjnZoneCard');
+    const zone = document.querySelector('.nullsanz-upload-zone');
+    const card = document.querySelector('#nullsanzZoneCard');
     if (!zone || !card) return;
-    zone.classList.toggle('adjn-zone-locked', !accessUnlocked);
-    card.classList.toggle('adjn-zone-locked', !accessUnlocked);
-    const prompt = card.querySelector('#adjnCardPrompt');
-    const btn = card.querySelector('.adjn-card-btn');
-    const tag = card.querySelector('.adjn-card-tag');
+    zone.classList.toggle('nullsanz-zone-locked', !accessUnlocked);
+    card.classList.toggle('nullsanz-zone-locked', !accessUnlocked);
+    const prompt = card.querySelector('#nullsanzCardPrompt');
+    const btn = card.querySelector('.nullsanz-card-btn');
+    const tag = card.querySelector('.nullsanz-card-tag');
     if (!accessUnlocked) {
       if (prompt) prompt.textContent = 'Masukkan password untuk membuka akses upload';
       if (btn) { btn.textContent = '🔒 Unlock Auto-Patch'; }
@@ -946,7 +946,7 @@
 
   function hasDashedBorder(el) {
     if (!el || !(el instanceof HTMLElement)) return false;
-    if (el.classList.contains('adjn-upload-zone') || el.dataset.adjnDropzone === '1') return true;
+    if (el.classList.contains('nullsanz-upload-zone') || el.dataset.nullsanzDropzone === '1') return true;
     try {
       const s = window.getComputedStyle(el);
       return (
@@ -963,7 +963,7 @@
 
   function findOuterUploadDropZone(startEl) {
     if (!startEl) return null;
-    const existing = document.querySelector('[data-adjn-dropzone="1"]');
+    const existing = document.querySelector('[data-nullsanz-dropzone="1"]');
     if (existing && document.body.contains(existing)) {
       return existing;
     }
@@ -990,23 +990,23 @@
       }
     }
     const target = dashedAncestor || uploadAncestor || null;
-    if (target) target.dataset.adjnDropzone = '1';
+    if (target) target.dataset.nullsanzDropzone = '1';
     return target;
   }
 
   function dismissUploadOverlay() {
-    window.__adjnUploadActive = true;
-    const ov = document.querySelector('.adjn-zone-overlay');
-    const zone = document.querySelector('.adjn-upload-zone');
+    window.__nullsanzUploadActive = true;
+    const ov = document.querySelector('.nullsanz-zone-overlay');
+    const zone = document.querySelector('.nullsanz-upload-zone');
     if (ov) {
       ov.style.transition = 'opacity 0.35s ease';
       ov.style.opacity = '0';
       setTimeout(() => {
         try { ov.remove(); } catch (_) {}
-        if (zone) zone.classList.remove('adjn-upload-zone');
+        if (zone) zone.classList.remove('nullsanz-upload-zone');
       }, 350);
     } else if (zone) {
-      zone.classList.remove('adjn-upload-zone');
+      zone.classList.remove('nullsanz-upload-zone');
     }
   }
 
@@ -1016,16 +1016,16 @@
 
     // Do not decorate if user is already on caption/publish page
     if (document.querySelector('input[placeholder*="caption" i], textarea, [class*="caption" i], [class*="publish" i], [class*="post-btn" i]')) {
-      const ov = document.querySelector('.adjn-zone-overlay');
+      const ov = document.querySelector('.nullsanz-zone-overlay');
       if (ov) ov.remove();
       return;
     }
 
-    if (window.__adjnUploadActive && !findTikTokVideoInput()) return;
-    window.__adjnUploadActive = false;
+    if (window.__nullsanzUploadActive && !findTikTokVideoInput()) return;
+    window.__nullsanzUploadActive = false;
 
     // Stable anchor: if overlay is already active in DOM, do NOT tear it down or shift it!
-    const existingOverlay = document.querySelector('.adjn-zone-overlay');
+    const existingOverlay = document.querySelector('.nullsanz-zone-overlay');
     if (existingOverlay && document.body.contains(existingOverlay)) {
       return;
     }
@@ -1041,33 +1041,33 @@
     const zone = findOuterUploadDropZone(startEl) || startEl;
     if (!zone) return;
 
-    zone.dataset.adjnDropzone = '1';
+    zone.dataset.nullsanzDropzone = '1';
     if (getComputedStyle(zone).position === 'static') {
       zone.style.position = 'relative';
     }
-    zone.classList.add('adjn-upload-zone');
+    zone.classList.add('nullsanz-upload-zone');
 
     const overlayEl = document.createElement('div');
-    overlayEl.className = 'adjn-zone-overlay';
+    overlayEl.className = 'nullsanz-zone-overlay';
     overlayEl.innerHTML = `
-      <img class="adjn-zone-bg" src="${chrome.runtime.getURL('adjn-upload-banner.jpg')}" alt="ADJN Banner">
-      <div class="adjn-zone-gradient"></div>
+      <img class="nullsanz-zone-bg" src="${chrome.runtime.getURL('nullsanz-upload-banner.jpg')}" alt="Nullsanz Banner">
+      <div class="nullsanz-zone-gradient"></div>
       
       <!-- Cyber Corner Brackets -->
-      <div class="adjn-bracket adjn-bracket-tl"></div>
-      <div class="adjn-bracket adjn-bracket-tr"></div>
-      <div class="adjn-bracket adjn-bracket-bl"></div>
-      <div class="adjn-bracket adjn-bracket-br"></div>
+      <div class="nullsanz-bracket nullsanz-bracket-tl"></div>
+      <div class="nullsanz-bracket nullsanz-bracket-tr"></div>
+      <div class="nullsanz-bracket nullsanz-bracket-bl"></div>
+      <div class="nullsanz-bracket nullsanz-bracket-br"></div>
 
       <!-- Floating Glass Center Card -->
-      <div class="adjn-zone-card" id="adjnZoneCard">
+      <div class="nullsanz-zone-card" id="nullsanzZoneCard">
         <!-- Idle Content -->
-        <div class="adjn-idle-content">
-          <img src="${chrome.runtime.getURL('icon48.png')}" class="adjn-card-logo-img" alt="FRY Logo">
-          <div class="adjn-card-title">Nullsanz TikTok Studio v3.0</div>
-          <div class="adjn-card-tag">✦ 8K 60FPS • 4K 120FPS • ULTRA HD MULTI-ENGINE ACTIVE ✦</div>
-          <div class="adjn-card-prompt" id="adjnCardPrompt">Tarik &amp; letakkan video di sini atau klik untuk kalibrasi Nullsanz</div>
-          <button type="button" class="adjn-card-btn">
+        <div class="nullsanz-idle-content">
+          <img src="${chrome.runtime.getURL('icon48.png')}" class="nullsanz-card-logo-img" alt="Nullsanz Logo">
+          <div class="nullsanz-card-title">Nullsanz TikTok Studio v3.0</div>
+          <div class="nullsanz-card-tag">✦ 8K 60FPS • 4K 120FPS • ULTRA HD MULTI-ENGINE ACTIVE ✦</div>
+          <div class="nullsanz-card-prompt" id="nullsanzCardPrompt">Tarik &amp; letakkan video di sini atau klik untuk kalibrasi Nullsanz</div>
+          <button type="button" class="nullsanz-card-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
@@ -1075,7 +1075,7 @@
             </svg>
             <span>Pilih Video (Auto-Patch)</span>
           </button>
-          <div class="adjn-card-specs">
+          <div class="nullsanz-card-specs">
             <span>MP4 / MOV</span>
             <span>H.264 / HEVC</span>
             <span>100% Lokal FastStart</span>
@@ -1083,16 +1083,16 @@
         </div>
 
         <!-- Processing Progress Ring (Active during calibration) -->
-        <div class="adjn-ring-container">
-          <div class="adjn-ring-wrap">
-            <svg class="adjn-ring-svg" viewBox="0 0 100 100">
-              <circle class="adjn-ring-circle-bg" cx="50" cy="50" r="42"></circle>
-              <circle class="adjn-ring-circle-bar" id="adjnRingBar" cx="50" cy="50" r="42"></circle>
+        <div class="nullsanz-ring-container">
+          <div class="nullsanz-ring-wrap">
+            <svg class="nullsanz-ring-svg" viewBox="0 0 100 100">
+              <circle class="nullsanz-ring-circle-bg" cx="50" cy="50" r="42"></circle>
+              <circle class="nullsanz-ring-circle-bar" id="nullsanzRingBar" cx="50" cy="50" r="42"></circle>
             </svg>
-            <div class="adjn-ring-percentage" id="adjnRingPct">0%</div>
+            <div class="nullsanz-ring-percentage" id="nullsanzRingPct">0%</div>
           </div>
-          <div class="adjn-ring-title" id="adjnRingTitle">MEMBACA VIDEO...</div>
-          <div class="adjn-ring-detail" id="adjnRingDetail">TikTok ditahan sampai kalibrasi selesai.</div>
+          <div class="nullsanz-ring-title" id="nullsanzRingTitle">MEMBACA VIDEO...</div>
+          <div class="nullsanz-ring-detail" id="nullsanzRingDetail">TikTok ditahan sampai kalibrasi selesai.</div>
         </div>
       </div>
     `;
@@ -1107,19 +1107,19 @@
 
     // Drag-over styling
     overlayEl.addEventListener('dragenter', () => {
-      zone.classList.add('adjn-drag-over');
-      const prompt = overlayEl.querySelector('#adjnCardPrompt');
+      zone.classList.add('nullsanz-drag-over');
+      const prompt = overlayEl.querySelector('#nullsanzCardPrompt');
       if (prompt) prompt.textContent = 'Lepaskan video untuk mulai kalibrasi otomatis!';
     });
     overlayEl.addEventListener('dragleave', (e) => {
       if (!overlayEl.contains(e.relatedTarget)) {
-        zone.classList.remove('adjn-drag-over');
-        const prompt = overlayEl.querySelector('#adjnCardPrompt');
+        zone.classList.remove('nullsanz-drag-over');
+        const prompt = overlayEl.querySelector('#nullsanzCardPrompt');
         if (prompt) prompt.textContent = 'Tarik & letakkan video di sini atau klik untuk kalibrasi';
       }
     });
     overlayEl.addEventListener('drop', () => {
-      zone.classList.remove('adjn-drag-over');
+      zone.classList.remove('nullsanz-drag-over');
     });
 
     zone.appendChild(overlayEl);
@@ -1140,11 +1140,11 @@
     const p = Math.max(0, Math.min(100, pct));
     
     // Update circular progress ring in upload zone card
-    const card = document.getElementById('adjnZoneCard');
-    const ringBar = document.getElementById('adjnRingBar');
-    const ringPct = document.getElementById('adjnRingPct');
-    const ringTitle = document.getElementById('adjnRingTitle');
-    const ringDetail = document.getElementById('adjnRingDetail');
+    const card = document.getElementById('nullsanzZoneCard');
+    const ringBar = document.getElementById('nullsanzRingBar');
+    const ringPct = document.getElementById('nullsanzRingPct');
+    const ringTitle = document.getElementById('nullsanzRingTitle');
+    const ringDetail = document.getElementById('nullsanzRingDetail');
 
     if (card) card.classList.add('is-processing');
     if (ringPct) ringPct.textContent = `${Math.round(p)}%`;
@@ -1165,7 +1165,7 @@
 
   function hideStage(delay = 600) {
     setTimeout(() => {
-      const card = document.getElementById('adjnZoneCard');
+      const card = document.getElementById('nullsanzZoneCard');
       if (card) card.classList.remove('is-processing');
       if (overlay) overlay.classList.remove('show');
       if (overlayBar) overlayBar.style.width = '0%';
@@ -1199,7 +1199,7 @@
     }
 
     setBusy(true);
-    input.dataset.adjnProcessing = '1';
+    input.dataset.nullsanzProcessing = '1';
     setStage('Membaca video…', 10, `${file.name} • ${fmtBytes(file.size)}`);
 
     try {
@@ -1207,9 +1207,9 @@
       const buffer = await file.arrayBuffer();
 
       // Fast-path: Inline processor (direct execution without iframe or timeout)
-      if (globalThis.ADJNVideoProcessor?.processVideoDirect) {
-        const requestId = `adjn-${Date.now()}-${++requestSeq}`;
-        const result = await globalThis.ADJNVideoProcessor.processVideoDirect({
+      if (globalThis.NullsanzVideoProcessor?.processVideoDirect) {
+        const requestId = `nullsanz-${Date.now()}-${++requestSeq}`;
+        const result = await globalThis.NullsanzVideoProcessor.processVideoDirect({
           requestId,
           buffer,
           fileName: file.name || 'video.mp4',
@@ -1250,8 +1250,8 @@
             lastModified: file.lastModified || Date.now()
           });
         }
-        delete targetInput.dataset.adjnProcessing;
-        if (targetInput !== input) delete input.dataset.adjnProcessing;
+        delete targetInput.dataset.nullsanzProcessing;
+        if (targetInput !== input) delete input.dataset.nullsanzProcessing;
 
         setStage('Siap upload', 100, `${result.mode || 'processed'} • ${fmtBytes(result.inputBytes || file.size)} → ${fmtBytes(outputBuf.byteLength)}`);
         
@@ -1265,10 +1265,10 @@
 
       // Fallback: If inline processor is not present, use iframe
       await waitProcessor();
-      const requestId = `adjn-${Date.now()}-${++requestSeq}`;
+      const requestId = `nullsanz-${Date.now()}-${++requestSeq}`;
       pending = { requestId, input, originalFile: file };
       frame.contentWindow.postMessage({
-        source: 'FRY_CONTENT',
+        source: 'NULLSANZ_CONTENT',
         type: 'PROCESS',
         requestId,
         buffer,
@@ -1277,7 +1277,7 @@
         fileSize: file.size || buffer.byteLength
       }, '*', [buffer]);
     } catch (e) {
-      delete input.dataset.adjnProcessing;
+      delete input.dataset.nullsanzProcessing;
       pending = null;
       setBusy(false);
       hideStage(0);
@@ -1292,7 +1292,7 @@
   function replayToTikTok(inputEl, file, originalFile) {
     if (originalFile && file.name) {
       window.postMessage({
-        source: 'ADJN_CONTENT',
+        source: 'NULLSANZ_CONTENT',
         type: 'STORE_ORIGINAL_FILE',
         patchedName: file.name,
         originalFile: originalFile
@@ -1324,7 +1324,7 @@
         try { a.files = dt.files; } catch (_) {}
       }
 
-      a.dataset.adjnReady = '1';
+      a.dataset.nullsanzReady = '1';
 
       // Reliable event dispatching across Chrome, Edge, Brave, Kiwi, Lemur, and Orion
       a.dispatchEvent(new Event('input', { bubbles: true, composed: true, cancelable: true }));
@@ -1348,7 +1348,7 @@
     const data = event.data;
     if (!data) return;
 
-    if (data.source === 'ADJN_PAGE_HOOK') {
+    if ((data.source === 'NULLSANZ_PAGE_HOOK' || data.source === 'Nullsanz_PAGE_HOOK')) {
       if (data.type === 'HOOK_READY') {
         pageHookReady = true;
         if (pill) pill.title = 'Nullsanz TikTok Studio v3.0 • page hook ready';
@@ -1359,7 +1359,7 @@
       return;
     }
 
-    if (data.source !== 'FRY_PROCESSOR') return;
+    if ((data.source !== 'NULLSANZ_PROCESSOR' && data.source !== 'FRY_PROCESSOR')) return;
     if (data.type === 'READY') { processorReady = true; return; }
     if (!pending || (data.requestId && data.requestId !== pending.requestId)) return;
 
@@ -1369,7 +1369,7 @@
     }
     if (data.type === 'ERROR') {
       const input = pending.input;
-      if (input) delete input.dataset.adjnProcessing;
+      if (input) delete input.dataset.nullsanzProcessing;
       pending = null;
       setBusy(false);
       hideStage(0);
@@ -1394,13 +1394,13 @@
         setStage('Siap upload', 100, `${data.mode || 'processed'} • ${fmtBytes(data.inputBytes)} → ${fmtBytes(data.outputBytes)}`);
         let targetInput = input.isConnected !== false ? input : findActiveFileInput();
         if (targetInput) {
-          delete targetInput.dataset.adjnProcessing;
-          if (targetInput !== input) delete input.dataset.adjnProcessing;
+          delete targetInput.dataset.nullsanzProcessing;
+          if (targetInput !== input) delete input.dataset.nullsanzProcessing;
           replayToTikTok(targetInput, patched, originalFile);
         }
         showToast(`✓ Nullsanz: Pre-upload selesai! Video Ultra HD & Sound Safe aktif.`, 'ok');
       } catch (e) {
-        if (input) delete input.dataset.adjnProcessing;
+        if (input) delete input.dataset.nullsanzProcessing;
         showToast(`Gagal meneruskan file hasil proses: ${e?.message || e}`, 'err');
       } finally {
         pending = null;

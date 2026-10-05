@@ -228,11 +228,11 @@
   // Save Settings
   function saveState() {
     const data = {
-      adjnLang: currentLang,
-      adjnUploader: uploaderActive,
-      adjnWatermark: watermarkActive,
-      adjnPublicVersion: publicVersionActive,
-      adjnTheme: currentTheme
+      nullsanzLang: currentLang,
+      nullsanzUploader: uploaderActive,
+      nullsanzWatermark: watermarkActive,
+      nullsanzPublicVersion: publicVersionActive,
+      nullsanzTheme: currentTheme
     };
 
     try {
@@ -248,21 +248,21 @@
     } catch (_) {}
 
     try {
-      localStorage.setItem('adjn_settings', JSON.stringify(data));
+      localStorage.setItem('nullsanz_settings', JSON.stringify(data));
     } catch (_) {}
   }
 
   // Load Settings
   function loadState() {
     try {
-      const saved = localStorage.getItem('adjn_settings');
+      const saved = localStorage.getItem('nullsanz_settings');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.adjnLang) currentLang = parsed.adjnLang;
-        if (parsed.adjnUploader !== undefined) uploaderActive = !!parsed.adjnUploader;
-        if (parsed.adjnWatermark !== undefined) watermarkActive = !!parsed.adjnWatermark;
-        if (parsed.adjnPublicVersion !== undefined) publicVersionActive = !!parsed.adjnPublicVersion;
-        if (parsed.adjnTheme) currentTheme = parsed.adjnTheme;
+        if (parsed.nullsanzLang) currentLang = parsed.nullsanzLang;
+        if (parsed.nullsanzUploader !== undefined) uploaderActive = !!parsed.nullsanzUploader;
+        if (parsed.nullsanzWatermark !== undefined) watermarkActive = !!parsed.nullsanzWatermark;
+        if (parsed.nullsanzPublicVersion !== undefined) publicVersionActive = !!parsed.nullsanzPublicVersion;
+        if (parsed.nullsanzTheme) currentTheme = parsed.nullsanzTheme;
       }
     } catch (_) {}
 

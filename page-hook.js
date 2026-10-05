@@ -1,7 +1,7 @@
 (() => {
   'use strict';
-  if (window.__ADJN_METHOD_PAGE_HOOK__) return;
-  window.__ADJN_METHOD_PAGE_HOOK__ = true;
+  if (window.__NULLSANZ_METHOD_PAGE_HOOK__) return;
+  window.__NULLSANZ_METHOD_PAGE_HOOK__ = true;
 
   console.info('[Nullsanz TikTok Studio v3.0] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
 
@@ -37,12 +37,12 @@
   window.addEventListener('message', event => {
     const data = event.data;
     if (!data) return;
-    if (data.source === 'ADJN_METHOD' && data.type === 'ADJN_SETTINGS' && data.settings) {
+    if (data.source === 'NULLSANZ_METHOD' && data.type === 'NULLSANZ_SETTINGS' && data.settings) {
       if (data.settings.watermarkEnabled !== undefined) {
         watermarkEnabled = !!data.settings.watermarkEnabled;
       }
     }
-    if (data.source === 'ADJN_CONTENT' && data.type === 'STORE_ORIGINAL_FILE') {
+    if ((data.source === 'NULLSANZ_CONTENT' || data.source === 'ADJN_CONTENT') && data.type === 'STORE_ORIGINAL_FILE') {
       originalFilesMap.set(data.patchedName, data.originalFile);
       console.info('[Nullsanz Inject] Stored original file for safe preview:', data.patchedName);
     }
@@ -389,7 +389,7 @@
   function reportPublish(transport, url, changed) {
     try {
       window.postMessage({
-        source: 'ADJN_PAGE_HOOK',
+        source: 'NULLSANZ_PAGE_HOOK',
         type: 'PUBLISH_NORMALIZED',
         transport,
         changed: !!changed,
@@ -547,7 +547,7 @@
     const nativeSend = proto.send;
 
     proto.open = function(method, url) {
-      this.__adjnUrl = url;
+      this.__nullsanzUrl = url;
       if (typeof url === 'string' && url.includes(PHOTO_AB_URL)) {
         this.addEventListener('readystatechange', function () {
           if (this.readyState === 4 && this.status >= 200 && this.status < 300) {
@@ -571,7 +571,7 @@
 
     proto.send = function(body) {
       let nextBody = body;
-      const url = this.__adjnUrl || '';
+      const url = this.__nullsanzUrl || '';
       if (isPublishUrl(url)) {
         let changed = false;
         try {
@@ -589,5 +589,5 @@
     };
   }
 
-  window.postMessage({ source: 'ADJN_PAGE_HOOK', type: 'HOOK_READY' }, '*');
+  window.postMessage({ source: 'NULLSANZ_PAGE_HOOK', type: 'HOOK_READY' }, '*');
 })();

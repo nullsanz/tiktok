@@ -52,8 +52,8 @@
 - `page-hook.js` — Script MAIN world yang mencegat `JSON.stringify`, `fetch`, dan `XMLHttpRequest` untuk menonaktifkan canvas recompression TikTok & membersihkan watermark.
 - `content.js` — Content script UI yang memasang HUD status, upload dropzone, progress bar, selector engine, dan komunikasi patcher.
 - `processor.js` & `processor.html` — Background worker sandbox untuk kalibrasi FastStart MP4 container.
-- `adjn-engine.js` — Multi-Engine verification module (Dolby Vision, HEVC, and multi-profile layout checks).
-- `adjn-mp4-core.js` — Engine biner pembedah atom dan box MP4 (ftyp, moov, mdat) secara lokal dengan 6-Pass Safe.
+- `nullsanz-engine.js` — Multi-Engine verification module (Dolby Vision, HEVC, and multi-profile layout checks).
+- `nullsanz-mp4-core.js` — Engine biner pembedah atom dan box MP4 (ftyp, moov, mdat) secara lokal dengan 6-Pass Safe.
 - `popup.html` & `popup.js` — Dashboard interaktif bilingual (ID/EN) untuk kontrol fitur dan tema.
 - `icons/` & assets — Icon dan branding resmi Nullsanz.
 

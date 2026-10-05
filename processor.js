@@ -6,7 +6,7 @@
 
   function send(type, payload = {}, transfer = []) {
     if (typeof parent !== 'undefined' && parent && parent !== window) {
-      parent.postMessage({ source: 'FRY_PROCESSOR', type, ...payload }, '*', transfer);
+      parent.postMessage({ source: 'NULLSANZ_PROCESSOR', type, ...payload }, '*', transfer);
     }
   }
   function stage(requestId, key, label, progress, detail = '') {
@@ -343,7 +343,7 @@
     const selectedEngine = ['2.1.5','2.3','3.0'].includes(String(data.engine || '')) ? String(data.engine) : '2.1.5';
     const engineVersion = selectedEngine === '2.3' ? '5.5' : selectedEngine === '3.0' ? '6.0' : null;
     const requestId = data.requestId;
-    const core = globalThis.FRYOriginalMp4Core || globalThis.ADJNOriginalMp4Core;
+    const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core || globalThis.FRYOriginalMp4Core || globalThis.ADJNOriginalMp4Core;
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {
       throw new Error('Nullsanz Media Core tidak termuat.');
     }
@@ -358,9 +358,10 @@
     // compatibility/layout validator, while keeping the actual mutation local
     // in Nullsanz Core. No external engine watermark/branding is written by this extension.
     let engineProfile = { id: selectedEngine, source: 'Nullsanz Core v6.0' };
-    if (engineVersion && globalThis.ADJNEngines?.[engineVersion]?.checkLayout) {
+    const engineChecker = globalThis.NullsanzEngines || globalThis.ADJNEngines;
+    if (engineVersion && engineChecker?.[engineVersion]?.checkLayout) {
       try {
-        const check = await globalThis.ADJNEngines[engineVersion].checkLayout(new Blob([original], { type: data.fileType || 'video/mp4' }));
+        const check = await engineChecker[engineVersion].checkLayout(new Blob([original], { type: data.fileType || 'video/mp4' }));
         if (!check?.compatible) {
           throw new Error(check?.reason || `Engine ${engineVersion} menolak struktur video.`);
         }
@@ -425,7 +426,7 @@
       );
     }
 
-    // ADJN Method v5.0: The clean 64-bit Duration Sentinel leaves bitstream and audio samples 100% intact,
+    // Nullsanz Method v6.0: The clean 64-bit Duration Sentinel leaves bitstream and audio samples 100% intact,
     // which is fully compatible with Apple AVFoundation and iOS/Orion without crashing!
 
 
@@ -495,7 +496,7 @@
         dolbyVisionPreserved: hdr?.dolbyVision ? outputHdr?.dolbyVision === true : null
       },
       verification,
-      mode: 'adjn-core-resolution-codec-safe',
+      mode: 'nullsanz-core-resolution-codec-safe',
       passthrough: false,
       outputName: '',
       outputMime: 'video/mp4',
@@ -504,7 +505,7 @@
     };
   }
 
-  globalThis.ADJNVideoProcessor = {
+  globalThis.NullsanzVideoProcessor = {
     async processVideoDirect(data, onProgress) {
       stageCallback = onProgress;
       try {
@@ -520,11 +521,12 @@
     validateMediaInfo,
     verifyMediaContract
   };
+  globalThis.ADJNVideoProcessor = globalThis.NullsanzVideoProcessor;
 
   if (typeof window !== 'undefined') {
     window.addEventListener('message', async (event) => {
       const data = event.data;
-      if (!data || data.source !== 'FRY_CONTENT' || data.type !== 'PROCESS') return;
+      if (!data || (data.source !== 'NULLSANZ_CONTENT' && data.source !== 'FRY_CONTENT') || data.type !== 'PROCESS') return;
       if (busy) return send('ERROR', { requestId: data.requestId, message: 'Processor masih sibuk.' });
       busy = true;
       try {

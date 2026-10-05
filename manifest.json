@@ -48,7 +48,7 @@
       ],
       "js": [
         "orion-compat.js",
-        "adjn-mp4-core.js",
+        "nullsanz-mp4-core.js",
         "processor.js",
         "content.js"
       ],
@@ -61,8 +61,8 @@
       "resources": [
         "processor.html",
         "processor.js",
-        "adjn-mp4-core.js",
-        "adjn-engine.js",
+        "nullsanz-mp4-core.js",
+        "nullsanz-engine.js",
         "orion-compat.js",
         "icon16.png",
         "icon32.png",
@@ -71,9 +71,9 @@
         "icon256.png",
         "icon512.png",
         "page-hook.js",
-        "adjn-upload-banner.jpg",
-        "fry-logo-master.png",
-        "fry-logo-original.png"
+        "nullsanz-upload-banner.jpg",
+        "nullsanz-logo-master.png",
+        "nullsanz-logo-original.png"
       ],
       "matches": [
         "https://www.tiktok.com/*",

@@ -1,6 +1,6 @@
 /*
- * ADJN MP4 Core v5.0
- * Developed by F R Y 60fps & Adekjamannow
+ * Nullsanz MP4 Core v6.0
+ * Developed by Nullsanz Studio
  *
  * 64-Bit Unknown Duration Sentinel & Bitstream Ingest Engine
  */
@@ -8,10 +8,11 @@
   const api = factory();
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) {
+    root.NullsanzOriginalMp4Core = api;
+    root.NullsanzMp4Core = api;
     root.FRYOriginalMp4Core = api;
     root.ADJNOriginalMp4Core = api;
-    root.FRYMp4Patcher = api;
-    root.ADJNMp4Patcher = api;
+    root.NullsanzMp4Patcher = api;
     root.HazePatch = api;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
