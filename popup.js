@@ -5,11 +5,11 @@
   const I18N = {
     id: {
       appName: 'Nullsanz Studio',
-      appSub: 'FastStart Calibration & Anti-Kompres',
+      appSub: 'Ultra HD Multi-Engine & Anti-Kompres',
       devSub: 'Develop by nullsanz / null.cloud',
-      engineReady: 'Nullsanz Patcher Core Ready',
-      hudCalibration: '4K 120FPS',
-      hudSound: 'ANTI-MUTE',
+      engineReady: 'Nullsanz Multi-Engine Core Ready',
+      hudCalibration: '8K 60FPS • 4K 120FPS',
+      hudSound: 'SOUND SAFE',
       hudProcess: '100% LOKAL',
       uploaderLabel: 'Auto-Patcher Uploader',
       uploaderOn: 'AKTIF',
@@ -17,9 +17,9 @@
       watermarkLabel: 'Caption Watermark',
       watermarkOn: 'NYALA',
       watermarkOff: 'NONAKTIF (BERSIH)',
-      publicVersionLabel: 'Akses Full Unlimited',
-      publicVersionOn: 'AKTIF • TANPA BATAS',
-      publicVersionOff: 'NONAKTIF',
+      publicVersionLabel: 'Engine Mode',
+      publicVersionOn: 'MULTI-ENGINE 2.1.5 / 2.3 / 3.0',
+      publicVersionOff: 'FULL UNLIMITED',
       supportTitle: '',
       supportBadge: '',
       supportText: '',
@@ -28,22 +28,22 @@
       accordionGuide: 'Panduan Langkah demi Langkah',
       chipFeatures: '16 FITUR',
       chipGuide: '5 TAHAP',
-      footerSub: 'Nullsanz TikTok Studio • null.cloud',
+      footerSub: 'Nullsanz TikTok Studio • v3.0.0',
       features: [
-        'Kualitas Unggah TikTok Asli Tanpa Kompresi',
-        'Hingga 1080p • 60/120 FPS (Ultra Smooth)',
+        'Kualitas Unggah TikTok yang Ditingkatkan',
+        'Hingga 8K 60 FPS • 4K 120 FPS (Ultra Smooth)',
         'Dukungan H.264 & H.265 / HEVC',
         'Mendukung Semua Format Video (MP4 / MOV)',
         'Dukungan Original Sound (Bypass Anti-Mute)',
         'Kompatibilitas TikTok Story & Feed',
         'Sound & Music Tagging Aman',
-        'Caption Bersih Tanpa Watermark Otomatis',
+        '@Mention yang Bisa Diklik',
         'Dukungan Edit Cover Presisi',
         'Pemrosesan Video Otomatis',
         'Pemrosesan Lokal di Perangkat (Privasi 100%)',
         'Proses Upload Simpel & Cepat',
         'Penghapus Repost Metadata',
-        'Akses Penuh Tanpa Password',
+        'Toggle Watermark & Metadata',
         'Dukungan Mobile & Desktop Browser',
         'Bahasa Inggris & Indonesia'
       ],
@@ -51,37 +51,37 @@
         {
           num: 1,
           title: 'Ekspor Video Master',
-          desc: 'Ekspor editan kamu dalam 1080p atau 4K • 60 FPS dari video editor favoritmu (CapCut, Premiere, Alight Motion, dll).'
+          desc: 'Ekspor editan kamu dalam 1080p, 4K, atau 8K • 60 FPS dari video editor favoritmu (CapCut, Premiere, Alight Motion, dll).'
         },
         {
           num: 2,
           title: 'Tingkatkan Kualitas (Enhance)',
-          desc: 'Gunakan video enhancer pilihanmu (Wink Ultra HD atau AI Repair).'
+          desc: 'Gunakan video enhancer pilihanmu. Rekomendasi Wink: Ultra HD, atau AI Repair → Basic → Ultra HD → 1080p.'
         },
         {
           num: 3,
           title: 'Kompres & Kalibrasi FastStart',
-          desc: 'Optimasi container MP4 non-fragmented dengan faststart.'
+          desc: 'Gunakan Panda Video Compressor atau EDGE Video Calibration Studio untuk optimasi container MP4 non-fragmented.'
         },
         {
           num: 4,
           title: 'Mode Kompresi & Ekstensi',
-          desc: 'Pastikan toggle Auto-Patcher pada ekstensi Nullsanz ini berstatus AKTIF.'
+          desc: 'Pilih Large File mode. Pastikan toggle Auto-Patcher pada ekstensi ini berstatus AKTIF.'
         },
         {
           num: 5,
           title: 'Unggah ke TikTok Studio',
-          desc: 'Buka TikTok Studio lalu unggah. Ekstensi Nullsanz otomatis mengkalibrasi file secara lokal dan mematikan kompresi TikTok.'
+          desc: 'Buka TikTok Studio lalu unggah. Ekstensi Nullsanz otomatis mengkalibrasi file secara lokal sebelum video diunggah.'
         }
       ]
     },
     en: {
       appName: 'Nullsanz Studio',
-      appSub: 'FastStart Calibration & Anti-Compress',
+      appSub: 'Ultra HD Multi-Engine & Anti-Compress',
       devSub: 'Develop by nullsanz / null.cloud',
-      engineReady: 'Nullsanz Patcher Core Ready',
-      hudCalibration: '4K 120FPS',
-      hudSound: 'ANTI-MUTE',
+      engineReady: 'Nullsanz Multi-Engine Core Ready',
+      hudCalibration: '8K 60FPS • 4K 120FPS',
+      hudSound: 'SOUND SAFE',
       hudProcess: '100% LOCAL',
       uploaderLabel: 'Auto-Patcher Uploader',
       uploaderOn: 'ACTIVE',
@@ -89,9 +89,9 @@
       watermarkLabel: 'Caption Watermark',
       watermarkOn: 'ON',
       watermarkOff: 'OFF (CLEAN)',
-      publicVersionLabel: 'Full Unlimited Access',
-      publicVersionOn: 'ACTIVE • NO LIMITS',
-      publicVersionOff: 'DISABLED',
+      publicVersionLabel: 'Engine Mode',
+      publicVersionOn: 'MULTI-ENGINE 2.1.5 / 2.3 / 3.0',
+      publicVersionOff: 'FULL UNLIMITED',
       supportTitle: '',
       supportBadge: '',
       supportText: '',
@@ -100,22 +100,22 @@
       accordionGuide: 'Step-by-Step Guide',
       chipFeatures: '16 FEATURES',
       chipGuide: '5 STEPS',
-      footerSub: 'Nullsanz TikTok Studio • null.cloud',
+      footerSub: 'Nullsanz TikTok Studio • v3.0.0',
       features: [
-        'Lossless TikTok Upload Quality',
-        'Up to 1080p • 60/120 FPS (Ultra Smooth)',
+        'Enhanced TikTok Upload Quality',
+        'Up to 8K 60 FPS • 4K 120 FPS (Ultra Smooth)',
         'H.264 & H.265 / HEVC Support',
         'Supports All Video Formats (MP4 / MOV)',
         'Original Sound Support (Anti-Mute Bypass)',
         'TikTok Story & Feed Compatibility',
         'Safe Sound & Music Tagging',
-        'Clean Caption Zero Auto-Watermark',
+        'Clickable @Mention Support',
         'Precision Cover Editing Support',
         'Automatic Video Processing',
         'Local Device Processing (100% Private)',
         'Simple & Fast Upload Workflow',
         'Metadata Repost Cleaner',
-        'Full Unlimited Access Without Password',
+        'Toggle Watermark & Metadata',
         'Mobile & Desktop Browser Support',
         'English & Indonesian Language'
       ],
@@ -123,27 +123,27 @@
         {
           num: 1,
           title: 'Export Master Video',
-          desc: 'Export your edit in 1080p or 4K • 60 FPS from your favorite video editor.'
+          desc: 'Export your edit in 1080p, 4K, or 8K • 60 FPS from your favorite video editor (CapCut, Premiere, Alight Motion, etc).'
         },
         {
           num: 2,
           title: 'Enhance Quality',
-          desc: 'Use your preferred video enhancer (Wink Ultra HD or AI Repair).'
+          desc: 'Use your preferred video enhancer. Recommended for Wink: Ultra HD, or AI Repair → Basic → Ultra HD → 1080p.'
         },
         {
           num: 3,
           title: 'Compress & FastStart Calibration',
-          desc: 'Optimize non-fragmented MP4 containers with faststart.'
+          desc: 'Use Panda Video Compressor or EDGE Video Calibration Studio to optimize non-fragmented MP4 containers.'
         },
         {
           num: 4,
           title: 'Compression Mode & Extension',
-          desc: 'Make sure the Auto-Patcher toggle in Nullsanz extension is set to ACTIVE.'
+          desc: 'Select Large File mode. Make sure the Auto-Patcher toggle in this extension is set to ACTIVE.'
         },
         {
           num: 5,
           title: 'Upload to TikTok Studio',
-          desc: 'Open TikTok Studio and upload. Nullsanz extension automatically calibrates locally and bypasses TikTok compression.'
+          desc: 'Open TikTok Studio and upload. The Nullsanz extension automatically calibrates the file locally before upload.'
         }
       ]
     }
@@ -351,8 +351,8 @@
     if (publicVersionActive) cardPublicVersion.classList.add('active-card');
     else cardPublicVersion.classList.remove('active-card');
 
-    if (txtSupportTitle) txtSupportTitle.textContent = t.supportTitle;
-    if (txtSupportText) txtSupportText.textContent = t.supportText;
+    txtSupportTitle.textContent = t.supportTitle;
+    txtSupportText.textContent = t.supportText;
 
     txtBtnOpenStudio.textContent = t.btnOpenStudio;
     txtAccFeaturesTitle.textContent = t.accordionFeatures;

@@ -101,18 +101,25 @@
     if (width < 16 || height < 16) throw new Error(`Resolusi ${width}×${height} tidak valid.`);
 
     // Universal-resolution path: never snap/resize to 1080p, 1440p, or any preset.
-    // Accept any aspect ratio / intermediate resolution up to 4K canvas: max long edge 4096, max short edge 2160.
+    // Preserve native resolution/aspect ratio with two validated ceilings:
+    //   - up to 4K/DCI 4K (4096×2160): max 120 FPS
+    //   - above 4K up to 8K/DCI 8K (8192×4320): max 60 FPS
     const shortSide = Math.min(width, height);
     const longSide = Math.max(width, height);
-    if (longSide > 4096 || shortSide > 2160) {
+    const within4K = longSide <= 4096 && shortSide <= 2160;
+    const within8K = longSide <= 8192 && shortSide <= 4320;
+    if (!within8K) {
       throw new Error(
-        `Resolusi ${width}×${height} di atas batas ADJN 4K120 (maks. 4096×2160 atau 2160×4096).`
+        `Resolusi ${width}×${height} di atas batas Nullsanz 8K60 (maks. 8192×4320 atau 4320×8192).`
       );
     }
 
     const fps = Number(info.maxFps || info.averageFps || 0);
-    if (Number.isFinite(fps) && fps > 120.01) {
-      throw new Error(`FPS ${fps.toFixed(2)} di atas batas 120 FPS.`);
+    const maxAllowedFps = within4K ? 120.01 : 60.01;
+    if (Number.isFinite(fps) && fps > maxAllowedFps) {
+      const mode = within4K ? '4K120' : '8K60';
+      const limit = within4K ? 120 : 60;
+      throw new Error(`FPS ${fps.toFixed(2)} di atas batas ${mode} (${limit} FPS).`);
     }
 
     return {
@@ -121,13 +128,10 @@
       fps,
       shortSide,
       longSide,
+      within4K,
+      within8K,
       uhdHighLoad: shortSide > 1080 || longSide > 1920 || fps > 60.01
     };
-  }
-
-  function enforceAccessLimits(info, accessLimits) {
-    // Nullsanz Studio: Unlimited resolution and FPS
-    return;
   }
 
   function nearlyEqual(a, b, epsilon = 0.02) {
@@ -302,7 +306,7 @@
       hdr: sourceHdr,
       outputHdr: sourceHdr,
       report: {
-        engine: 'ADJN Universal Safe Passthrough 2.0',
+        engine: 'Nullsanz Core • Universal Safe Passthrough 3.0',
         passthrough: true,
         reason,
         container: sniff?.container || ext || 'unknown',
@@ -326,7 +330,7 @@
         metadataPreservedByteForByte: true,
         allTracksPreserved: true
       },
-      mode: 'adjn-universal-safe-passthrough',
+      mode: 'nullsanz-universal-safe-passthrough',
       passthrough: true,
       outputName: data.fileName || `video.${ext || 'mp4'}`,
       outputMime: data.fileType || mimeForExtension(ext),
@@ -336,10 +340,12 @@
   }
 
   async function processVideo(data) {
+    const selectedEngine = ['2.1.5','2.3','3.0'].includes(String(data.engine || '')) ? String(data.engine) : '2.1.5';
+    const engineVersion = selectedEngine === '2.3' ? '5.5' : selectedEngine === '3.0' ? '6.0' : null;
     const requestId = data.requestId;
     const core = globalThis.FRYOriginalMp4Core || globalThis.ADJNOriginalMp4Core;
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {
-      throw new Error('ADJN Media Core tidak termuat.');
+      throw new Error('Nullsanz Media Core tidak termuat.');
     }
 
     stage(requestId, 'reading', 'Membaca video…', 6);
@@ -347,6 +353,23 @@
     if (original.byteLength < 64) throw new Error('File video kosong/tidak valid.');
 
     const sniff = sniffMedia(original, data);
+
+    // Engine 2.3/3.0: use the supplied engine source as a strict
+    // compatibility/layout validator, while keeping the actual mutation local
+    // in Nullsanz Core. No external engine watermark/branding is written by this extension.
+    let engineProfile = { id: selectedEngine, source: 'Nullsanz Core v6.0' };
+    if (engineVersion && globalThis.ADJNEngines?.[engineVersion]?.checkLayout) {
+      try {
+        const check = await globalThis.ADJNEngines[engineVersion].checkLayout(new Blob([original], { type: data.fileType || 'video/mp4' }));
+        if (!check?.compatible) {
+          throw new Error(check?.reason || `Engine ${engineVersion} menolak struktur video.`);
+        }
+        engineProfile = { id: selectedEngine, source: `Nullsanz Core ${selectedEngine} • compatibility profile ${engineVersion}` };
+      } catch (engineError) {
+        stage(requestId, 'checking', 'Engine compatibility…', 18, engineError?.message || String(engineError));
+        return passthroughResult(original, data, engineError?.message || 'engine compatibility check gagal', null, null, sniff);
+      }
+    }
     stage(requestId, 'checking', 'Cek container, codec & metadata…', 15,
       `${sniff.container || 'video'} • ${sniff.codec || 'codec auto'} • ${sniff.audioCodec || 'audio auto'}`);
 
@@ -356,13 +379,10 @@
 
     try {
       info = core.inspectMediaInfo(original);
-      // Password-specific limits are enforced here, before any patch or passthrough path.
-      enforceAccessLimits(info, data.accessLimits);
       validateMediaInfo(info);
       hdr = detectHdrProfile(original, info);
       compat = core.inspectCompatibility(original);
     } catch (inspectError) {
-      if (/melewati batas password/i.test(String(inspectError?.message || ''))) throw inspectError;
       // Fragmented MP4, WebM/MKV, unusual MOV atoms, and other structures are
       // deliberately preserved byte-for-byte instead of being rejected.
       stage(requestId, 'preparing', 'Universal Safe…', 35, 'Struktur kompleks • seluruh file dipertahankan byte-identical');
@@ -411,26 +431,33 @@
 
     // Only the proven-safe classic path is modified. Everything else above
     // is exact-byte passthrough, which preserves every metadata atom/track.
-    stage(requestId, 'preparing', 'Siapin media…', 28, `${loadText}${hdrText} • ADJN full patch`);
+    stage(requestId, 'preparing', 'Siapin media…', 28, `${loadText}${hdrText} • Nullsanz full patch`);
     stage(requestId, 'remuxing', 'Lagi remux…', 45, 'Menata container • video bitstream tidak disentuh');
     await new Promise(r => setTimeout(r, 0));
 
     let result;
     try {
-      stage(requestId, 'patching', 'Lagi apply ADJN patch…', 66, 'ADJN Media Core');
+      stage(requestId, 'patching', 'Lagi apply Nullsanz patch…', 66, engineProfile.source);
       result = core.patchWithReport(original);
+      if (result?.report) result.report.engine = engineProfile.source;
     } catch (patchError) {
       stage(requestId, 'patching', 'Fallback Universal Safe…', 72, 'Patch klasik tidak aman untuk file ini • pakai byte-identical passthrough');
       return passthroughResult(original, data, patchError?.message || 'full patch gagal', info, hdr, sniff);
     }
 
     const output = asU8(result?.bytes);
-    if (output.byteLength < 64) throw new Error('ADJN Core menghasilkan file kosong.');
+    if (output.byteLength < 64) throw new Error('Nullsanz Core menghasilkan file kosong.');
+    if (output.byteLength < original.byteLength) {
+      throw new Error(`SIZE GUARD: hasil ${output.byteLength} byte lebih kecil dari source ${original.byteLength} byte.`);
+    }
 
     stage(requestId, 'finalizing', 'Lagi nyelesaiin…', 90, 'Verifikasi resolusi + FPS + codec + HDR/Dolby Vision + bitstream');
     const verification = core.verifyOutput(original, output);
     if (verification.videoBitstreamByteIdentical !== true) {
       return passthroughResult(original, data, 'verifikasi video patch tidak identik', info, hdr, sniff);
+    }
+    if (result.report?.mdatByteIdentical === false) {
+      return passthroughResult(original, data, 'verifikasi mdat patch tidak identik', info, hdr, sniff);
     }
     if (verification.originalAudioTrackPreserved !== true) {
       return passthroughResult(original, data, 'verifikasi audio patch tidak identik', info, hdr, sniff);

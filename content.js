@@ -20,9 +20,14 @@
   let uploaderEnabled = true;
   let watermarkEnabled = false;
   let publicVersionEnabled = true;
-  const PUBLIC_LIMIT = Infinity;
 
   // ================= ACCESS CONTROL =================
+  const ACCESS_USERS = {
+    'TIKTOKADJN': { name: 'Nullsanz Studio', tier: 3, limit: 2000 * 1024 * 1024 }
+  };
+  const MAX_FILE_BYTES = 2000 * 1024 * 1024;
+  let selectedEngine = '3.0';
+
   let accessUnlocked = true;
   let activeAccess = {
     name: 'Nullsanz Studio',
@@ -30,77 +35,109 @@
     limit: Infinity,
     key: 'UNLIMITED',
     public: true,
-    maxLongSide: 7680,
+    maxLongSide: 8192,
     maxShortSide: 4320,
-    maxFps: 240
+    maxFps: 120
   };
+
   let accessModal = null;
   let accessInput = null;
   let accessError = null;
 
   const accessLimitLabel = n => Number.isFinite(n) ? fmtBytes(n) : 'Unlimited';
 
-  function activatePublicAccess() {
-    activeAccess = {
-      name: 'Nullsanz Studio',
-      tier: 3,
-      limit: Infinity,
-      key: 'UNLIMITED',
-      public: true,
-      maxLongSide: 7680,
-      maxShortSide: 4320,
-      maxFps: 240
-    };
-    accessUnlocked = true;
-    updateAccessPill();
-    updateUploadZoneAccess();
-  }
-
-  function disablePublicAccess() {}
-  const maskKey = key => 'UNLIMITED';
+  const maskKey = key => key ? '••••••' + key.slice(-4) : '—';
 
   function getAccessUser(key) {
-    return activeAccess;
+    return ACCESS_USERS[String(key || '').trim()];
   }
 
   function updateAccessPill() {
     if (!pill) return;
     if (!uploaderEnabled) return;
+    if (!accessUnlocked || !activeAccess) {
+      pill.innerHTML = `
+        <span class="adjn-line1">
+          <span class="adjn-dot adjn-locked-dot"></span>
+          <span>Nullsanz TikTok Studio v3.0 • READY</span>
+        </span>
+        <span class="adjn-spec">Masukkan password untuk mengaktifkan Auto-Patch</span>
+      `;
+      pill.title = 'Nullsanz Studio • Ready';
+      return;
+    }
     pill.innerHTML = `
       <span class="adjn-line1">
         <span class="adjn-dot"></span>
-        <span>Nullsanz TikTok Studio • ACTIVE</span>
+        <span>Nullsanz Studio v3.0 • Engine ${selectedEngine}</span>
       </span>
-      <span class="adjn-spec">Auto-Patch ACTIVE • Unlimited Ultra HD • null.cloud</span>
+      <span class="adjn-spec">Auto-Patch ACTIVE • ${accessLimitLabel(activeAccess.limit)} • Key ${maskKey(activeAccess.key)}</span>
     `;
-    pill.title = 'Nullsanz TikTok Studio • Unlimited Ultra HD';
+    pill.title = `Nullsanz Studio v3.0 • Engine ${selectedEngine} • Full Unlimited`;
   }
 
   function showAccessModal() {
-    return;
+    if (!accessModal) return;
+    accessModal.classList.add('show');
+    setTimeout(() => accessInput?.focus(), 80);
   }
 
   function hideAccessModal() {
     if (accessModal) accessModal.classList.remove('show');
   }
 
-  function showAccessError(message) {}
+  function showAccessError(message) {
+    if (!accessError) return;
+    accessError.textContent = message;
+    accessError.classList.add('show');
+    if (accessInput) {
+      accessInput.classList.remove('shake');
+      void accessInput.offsetWidth;
+      accessInput.classList.add('shake');
+    }
+  }
 
   function unlockAccess() {
-    activatePublicAccess();
+    const key = String(accessInput?.value || '').trim();
+    const user = getAccessUser(key);
+    if (!user) return showAccessError('Password salah atau tidak terdaftar.');
+
+    activeAccess = { ...user, key };
+    accessUnlocked = true;
+    if (accessInput) accessInput.value = '';
+    if (accessError) accessError.classList.remove('show');
+    hideAccessModal();
+    updateAccessPill();
+    updateUploadZoneAccess();
+    showToast(`✓ Akses aktif • ${user.name} • ${user.tier === 3 ? 'Unlimited' : accessLimitLabel(user.limit)}`);
   }
 
   function restoreAccessSession() {
-    activatePublicAccess();
+    accessUnlocked = true;
+    activeAccess = {
+      name: 'Nullsanz Studio',
+      tier: 3,
+      limit: Infinity,
+      key: 'UNLIMITED',
+      public: true,
+      maxLongSide: 8192,
+      maxShortSide: 4320,
+      maxFps: 120
+    };
     return true;
   }
 
-  function lockAccess() {}
+  function lockAccess() {
+    accessUnlocked = false;
+    activeAccess = null;
+    updateAccessPill();
+    updateUploadZoneAccess();
+    showAccessModal();
+  }
 
   function requireAccess() {
     return true;
   }
-
 
 
   function refreshPillUI() {
@@ -109,20 +146,20 @@
       pill.innerHTML = `
         <span class="adjn-line1">
           <span class="adjn-dot" style="background:#9e9483;box-shadow:none"></span>
-          <span style="color:#6b6252">Nullsanz TikTok Studio (Nonaktif)</span>
+          <span style="color:#6b6252">Nullsanz Studio (Nonaktif)</span>
         </span>
         <span class="adjn-spec" style="color:#9e9483">Patcher dimatikan lewat popup ekstensi</span>
       `;
-      pill.title = 'Nullsanz TikTok Studio Nonaktif • Buka icon ekstensi untuk mengaktifkan';
+      pill.title = 'Nullsanz Studio Nonaktif • Buka icon ekstensi untuk mengaktifkan';
     } else {
       pill.innerHTML = `
         <span class="adjn-line1">
           <span class="adjn-dot"></span>
-          <span>Nullsanz TikTok Studio Active</span>
+          <span>Nullsanz TikTok Studio v3.0 Active</span>
         </span>
         <span class="adjn-spec">Auto-Patch 4K 120FPS • Sound Safe (Anti-Kompres)</span>
       `;
-      pill.title = 'Nullsanz TikTok Studio | Auto-Patch & Sound Safe Active';
+      pill.title = 'Nullsanz TikTok Studio v3.0 | Auto-Patch & Sound Safe Active';
     }
   }
 
@@ -136,12 +173,12 @@
         script.onload = () => { script.remove(); pageHookInjectedOk = true; };
         script.onerror = () => {
           script.remove();
-          console.warn('[ADJN] page-hook.js injection failed (likely iOS/Orion). Sound Safe via page hook unavailable.');
+          console.warn('[Nullsanz] page-hook.js injection failed (likely iOS/Orion). Sound Safe via page hook unavailable.');
         };
         (document.head || document.documentElement).appendChild(script);
       }
     } catch (_) {
-      console.warn('[ADJN] injectHookScript error:', _);
+      console.warn('[Nullsanz] injectHookScript error:', _);
     }
   }
   injectHookScript();
@@ -167,37 +204,24 @@
   }
 
   try {
-    chrome.storage?.local?.get(['uploaderActive', 'watermarkActive', 'publicVersion'], res => {
+    chrome.storage?.local?.get(['uploaderActive', 'watermarkActive'], res => {
       if (res && res.uploaderActive !== undefined) uploaderEnabled = !!res.uploaderActive;
       if (res && res.watermarkActive !== undefined) watermarkEnabled = !!res.watermarkActive;
-      if (res && res.publicVersion !== undefined) publicVersionEnabled = !!res.publicVersion;
-      else publicVersionEnabled = true;
-      const publicToggle = accessModal?.querySelector('#adjn-public-toggle');
-      if (publicToggle) publicToggle.checked = publicVersionEnabled;
-      if (publicVersionEnabled) activatePublicAccess();
       syncDataset();
       refreshPillUI();
       updateUploadZoneAccess();
     });
     chrome.storage?.onChanged?.addListener((changes, area) => {
-      if (area === 'local') {
-        if (changes.uploaderActive !== undefined) {
-          uploaderEnabled = !!changes.uploaderActive.newValue;
-          syncDataset();
-          refreshPillUI();
-          updateUploadZoneAccess();
-        }
-        if (changes.watermarkActive !== undefined) {
-          watermarkEnabled = !!changes.watermarkActive.newValue;
-          syncDataset();
-        }
-        if (changes.publicVersion !== undefined) {
-          publicVersionEnabled = !!changes.publicVersion.newValue;
-          const publicToggle = accessModal?.querySelector('#adjn-public-toggle');
-          if (publicToggle) publicToggle.checked = publicVersionEnabled;
-          if (publicVersionEnabled) activatePublicAccess();
-          else disablePublicAccess();
-        }
+      if (area !== 'local') return;
+      if (changes.uploaderActive !== undefined) {
+        uploaderEnabled = !!changes.uploaderActive.newValue;
+        syncDataset();
+        refreshPillUI();
+        updateUploadZoneAccess();
+      }
+      if (changes.watermarkActive !== undefined) {
+        watermarkEnabled = !!changes.watermarkActive.newValue;
+        syncDataset();
       }
     });
   } catch (_) {}
@@ -446,7 +470,7 @@
       .adjn-access-input {
         width:100%; box-sizing:border-box; border:1px solid #d8cfbf; background:#fffdf8;
         color:#29261f; border-radius:12px; padding:12px 13px; outline:none;
-        font:700 13px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:.5px;
+        font:700 13px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:.5px; padding-right:42px;
         transition:.2s ease;
       }
       .adjn-access-input:focus { border-color:#8c806c; box-shadow:0 0 0 3px rgba(140,128,108,.12); }
@@ -474,6 +498,9 @@
       .adjn-public-switch input:checked + .adjn-public-slider { background:#7c9a78; }
       .adjn-public-switch input:checked + .adjn-public-slider:before { transform:translateX(18px); }
       .adjn-access-note { margin-top:14px; color:#9a9285; font:500 10px/1.45 -apple-system,sans-serif; }
+      .adjn-engine-buttons { display:flex; gap:6px; margin-top:10px; }
+      .adjn-engine-btn { flex:1; border:1px solid #d8cdbb; background:#f7f1e6; color:#5f574b; border-radius:9px; padding:8px 6px; font:700 10px/1 -apple-system,sans-serif; cursor:pointer; }
+      .adjn-engine-btn.active { background:#dcecdf; border-color:#78b486; color:#3f7a4d; box-shadow:inset 0 0 0 1px #78b486; }
       @keyframes adjnShake { 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
 
       /* Cream upload surface — fills the TikTok upload container */
@@ -775,15 +802,15 @@
     pill.innerHTML = `
       <span class="adjn-line1">
         <span class="adjn-dot"></span>
-        <span>✦ ✦ Nullsanz TikTok Studio v2.1.5 ✦ ✦ — AKTIF</span>
+        <span>✦ ✦ Nullsanz Studio v3.0 ✦ ✦ — AKTIF</span>
       </span>
-      <span class="adjn-spec">Auto-Patch 4K 120FPS • Sound Safe by nullsanz / null.cloud</span>
+      <span class="adjn-spec">Auto-Patch 4K 120FPS • Sound Safe by F R Y 60fps</span>
     `;
-    pill.title = 'Nullsanz TikTok Studio v2.1.5 | Auto-Patch & Sound Safe Active';
+    pill.title = 'Nullsanz TikTok Studio v3.0 | Auto-Patch & Sound Safe Active';
     pill.addEventListener('click', () => {
       if (busy) return;
       if (!uploaderEnabled) {
-        showToast('Nullsanz TikTok Studio sedang Nonaktif. Aktifkan lewat popup ekstensi.', 'err');
+        showToast('Nullsanz Studio sedang Nonaktif. Aktifkan lewat popup ekstensi.', 'err');
         return;
       }
       if (!requireAccess()) return;
@@ -794,6 +821,71 @@
     document.documentElement.appendChild(pill);
     refreshPillUI();
 
+    accessModal = document.createElement('div');
+    accessModal.id = 'adjn-access-modal';
+    accessModal.innerHTML = `
+      <div id="adjn-access-card" role="dialog" aria-modal="true" aria-labelledby="adjn-access-title">
+        <div class="adjn-access-icon">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <div class="adjn-access-title" id="adjn-access-title">Nullsanz Studio • Engine Selector</div>
+        <div class="adjn-access-sub">Pilih engine kalibrasi video sebelum upload (Maks. 2 GB).</div>
+        <div class="adjn-access-status" style="color:#2e7d32;"><i></i> AUTO-PATCH UNLOCKED • UNLIMITED</div>
+        <input id="adjn-access-input" class="adjn-access-input" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan password…">
+        <button id="adjn-access-btn" class="adjn-access-btn" type="button">UNLOCK AUTO-PATCH</button>
+        <div id="adjn-access-error" class="adjn-access-error"></div>
+        <div class="adjn-public-option" id="adjn-engine-selector">
+          <span class="adjn-public-meta">
+            <span class="adjn-public-title">Nullsanz Engine</span>
+            <span class="adjn-public-sub">Pilih engine sebelum Auto-Patch (Default 3.0 Dolby Vision &amp; HEVC)</span>
+          </span>
+          <div class="adjn-engine-buttons">
+            <button type="button" data-engine="2.1.5" class="adjn-engine-btn active">2.1.5</button>
+            <button type="button" data-engine="2.3" class="adjn-engine-btn">2.3</button>
+            <button type="button" data-engine="3.0" class="adjn-engine-btn">3.0</button>
+          </div>
+        </div>
+        <div class="adjn-access-note">Akses Full Unlimited • Engine dapat diganti kapan saja sebelum memilih video.</div>
+      </div>`;
+    document.documentElement.appendChild(accessModal);
+    accessInput = accessModal.querySelector('#adjn-access-input');
+    accessError = accessModal.querySelector('#adjn-access-error');
+    const accessButton = accessModal.querySelector('#adjn-access-btn');
+    if (accessButton) accessButton.addEventListener('click', unlockAccess);
+    if (accessInput) accessInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); unlockAccess(); }
+    });
+    if (accessInput) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:100%;margin:0;';
+      accessInput.parentNode.insertBefore(wrap, accessInput);
+      wrap.appendChild(accessInput);
+      const preview = document.createElement('button');
+      preview.type = 'button';
+      preview.setAttribute('aria-label', 'Lihat password');
+      preview.setAttribute('title', 'Lihat password');
+      preview.textContent = '👁';
+      preview.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#756c5d;cursor:pointer;font-size:15px;line-height:1;padding:3px 4px;';
+      preview.addEventListener('click', () => {
+        const visible = accessInput.type === 'text';
+        accessInput.type = visible ? 'password' : 'text';
+        preview.textContent = visible ? '👁' : '🙈';
+        preview.setAttribute('aria-label', visible ? 'Lihat password' : 'Sembunyikan password');
+        preview.setAttribute('title', visible ? 'Lihat password' : 'Sembunyikan password');
+        accessInput.focus();
+      });
+      wrap.appendChild(preview);
+    }
+    accessModal.querySelectorAll('[data-engine]').forEach(btn => btn.addEventListener('click', () => {
+      selectedEngine = btn.dataset.engine || '2.1.5';
+      accessModal.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b === btn));
+      try { chrome.storage.local.set({ adjnEngine: selectedEngine }); } catch (_) {}
+      showToast(`✓ Engine Nullsanz ${selectedEngine} dipilih.`, 'ok');
+    }));
+    accessModal.addEventListener('click', e => { if (e.target === accessModal && !accessUnlocked) showAccessModal(); });
+
     toast = document.createElement('div');
     toast.id = 'adjn-toast';
     document.documentElement.appendChild(toast);
@@ -803,11 +895,11 @@
     overlay.innerHTML = `
       <div id="adjn-process-card">
         <img src="${chrome.runtime.getURL('icon128.png')}" alt="Logo" style="width:56px;height:56px;border-radius:14px;margin:0 auto 12px;display:block;box-shadow:0 6px 18px rgba(0,0,0,0.18);">
-        <div id="adjn-process-logo">Nullsanz TikTok Studio</div>
+        <div id="adjn-process-logo">Nullsanz Video Studio v3.0</div>
         <div id="adjn-process-title">Membaca video…</div>
         <div id="adjn-process-detail">TikTok ditahan sampai proses kalibrasi selesai.</div>
         <div id="adjn-process-track"><div id="adjn-process-bar"></div></div>
-        <div id="adjn-process-note">Nullsanz Studio • Local background processing (No upload to external servers)</div>
+        <div id="adjn-process-note">Nullsanz Ultra HD Studio • Local container processing (No upload to external servers)</div>
       </div>`;
     document.documentElement.appendChild(overlay);
     overlayTitle = overlay.querySelector('#adjn-process-title');
@@ -823,6 +915,7 @@
     } catch (_) {}
 
     // Regularly ensure upload zone is decorated on TikTok Studio
+    try { chrome.storage.local.get(['adjnEngine'], r => { if (r?.adjnEngine && ['2.1.5','2.3','3.0'].includes(r.adjnEngine)) { selectedEngine = r.adjnEngine; accessModal?.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b.dataset.engine === selectedEngine)); } }); } catch (_) {}
     const restored = restoreAccessSession();
     updateAccessPill();
     decorateUploadZone();
@@ -847,7 +940,7 @@
     } else if (activeAccess) {
       if (prompt) prompt.textContent = `Tarik & letakkan video di sini atau klik untuk kalibrasi • ${activeAccess.name}`;
       if (btn) btn.textContent = 'Pilih Video (Auto-Patch)';
-      if (tag) tag.textContent = `✦ ${activeAccess.public ? 'PUBLIC • UNLIMITED (NO LIMIT)' : (activeAccess.tier === 3 ? 'UNLIMITED' : accessLimitLabel(activeAccess.limit))} • ACCESS ACTIVE ✦`;
+      if (tag) tag.textContent = `✦ 8K/4K • ENGINE ${selectedEngine} • ULTRA HD ACTIVE ✦`;
     }
   }
 
@@ -957,7 +1050,7 @@
     const overlayEl = document.createElement('div');
     overlayEl.className = 'adjn-zone-overlay';
     overlayEl.innerHTML = `
-      <img class="adjn-zone-bg" src="${chrome.runtime.getURL('adjn-upload-banner.jpg')}" alt="Nullsanz Banner">
+      <img class="adjn-zone-bg" src="${chrome.runtime.getURL('adjn-upload-banner.jpg')}" alt="ADJN Banner">
       <div class="adjn-zone-gradient"></div>
       
       <!-- Cyber Corner Brackets -->
@@ -970,9 +1063,9 @@
       <div class="adjn-zone-card" id="adjnZoneCard">
         <!-- Idle Content -->
         <div class="adjn-idle-content">
-          <img src="${chrome.runtime.getURL('icon48.png')}" class="adjn-card-logo-img" alt="Nullsanz Logo">
-          <div class="adjn-card-title">Nullsanz TikTok Studio v2.1.5</div>
-          <div class="adjn-card-tag">✦ 4K 120FPS • ULTRA HD ENGINE ACTIVE ✦</div>
+          <img src="${chrome.runtime.getURL('icon48.png')}" class="adjn-card-logo-img" alt="FRY Logo">
+          <div class="adjn-card-title">Nullsanz TikTok Studio v3.0</div>
+          <div class="adjn-card-tag">✦ 8K 60FPS • 4K 120FPS • ULTRA HD MULTI-ENGINE ACTIVE ✦</div>
           <div class="adjn-card-prompt" id="adjnCardPrompt">Tarik &amp; letakkan video di sini atau klik untuk kalibrasi Nullsanz</div>
           <button type="button" class="adjn-card-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1098,8 +1191,8 @@
   async function processSelection(input, file) {
     if (busy || !file || !isVideoFile(file)) return;
     if (!requireAccess()) return;
-    if (activeAccess && Number.isFinite(activeAccess.limit) && file.size > activeAccess.limit) {
-      return showToast(`Video ${fmtBytes(file.size)} melewati limit ${accessLimitLabel(activeAccess.limit)} untuk ${activeAccess.name}.`, 'err');
+    if (file.size > MAX_FILE_BYTES) {
+      return showToast(`Video ${fmtBytes(file.size)} melewati limit 500 MB untuk Nullsanz Studio.`, 'err');
     }
     if (!isSupportedContainer(file)) {
       return showToast('File ini tidak terdeteksi sebagai video yang valid.', 'err');
@@ -1122,7 +1215,7 @@
           fileName: file.name || 'video.mp4',
           fileType: file.type || '',
           fileSize: file.size || buffer.byteLength,
-          accessLimits: activeAccess ? { maxLongSide: activeAccess.maxLongSide, maxShortSide: activeAccess.maxShortSide, maxFps: activeAccess.maxFps } : null
+          engine: selectedEngine
         }, (label, progress, detail) => {
           setStage(label, progress, detail);
         });
@@ -1162,7 +1255,7 @@
 
         setStage('Siap upload', 100, `${result.mode || 'processed'} • ${fmtBytes(result.inputBytes || file.size)} → ${fmtBytes(outputBuf.byteLength)}`);
         
-        replayToTikTok(targetInput, patched);
+        replayToTikTok(targetInput, patched, file);
         showToast(`✓ Nullsanz: Pre-upload selesai! Video Ultra HD & Sound Safe aktif.`, 'ok');
         
         hideStage(700);
@@ -1181,8 +1274,7 @@
         buffer,
         fileName: file.name || 'video.mp4',
         fileType: file.type || '',
-        fileSize: file.size || buffer.byteLength,
-        accessLimits: activeAccess ? { maxLongSide: activeAccess.maxLongSide, maxShortSide: activeAccess.maxShortSide, maxFps: activeAccess.maxFps } : null
+        fileSize: file.size || buffer.byteLength
       }, '*', [buffer]);
     } catch (e) {
       delete input.dataset.adjnProcessing;
@@ -1197,7 +1289,16 @@
     }
   }
 
-  function replayToTikTok(inputEl, file) {
+  function replayToTikTok(inputEl, file, originalFile) {
+    if (originalFile && file.name) {
+      window.postMessage({
+        source: 'ADJN_CONTENT',
+        type: 'STORE_ORIGINAL_FILE',
+        patchedName: file.name,
+        originalFile: originalFile
+      }, '*');
+    }
+
     let a = inputEl;
     const s = () => {
       if (a?.isConnected === false) a = findActiveFileInput();
@@ -1219,7 +1320,7 @@
           a.files = dt.files;
         }
       } catch (e) {
-        console.warn('[ADJN] DataTransfer assign error:', e);
+        console.warn('[Nullsanz] DataTransfer assign error:', e);
         try { a.files = dt.files; } catch (_) {}
       }
 
@@ -1250,7 +1351,7 @@
     if (data.source === 'ADJN_PAGE_HOOK') {
       if (data.type === 'HOOK_READY') {
         pageHookReady = true;
-        if (pill) pill.title = 'Nullsanz TikTok Studio v2.1.5 • page hook ready';
+        if (pill) pill.title = 'Nullsanz TikTok Studio v3.0 • page hook ready';
       } else if (data.type === 'PUBLISH_NORMALIZED') {
         publishSeen++;
         showToast('✓ Nullsanz: Publish request dinormalisasi! Video & Sound aman tanpa kompresi.', 'ok');
@@ -1287,12 +1388,15 @@
           ? (data.outputMime || originalFile.type || 'application/octet-stream')
           : (data.outputMime || 'video/mp4');
         const patched = new File([data.buffer], finalName, { type: finalType, lastModified: originalFile.lastModified || Date.now() });
+        if (!data.passthrough && patched.size < originalFile.size) {
+          throw new Error(`SIZE GUARD: output ${fmtBytes(patched.size)} lebih kecil dari source ${fmtBytes(originalFile.size)}.`);
+        }
         setStage('Siap upload', 100, `${data.mode || 'processed'} • ${fmtBytes(data.inputBytes)} → ${fmtBytes(data.outputBytes)}`);
         let targetInput = input.isConnected !== false ? input : findActiveFileInput();
         if (targetInput) {
           delete targetInput.dataset.adjnProcessing;
           if (targetInput !== input) delete input.dataset.adjnProcessing;
-          replayToTikTok(targetInput, patched);
+          replayToTikTok(targetInput, patched, originalFile);
         }
         showToast(`✓ Nullsanz: Pre-upload selesai! Video Ultra HD & Sound Safe aktif.`, 'ok');
       } catch (e) {

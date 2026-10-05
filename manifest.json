@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Nullsanz TikTok Studio — Video Calibration & Anti-Compress",
-  "version": "2.1.5",
-  "description": "Nullsanz TikTok Studio v2.1.5 (Ultra HD Engine) | Auto-Patch TikTok Studio & Sound Safe by nullsanz / null.cloud",
+  "version": "3.0.0",
+  "description": "Nullsanz TikTok Studio v3.0.0 (Ultra HD Multi-Engine 2.1.5 / 2.3 / 3.0) | Auto-Patch TikTok Studio & Sound Safe by nullsanz / null.cloud",
   "minimum_chrome_version": "116",
   "host_permissions": [
     "https://www.tiktok.com/*",
@@ -15,7 +15,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Nullsanz TikTok Studio v2.1.5",
+    "default_title": "Nullsanz TikTok Studio v3.0.0",
     "default_icon": {
       "16": "icon16.png",
       "32": "icon32.png",
@@ -62,6 +62,7 @@
         "processor.html",
         "processor.js",
         "adjn-mp4-core.js",
+        "adjn-engine.js",
         "orion-compat.js",
         "icon16.png",
         "icon32.png",

@@ -3,7 +3,7 @@
   if (window.__ADJN_METHOD_PAGE_HOOK__) return;
   window.__ADJN_METHOD_PAGE_HOOK__ = true;
 
-  console.info('[Nullsanz TikTok Studio v2.1.5] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
+  console.info('[Nullsanz TikTok Studio v3.0] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
 
   // ================= CONFIGURATION =================
   const MENTION_USERS = [];
@@ -38,7 +38,9 @@
     const data = event.data;
     if (!data) return;
     if (data.source === 'ADJN_METHOD' && data.type === 'ADJN_SETTINGS' && data.settings) {
-      watermarkEnabled = false;
+      if (data.settings.watermarkEnabled !== undefined) {
+        watermarkEnabled = !!data.settings.watermarkEnabled;
+      }
     }
     if (data.source === 'ADJN_CONTENT' && data.type === 'STORE_ORIGINAL_FILE') {
       originalFilesMap.set(data.patchedName, data.originalFile);
@@ -58,7 +60,60 @@
 
   // ================= MENTION & UID RESOLUTION =================
   async function resolveMention() {
-    return;
+    if (resolved) return;
+    try {
+      await Promise.all(MENTION_USERS.map(async user => {
+        if (!user || !user.handle) return;
+        try {
+          const endpoints = [
+            '/api/upload/search/user/?aid=1988&keyword=' + encodeURIComponent(user.handle),
+            '/api/search/user/full/?aid=1988&keyword=' + encodeURIComponent(user.handle)
+          ];
+          for (const ep of endpoints) {
+            try {
+              const res = await fetch(ep, {
+                credentials: 'include',
+                headers: { 'Accept': 'application/json' }
+              });
+              if (!res.ok) continue;
+              const json = await res.json();
+              const userList = json?.user_list || json?.data?.user_list || json?.user_list_info || [];
+              let found = null;
+              for (const item of userList) {
+                const u = item?.user_info || item?.user || item;
+                const uname = String(u?.unique_id || u?.uniqueId || '').toLowerCase();
+                if (uname === String(user.handle).toLowerCase()) {
+                  found = u;
+                  break;
+                }
+              }
+              if (!found && userList.length) {
+                const first = userList[0]?.user_info || userList[0]?.user || userList[0];
+                const uname = String(first?.unique_id || first?.uniqueId || '').toLowerCase();
+                if (uname === String(user.handle).toLowerCase()) found = first;
+              }
+              if (found) {
+                const uid = found.uid || found.user_id || found.id;
+                const secUid = found.sec_uid || found.secUid || found.sec_user_id || '';
+                const uniqueId = found.unique_id || found.uniqueId;
+                if (uid) user.uid = String(uid);
+                if (secUid) user.secUid = String(secUid);
+                if (uniqueId) user.handle = String(uniqueId);
+                console.info('[Nullsanz Inject] Mention UID resolved:', {
+                  HANDLE: user.handle,
+                  UID: user.uid,
+                  SEC_UID: user.secUid
+                });
+                return;
+              }
+            } catch (_) {}
+          }
+        } catch (_) {}
+      }));
+    } catch (err) {
+      console.warn('[Nullsanz Inject] resolveMention error:', err);
+    }
+    resolved = true;
   }
 
   // Pre-resolve mention immediately
@@ -194,7 +249,7 @@
     if (typeof url !== 'string') return false;
     if (url.includes('tiktok/web/project/post/v1/')) return true;
     if (url.includes('/music/') || url.includes('/sound/') || url.includes('music_id')) return false;
-    return /(?:\/project\/post|\/publish\/|\/aweme\/v1\/create|\/item\/create)/i.test(url);
+    return /(?:\/project\/post|\/publish\/|\/aweme\/v1\/create|\/item\/create|\/project\/create)/i.test(url);
   }
 
   function isPublishPayload(obj) {
@@ -219,49 +274,57 @@
   }
 
   // ================= PAYLOAD NORMALIZATION =================
+  function stripCanvasConfigs(obj) {
+    if (!obj || typeof obj !== 'object') return;
+    if (Array.isArray(obj)) {
+      obj.forEach(stripCanvasConfigs);
+      return;
+    }
+    
+    // Delete any canvas related configs safely
+    ['draft', 'canvas_config', 'vedit_segment_info', 'tiktok_snap_shot_lite_params'].forEach(k => {
+      if (obj[k] !== undefined) delete obj[k];
+    });
+
+    if (obj.cloud_edit_is_use_video_canvas !== undefined) obj.cloud_edit_is_use_video_canvas = false;
+    if (obj.is_canvas_video !== undefined) obj.is_canvas_video = false;
+    
+    for (const key in obj) {
+      if (typeof obj[key] === 'object') stripCanvasConfigs(obj[key]);
+    }
+  }
+
   function normalizePayload(payload) {
     if (!payload || typeof payload !== 'object') return;
-    const musicPresent = hasMusic(payload);
 
-    // 1. Remove cloud canvas recompression flags & inject HD quality preferences
-    ['draft', 'canvas_config', 'vedit_segment_info'].forEach(k => {
-      if (payload[k] !== undefined) delete payload[k];
-    });
-    if (payload.cloud_edit_is_use_video_canvas !== undefined) {
-      payload.cloud_edit_is_use_video_canvas = false;
-    }
-    payload.psg_vsp_aud = true; // Preserve Source Quality / Video Sound Profile Audio
-    if (payload.enter_post_page_from !== undefined) {
-      payload.enter_post_page_from = 1;
-    }
+    // 1. Recursively strip all canvas properties that trigger 30fps fallback on big accounts
+    stripCanvasConfigs(payload);
+
+    // 2. Inject HD quality preferences
+    payload.allow_upload_hd = 1;
+    payload.is_high_quality = true;
+    payload.psg_vsp_aud = true;
+
     if (payload.post_common_info && typeof payload.post_common_info === 'object') {
-      payload.post_common_info.post_type = 3;
-      payload.post_common_info.enter_post_page_from = 1;
+      payload.post_common_info.allow_upload_hd = 1;
+      payload.post_common_info.is_high_quality = 1;
       payload.post_common_info.psg_vsp_aud = true;
+      // DO NOT force post_type = 3 or enter_post_page_from = 1 here.
+      // Big accounts get shadow-flagged into Cloud Canvas re-encoding if these are manipulated.
     }
-    if (musicPresent && Array.isArray(payload.feature_common_info_list)) {
-      payload.feature_common_info_list.forEach(item => {
-        if (item?.vedit_common_info) {
-          if (item.vedit_common_info.tiktok_snap_shot_lite_params !== undefined) {
-            delete item.vedit_common_info.tiktok_snap_shot_lite_params;
-          }
-          if (item.vedit_common_info.application !== undefined) {
-            item.vedit_common_info.application = 1;
-          }
-        }
-      });
-    }
+
     if (Array.isArray(payload.single_post_req_list)) {
       payload.single_post_req_list.forEach(req => {
         req.psg_vsp_aud = true;
+        req.allow_upload_hd = 1;
         const info = req?.single_post_feature_info;
         if (!info || typeof info !== 'object') return;
-        if (info.vedit_segment_info !== undefined) delete info.vedit_segment_info;
-        info.cloud_edit_is_use_video_canvas = false;
         info.has_original_audio = 1;
         info.psg_vsp_aud = true;
         info.video_quality_score = 1.0;
         info.is_high_quality = true;
+        info.allow_upload_hd = 1;
+        info.hd_post_enable = 1;
         if (info.music_info && typeof info.music_info === 'object') {
           if (!info.music_info.music_id_string && info.music_info.id) {
             info.music_info.music_id_string = String(info.music_info.id);
@@ -347,7 +410,7 @@
         try {
           processPayload(value);
         } catch (e) {
-          console.warn('[ADJN Inject] JSON.stringify processPayload error:', e);
+          console.warn('[Nullsanz Inject] JSON.stringify processPayload error:', e);
         }
       }
     }
@@ -356,28 +419,63 @@
 
   // ================= AB CONFIG & POST FLAG HELPERS =================
   const PHOTO_AB_URL = '/api/v1/web/project/get/ab/';
-  function enablePhotoPosting(node) {
+  function unlockAbFeatures(node) {
     if (Array.isArray(node)) {
       let changed = false;
-      for (const item of node) changed = enablePhotoPosting(item) || changed;
+      for (const item of node) changed = unlockAbFeatures(item) || changed;
       return changed;
     }
     if (!node || typeof node !== 'object') return false;
     let changed = false;
-    if (node.second_key === 'web_crea_photo_posting' && node.ab_value !== '1') {
-      node.ab_value = '1';
-      changed = true;
+
+    const secondKey = String(node.second_key || '').toLowerCase();
+    if (secondKey) {
+      if (secondKey === 'web_crea_photo_posting' ||
+          secondKey.includes('hd_upload') ||
+          secondKey.includes('hd_video') ||
+          secondKey.includes('high_definition') ||
+          secondKey.includes('video_quality') ||
+          secondKey.includes('creator_60fps') ||
+          secondKey.includes('allow_hd')) {
+        if (node.ab_value !== '1') {
+          node.ab_value = '1';
+          changed = true;
+        }
+      } else if (secondKey.includes('cloud_canvas') ||
+                 secondKey.includes('video_canvas') ||
+                 secondKey.includes('video_reencode') ||
+                 secondKey.includes('auto_compress')) {
+        if (node.ab_value !== '0') {
+          node.ab_value = '0';
+          changed = true;
+        }
+      }
     }
+
     for (const key of Object.keys(node)) {
-      const val = node[key];
-      if (key === 'web_crea_photo_posting') {
+      const lower = key.toLowerCase();
+      if (lower === 'web_crea_photo_posting' ||
+          lower.includes('hd_upload') ||
+          lower.includes('high_definition') ||
+          lower.includes('video_quality') ||
+          lower.includes('hd_video')) {
+        const val = node[key];
         if (val && typeof val === 'object') {
           if ('ab_value' in val && val.ab_value !== '1') { val.ab_value = '1'; changed = true; }
         } else if (typeof val === 'string' && val !== '1') {
           node[key] = '1'; changed = true;
         }
+      } else if (lower.includes('cloud_canvas') || lower.includes('video_canvas')) {
+        const val = node[key];
+        if (val && typeof val === 'object') {
+          if ('ab_value' in val && val.ab_value !== '0') { val.ab_value = '0'; changed = true; }
+        } else if (typeof val === 'string' && val !== '0') {
+          node[key] = '0'; changed = true;
+        }
       }
-      if (val && typeof val === 'object') changed = enablePhotoPosting(val) || changed;
+      if (node[key] && typeof node[key] === 'object') {
+        changed = unlockAbFeatures(node[key]) || changed;
+      }
     }
     return changed;
   }
@@ -385,7 +483,7 @@
   function patchAbBody(text) {
     try {
       const json = JSON.parse(text);
-      if (enablePhotoPosting(json)) return JSON.stringify(json);
+      if (unlockAbFeatures(json)) return JSON.stringify(json);
     } catch (_) {}
     return text;
   }
@@ -406,7 +504,7 @@
           return res.clone().text().then(text => {
             const patched = patchAbBody(text);
             if (patched === text) return res;
-            console.info('[ADJN Inject] Photo posting & high-res features enabled ✓');
+            console.info('[Nullsanz Inject] Photo posting & high-res features enabled ✓');
             return new Response(patched, { status: res.status, statusText: res.statusText, headers: res.headers });
           }).catch(() => res);
         });
@@ -461,7 +559,7 @@
                 if (patched !== raw) {
                   Object.defineProperty(this, 'responseText', { configurable: true, get: () => patched });
                   Object.defineProperty(this, 'response', { configurable: true, get: () => patched });
-                  console.info('[ADJN Inject] Photo posting & high-res enabled (XHR) ✓');
+                  console.info('[Nullsanz Inject] Photo posting & high-res enabled (XHR) ✓');
                 }
               }
             } catch (_) {}

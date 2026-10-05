@@ -17,8 +17,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '5.0';
-  const ENCODER_TAG = 'ADJN Quality Method https://tiktok.com/@itsmefachry';
+  const VERSION = '6.0';
+  const ENCODER_TAG = 'Nullsanz Ultra HD Studio Patcher';
   const FOURCC_TOO = new Uint8Array([0xa9, 0x74, 0x6f, 0x6f]); // '©too'
   const SENTINEL_FF = new Uint8Array([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]); // 64-bit Unknown Duration Sentinel
   const CONTAINER_BOXES = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts']);
@@ -27,7 +27,7 @@
 
   function createError(msg) {
     const err = new Error(msg);
-    err.name = 'ADJNPatchError';
+    err.name = 'NullsanzPatchError';
     return err;
   }
   function throwError(msg) {
@@ -82,6 +82,19 @@
     if (ArrayBuffer.isView(val)) return new Uint8Array(val.buffer, val.byteOffset, val.byteLength);
     throw createError('Buffer video tidak valid.');
   }
+
+  function exactBytesEqual(a, b) {
+    if (a.byteLength !== b.byteLength) return false;
+    const step = 65536;
+    for (let o = 0; o < a.byteLength; o += step) {
+      const len = Math.min(step, a.byteLength - o);
+      for (let i = 0; i < len; i++) {
+        if (a[o + i] !== b[o + i]) return false;
+      }
+    }
+    return true;
+  }
+
 
   function indexOfSubarray(haystack, needleStr) {
     const needle = asciiToBytes(needleStr);
@@ -600,7 +613,7 @@
     if (moovBeforeMdat) {
       const traksWithOffsets = moov.findAll('trak').filter(t => getOffsetBox(t));
       const origOffsets = traksWithOffsets.map(t => parseStcoOrCo64(getOffsetBox(t)));
-      for (let iter = 0; iter < 4; iter++) {
+      for (let iter = 0; iter < 6; iter++) {
         const delta = moov.serialize().length - oldMoovSize;
         let changedType = false;
         traksWithOffsets.forEach((t, i) => {
@@ -609,7 +622,7 @@
           writeStcoOrCo64(box, origOffsets[i].map(o => o + delta));
           if (box.type !== prevType) changedType = true;
         });
-        if (!changedType) break;
+        if (!changedType && moov.serialize().length === oldMoovSize + delta) break;
       }
     }
 
@@ -621,7 +634,7 @@
     return concatBytes(finalChunks);
   }
 
-  function validateFinalOutput(bytes) {
+  function validateFinalOutput(bytes, originalBytes) {
     const top = parseTopLevel(bytes);
     if (!top.length || top[top.length - 1].end !== bytes.length) throwError('Hasil patch bukan box run lengkap.');
     const moovList = top.filter(b => b.type === 'moov');
@@ -634,7 +647,7 @@
     const mdatEnd = mdatBox.end;
     const moov = new Mp4Box('moov', null, parseBoxes(bytes, moovBox.start + moovBox.header, moovBox.end));
 
-    if (!hasEncoderTag(moov, ENCODER_TAG)) throwError('Hasil patch tidak memiliki ADJN encoder tag.');
+    if (!hasEncoderTag(moov, ENCODER_TAG)) throwError('Hasil patch tidak memiliki Nullsanz encoder tag.');
 
     const mvhd = moov.find('mvhd');
     if (!mvhd || !isSentinelDuration(mvhd.payload)) throwError('Hasil patch mvhd.duration bukan sentinel Unknown Duration.');
@@ -648,13 +661,25 @@
         }
       }
     }
+
+    if (originalBytes) {
+      const origTop = parseTopLevel(originalBytes);
+      const origMdatBox = origTop.find(b => b.type === 'mdat');
+      if (origMdatBox) {
+        const origMdat = originalBytes.subarray(origMdatBox.start + origMdatBox.header, origMdatBox.end);
+        const outMdat = bytes.subarray(mdatStart, mdatEnd);
+        if (!exactBytesEqual(origMdat, outMdat)) {
+          throwError('Nullsanz Core: Media payload (mdat) tidak identik setelah patch.');
+        }
+      }
+    }
   }
 
   function quickPatch(input) {
     const bytes = toU8Array(input);
     const parsed = parseMp4Structure(bytes);
     const patched = executePatch(bytes, parsed);
-    validateFinalOutput(patched);
+    validateFinalOutput(patched, bytes);
     return patched;
   }
 
@@ -724,7 +749,7 @@
     const bytes = toU8Array(input);
     const top = parseTopLevel(bytes);
     const moovBox = top.find(b => b.type === 'moov');
-    if (!moovBox) throw createError('ADJN Core: moov box tidak ditemukan.');
+    if (!moovBox) throw createError('Nullsanz Core: moov box tidak ditemukan.');
     const moov = new Mp4Box('moov', null, parseBoxes(bytes, moovBox.start + moovBox.header, moovBox.end));
     const traks = moov.findAll('trak');
 
@@ -759,7 +784,7 @@
 
     const video = allTracks.find(t => t.handler === 'vide');
     const audio = allTracks.find(t => t.handler === 'soun');
-    if (!video) throw createError('ADJN Core: video track tidak ditemukan.');
+    if (!video) throw createError('Nullsanz Core: video track tidak ditemukan.');
 
     return {
       width: video.width || 1080,
@@ -788,15 +813,18 @@
     const original = toU8Array(input);
     const patched = quickPatch(original);
     const inspected = inspect(patched);
+    const verification = verifyOutput(original, patched);
     return {
       bytes: patched,
       report: {
-        engine: 'ADJN 64-bit Duration Sentinel v5.0',
+        engine: 'Nullsanz 64-bit Sentinel v6.0 (6-Pass Safe)',
         durationUnknown: inspected.durationUnknown,
         encoderTag: inspected.encoderTag,
         codec: inspected.codec,
         sampleCount: inspected.sampleCount,
-        audioSampleCount: inspected.audioSampleCount
+        audioSampleCount: inspected.audioSampleCount,
+        mdatByteIdentical: verification.mdatByteIdentical,
+        videoBitstreamByteIdentical: verification.videoBitstreamByteIdentical
       }
     };
   }
@@ -804,9 +832,20 @@
   function verifyOutput(originalInput, outputInput) {
     const orig = toU8Array(originalInput);
     const out = toU8Array(outputInput);
+    const origTop = parseTopLevel(orig);
+    const outTop = parseTopLevel(out);
+    const origMdatBox = origTop.find(b => b.type === 'mdat');
+    const outMdatBox = outTop.find(b => b.type === 'mdat');
+    let mdatByteIdentical = false;
+    if (origMdatBox && outMdatBox) {
+      const origMdat = orig.subarray(origMdatBox.start + origMdatBox.header, origMdatBox.end);
+      const outMdat = out.subarray(outMdatBox.start + outMdatBox.header, outMdatBox.end);
+      mdatByteIdentical = exactBytesEqual(origMdat, outMdat);
+    }
     const outInsp = inspect(out);
     return {
-      videoBitstreamByteIdentical: true,
+      videoBitstreamByteIdentical: mdatByteIdentical,
+      mdatByteIdentical,
       originalAudioTrackPreserved: true,
       clonedAudioTrackAdded: false,
       wholeFileByteIdentical: false,
