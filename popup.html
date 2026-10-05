@@ -1,12 +1,1169 @@
-<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>✮ Nullsanz TikTok Studio v2.1.0</title><style>
-:root{--bg:#08070b;--panel:#111016;--panel2:#17131e;--text:#f7f3fb;--muted:#8d8797;--line:rgba(255,255,255,.08);--violet:#b86cff;--violet2:#7137d8;--green:#6ff0b4;--radius:24px}*{box-sizing:border-box}html,body{margin:0;width:100%;min-width:320px;background:#08070b;color:var(--text)}body{font-family:"Trajan Pro","Trajan Pro 3","Times New Roman",serif;font-weight:700;padding:0 0 14px;overflow-x:hidden}button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}.shell{padding:12px;display:flex;flex-direction:column;gap:10px}.topbar{display:none;height:48px;align-items:center;justify-content:space-between;padding:0 5px 0 4px}.brandmark-pfp{width:36px;height:36px;display:block;object-fit:cover;border-radius:11px;border:1px solid #ffffff18;box-shadow:0 0 18px #8e43c655;flex:none}.brandmark{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:900;letter-spacing:-.02em}.brandmark i{font-style:normal;width:28px;height:28px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#d58aff,#6b2ec5);box-shadow:0 7px 22px rgba(163,76,255,.35);font-size:16px}.top-actions{display:flex;gap:7px}.top-btn{width:32px;height:32px;border-radius:10px;background:#15131a;border:1px solid var(--line);display:grid;place-items:center;color:#bdb6c8;font-size:15px}.hero{position:relative;overflow:hidden;min-height:175px;border-radius:28px;padding:19px;background:linear-gradient(135deg,#18121f 0%,#0d0c12 62%);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.38)}.hero:before{content:"";position:absolute;width:210px;height:210px;right:-80px;top:-90px;background:radial-gradient(circle,#a94fff55 0%,transparent 66%);filter:blur(5px)}.hero:after{content:"✮";position:absolute;right:18px;bottom:-28px;font-family:Georgia,serif;font-size:125px;color:#fff009;opacity:.035;transform:rotate(-14deg)}.hero-row{position:relative;display:flex;align-items:center;gap:13px}.logo{width:64px;height:64px;border-radius:21px;overflow:hidden;border:1px solid #ffffff1c;box-shadow:0 12px 34px #7d35bb55;flex:none}.logo img{width:100%;height:100%;object-fit:cover}.hero-copy{min-width:0;flex:1}.eyebrow{font-size:9px;letter-spacing:.18em;color:#c99bea;font-weight:900;margin-bottom:5px}.title{font-family:"Trajan Pro","Trajan Pro 3","Times New Roman",serif;font-size:21px;line-height:1.05;font-weight:900;letter-spacing:-.055em}.subtitle{font-family:"Trajan Pro","Trajan Pro 3","Times New Roman",serif;font-size:10px;color:#8f8998;margin-top:7px}.live{position:absolute;right:17px;top:17px;display:flex;align-items:center;gap:5px;padding:6px 9px;border-radius:99px;background:#72efb418;border:1px solid #72efb42a;color:#79eeb5;font:700 8px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;letter-spacing:.05em}.live b{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green)}.hero-meta{position:absolute;left:19px;right:19px;bottom:17px;display:flex;justify-content:space-between;align-items:center;font:700 9px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#777180}.version{padding:5px 8px;border-radius:8px;background:#ffffff08;border:1px solid #ffffff0b;color:#aaa2b3}.control-panel{padding:14px;border-radius:24px;background:linear-gradient(145deg,#141118,#0f0e13);border:1px solid var(--line)}.section-label{display:flex;justify-content:space-between;align-items:center;margin:1px 3px 12px}.section-label strong{font-size:11px;letter-spacing:.11em}.section-label span{font:700 8px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#6e6877}.control{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#0c0b10;border:1px solid #ffffff08}.control-icon{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#402055,#191323);border:1px solid #c276ff2b;color:#e0bcff;font-family:Georgia,serif;font-size:21px}.control-copy{flex:1}.control-title{font-size:13px;font-weight:900}.control-sub{font:700 9px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#77717f;margin-top:4px}.switch{width:50px;height:29px;border-radius:99px;background:#29262e;border:1px solid #ffffff0b;position:relative;flex:none}.switch:after{content:"";position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:#f8f5fb;transition:.2s;box-shadow:0 2px 8px #0008}.switch.is-on{background:linear-gradient(135deg,#d176ff,#7133dc);box-shadow:0 0 22px #8c41ff45}.switch.is-on:after{transform:translateX(21px)}.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick-btn{min-height:76px;padding:13px;border-radius:20px;background:#111016;border:1px solid #ffffff09;display:flex;align-items:flex-end;justify-content:space-between;text-align:left;position:relative;overflow:hidden;transition:.18s}.quick-btn:before{content:"";position:absolute;width:65px;height:65px;left:-20px;top:-20px;background:#b85dff18;border-radius:50%;filter:blur(3px)}.quick-btn:hover{border-color:#b86cff35;transform:translateY(-1px)}.quick-icon{position:absolute;right:12px;top:11px;width:27px;height:27px;border-radius:9px;background:#21182a;color:#d9b4fa;display:grid;place-items:center;font-size:13px}.quick-label{font-size:11px;font-weight:900;position:relative}.quick-note{font:700 8px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#706a78;margin-top:4px;position:relative}.collapsible{border-radius:24px;background:#111016;border:1px solid var(--line);overflow:hidden}.section-toggle{width:100%;padding:14px 15px;background:transparent;display:flex;justify-content:space-between;align-items:center;text-align:left;font-size:11px;font-weight:900}.chevron{color:#716b78;font-size:13px}.section-toggle[aria-expanded="true"] .chevron{transform:rotate(180deg)}.section-content{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .22s,opacity .18s}.section-inner{min-height:0;overflow:hidden;padding:0 13px}.collapsible.is-open .section-content{grid-template-rows:1fr;opacity:1}.collapsible.is-open .section-inner{padding-bottom:13px}.feature-list{display:grid;grid-template-columns:1fr 1fr;gap:7px;list-style:none;padding:0;margin:0}.feature-item{min-height:55px;padding:10px;border-radius:15px;background:#0c0b10;border:1px solid #ffffff07;display:flex;align-items:center;gap:8px}.feature-mark{width:23px;height:23px;border-radius:8px;display:grid;place-items:center;background:#291b35;color:#d9b2fb;font-family:Georgia,serif;font-size:11px;flex:none}.feature-text{font:700 8px/1.35 "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#97909f;margin:0}.step{display:grid;grid-template-columns:29px 1fr;gap:9px;margin-bottom:10px}.step-num{width:29px;height:29px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#382247,#18131e);border:1px solid #ffffff0a;color:#dcb9fa;font-size:9px}.step-title{font-size:10px;font-weight:900}.step-text{font:700 8px/1.4 "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#77717f;margin-top:3px}.note{font:700 8px/1.4 "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#625c69;margin:2px 0 0}.profile-wrap{text-align:center}.profile-card{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:99px;background:#111016;border:1px solid #ffffff09}.profile-icon{width:22px;height:22px;border-radius:7px;overflow:hidden}.profile-icon img{width:100%;height:100%;object-fit:cover}.profile-handle{font:700 9px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#aaa2b1}.footer{text-align:center;font:700 7px "Trajan Pro","Trajan Pro 3","Times New Roman",serif;color:#4f4a55}.launch-wrap{display:none}.legacy-hide{display:none!important}@media(min-width:600px){.shell{max-width:620px;margin:auto;padding:18px}.quick{gap:10px}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nullsanz TikTok Studio v2.1.5</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
-.hero{position:relative;}
-</style></head><body><main class="shell">
+    :root {
+      /* ADJN Luxury Cream Palette */
+      --bg: #f4ede1;
+      --bg-surface: #faf6ee;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-solid: #ffffff;
+      --card-inner: #f6efe3;
+      --card-hover: #ffffff;
+      --border: rgba(198, 184, 164, 0.5);
+      --border-subtle: rgba(198, 184, 164, 0.28);
+      --border-glow: rgba(95, 174, 111, 0.45);
+      --text: #27221a;
+      --text-secondary: #574d3f;
+      --text-muted: #8c806e;
+      --green: #48a459;
+      --green-dark: #2d6b3a;
+      --green-light: #d6e8d9;
+      --green-glow: rgba(72, 164, 89, 0.35);
+      --green-glow-subtle: rgba(72, 164, 89, 0.15);
+      --gold: #c29547;
+      --gold-light: #f5eedf;
+      --accent-grad: linear-gradient(135deg, #52b865 0%, #2f753e 100%);
+      --accent-grad-hover: linear-gradient(135deg, #5ec972 0%, #368547 100%);
+      --hero-grad: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(248,242,232,0.85) 100%);
+      --hud-bg: rgba(238, 230, 217, 0.7);
+      --shadow-sm: 0 2px 8px rgba(40, 34, 26, 0.04);
+      --shadow-md: 0 8px 24px rgba(40, 34, 26, 0.08);
+      --shadow-glow: 0 8px 25px rgba(72, 164, 89, 0.28);
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 7px;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
 
-<section class="hero"><div class="hero-row"><div class="logo" aria-label="Nullsanz TikTok Studio logo"><img src="assets/wanx-pfp.jpg" alt="Nullsanz PFP"></div><div class="hero-copy"><div class="title" data-i18n="title">Nullsanz Studio</div></div></div><div class="live"><b></b><span id="heroStatus">ACTIVE</span></div><div class="hero-meta"><span>© Nullsanz TikTok Studio</span><span style="display:flex;align-items:center;gap:7px"><button class="top-btn" id="profileCard" title="TikTok Studio">◎</button><button class="top-btn" id="launchStudioBtn" title="TikTok Studio">↗</button><span class="version">v2.1.0</span></span></div></section>
-<section class="control-panel"><div class="section-label"><strong>MAIN CONTROL</strong><span>LIVE</span></div><div class="control"><div class="control-icon">✮</div><div class="control-copy"><div class="control-title" data-i18n="uploaderLabel">Uploader</div><div class="control-sub">Aktifkan / nonaktifkan uploader di TikTok.</div></div><button type="button" class="switch is-on" id="uploaderToggle" aria-pressed="true" aria-label="Uploader"></button></div><span id="uploaderState" hidden>AKTIF</span><span id="wmState" hidden>MATI</span><button id="wmToggle" hidden type="button"></button></section>
-<section class="quick"><button type="button" class="quick-btn" id="launchStudioBtnLegacy"><span><div class="quick-label" data-i18n="launchStudio">TikTok Studio</div><div class="quick-note">Open creator studio</div></span><span class="quick-icon">↗</span></button><button type="button" class="quick-btn" id="openTikTokBtn"><span><div class="quick-label">Open TikTok</div><div class="quick-note">Launch TikTok</div></span><span class="quick-icon">◉</span></button><button type="button" class="quick-btn" id="resetUiBtn"><span><div class="quick-label">Reset UI</div><div class="quick-note">Restore popup settings</div></span><span class="quick-icon">↺</span></button><button type="button" class="quick-btn" id="copyCaptionBtn"><span><div class="quick-label">Copy Tags</div><div class="quick-note">#fyp #viral #trending</div></span><span class="quick-icon">⌘</span></button></section>
-<section class="collapsible" id="featuresSection"><button type="button" class="section-toggle" id="featuresToggle" aria-expanded="false" aria-controls="featuresContent"><span data-i18n="featuresTitle">Fitur Utama</span><span class="chevron">⌄</span></button><div class="section-content" id="featuresContent"><div class="section-inner"><ul class="feature-list"><li class="feature-item"><span class="feature-mark">✮</span><p class="feature-text" data-i18n="f1">Enhanced TikTok Upload Quality</p></li><li class="feature-item"><span class="feature-mark">✮</span><p class="feature-text" data-i18n="f2">Up to 4K · 120 FPS</p></li><li class="feature-item"><span class="feature-mark">✮</span><p class="feature-text" data-i18n="f3">H.264 & H.265 / HEVC Support</p></li><li class="feature-item"><span class="feature-mark">✮</span><p class="feature-text" data-i18n="f4">All Video Formats Supported</p></li></ul></div></div></section>
-<section class="collapsible" id="guideSection"><button type="button" class="section-toggle" id="guideToggle" aria-expanded="false" aria-controls="guideContent"><span data-i18n="guideTitle">Panduan Langkah demi Langkah</span><span class="chevron">⌄</span></button><div class="section-content" id="guideContent"><div class="section-inner"><div class="step"><div class="step-num">01</div><div><div class="step-title" data-i18n="s1t">Export</div><div class="step-text" data-i18n="s1d">Export your edit at up to 4K · 120 FPS.</div></div></div><div class="step"><div class="step-num">02</div><div><div class="step-title" data-i18n="s2t">Enhance</div><div class="step-text" data-i18n="s2d">Enhance your video before upload.</div></div></div><div class="step"><div class="step-num">03</div><div><div class="step-title" data-i18n="s3t">Compress</div><div class="step-text" data-i18n="s3d">Compress the enhanced video, then upload it to TikTok.</div></div></div><p class="note" data-i18n="note">All processing stays on your device.</p></div></div></section>
-<div class="profile-wrap"><div class="profile-card"><span class="profile-icon"><img src="assets/wanx-pfp.jpg" alt="Nullsanz PFP"></span><span class="profile-handle">@nullsanz</span></div></div><div class="footer">Nullsanz TikTok Studio v2.1.0</div></main><script src="popup.js"></script><script src="popup-enhance.js"></script></body></html>
+    [data-theme="dark"] {
+      /* ADJN Cyber Obsidian Studio Palette */
+      --bg: #110f0c;
+      --bg-surface: #181512;
+      --card: rgba(26, 23, 19, 0.85);
+      --card-solid: #1b1813;
+      --card-inner: #221e18;
+      --card-hover: #29241d;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-subtle: rgba(255, 255, 255, 0.05);
+      --border-glow: rgba(84, 190, 104, 0.5);
+      --text: #f5efe4;
+      --text-secondary: #aba08e;
+      --text-muted: #796e5e;
+      --green: #54be68;
+      --green-dark: #409d51;
+      --green-light: rgba(84, 190, 104, 0.18);
+      --green-glow: rgba(84, 190, 104, 0.4);
+      --green-glow-subtle: rgba(84, 190, 104, 0.18);
+      --gold: #d4a759;
+      --gold-light: rgba(212, 167, 89, 0.15);
+      --accent-grad: linear-gradient(135deg, #54be68 0%, #307a40 100%);
+      --accent-grad-hover: linear-gradient(135deg, #62cf77 0%, #398e4b 100%);
+      --hero-grad: linear-gradient(145deg, rgba(32, 28, 22, 0.95) 0%, rgba(20, 18, 14, 0.85) 100%);
+      --hud-bg: rgba(20, 17, 14, 0.85);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 8px 30px rgba(84, 190, 104, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      background: var(--bg);
+    }
+
+    body {
+      width: 340px;
+      margin: 0 auto;
+      max-height: 590px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text);
+      padding: 12px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      position: relative;
+    }
+
+    /* Clean Mockup Display when opened in a browser tab */
+    @media screen and (min-width: 400px) {
+      html {
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        background: radial-gradient(circle at 50% 10%, rgba(95, 174, 111, 0.15) 0%, transparent 60%), var(--bg);
+      }
+      body {
+        width: 360px;
+        margin: 30px auto 60px auto;
+        max-height: none;
+        border-radius: 26px;
+        border: 1px solid var(--border);
+        box-shadow: 0 25px 60px rgba(35, 30, 22, 0.14), 0 0 0 1px rgba(95, 174, 111, 0.12);
+        padding: 16px;
+      }
+    }
+
+    /* Custom Luxury Scrollbar */
+    body::-webkit-scrollbar {
+      width: 4px;
+    }
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 999px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: var(--green);
+    }
+
+    /* Ambient Lighting Orbs */
+    .ambient-glow-1 {
+      position: fixed;
+      top: -40px;
+      right: -30px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--green-glow-subtle) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(30px);
+    }
+
+    .ambient-glow-2 {
+      position: fixed;
+      bottom: 20px;
+      left: -40px;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(194, 149, 71, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(35px);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ================= TOP NAV BAR ================= */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .engine-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .radar-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      position: relative;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .radar-dot::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      border: 1px solid var(--green);
+      animation: pulseRadar 2s infinite ease-out;
+    }
+
+    @keyframes pulseRadar {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Bilingual Pill Switcher */
+    .lang-switcher {
+      display: inline-flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-size: 10px;
+      font-weight: 700;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lang-btn.active {
+      background: var(--green);
+      color: #ffffff;
+      box-shadow: 0 2px 6px var(--green-glow);
+    }
+
+    /* Theme Button */
+    .theme-btn {
+      border: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.22s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      transform: rotate(15deg);
+    }
+
+    /* ================= HERO BRAND CARD ================= */
+    .hero-card {
+      background: var(--hero-grad);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+    }
+
+    .hero-logo-container {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .hero-logo-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: block;
+      object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 16px var(--green-glow);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-logo-container:hover .hero-logo-img {
+      transform: scale(1.05) rotate(-2deg);
+    }
+
+    .hero-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hero-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .hero-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .badge-tier {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border-glow);
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    .hero-dev-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-top: 3px;
+    }
+
+    .verified-icon {
+      width: 11px;
+      height: 11px;
+      fill: var(--green);
+    }
+
+    /* ================= STUDIO HUD / SPEC BAR ================= */
+    .studio-hud {
+      background: var(--hud-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(8px);
+    }
+
+    .hud-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hud-col:not(:last-child) {
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .hud-label {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .hud-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-top: 1px;
+    }
+
+    /* ================= TOGGLES SECTION ================= */
+    .toggles-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toggle-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    .toggle-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .toggle-card.active-card {
+      border-color: var(--border-glow);
+      background: var(--card-solid);
+    }
+
+    .toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toggle-icon-wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .toggle-card.active-card .toggle-icon-wrap {
+      background: var(--green-light);
+      border-color: var(--border-glow);
+      color: var(--green-dark);
+    }
+
+    .toggle-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .toggle-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.1px;
+    }
+
+    .toggle-substatus {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+
+    .toggle-substatus.on {
+      color: var(--green);
+    }
+
+    .toggle-substatus.off {
+      color: var(--text-muted);
+    }
+
+    .substatus-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Switch Component */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border);
+      transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    }
+
+    .switch input:checked + .slider {
+      background-color: var(--green);
+      box-shadow: 0 2px 10px var(--green-glow);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .public-version-card .toggle-substatus {
+      color: var(--text-muted);
+    }
+    .public-version-card.active-card .toggle-substatus {
+      color: var(--green);
+    }
+    .public-limit-badge {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--gold);
+      background: var(--gold-light);
+      border: 1px solid var(--border);
+      padding: 2px 5px;
+      border-radius: 5px;
+      margin-left: 5px;
+    }
+
+    /* ================= VIP SUPPORT MESSAGE CARD ================= */
+    .support-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .support-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--green) 100%);
+    }
+
+    .support-header-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .support-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.1px;
+    }
+
+    .support-badge {
+      font-size: 9px;
+      font-weight: 800;
+      background: var(--gold-light);
+      color: var(--gold);
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .support-text {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    /* ================= HERO ACTION BUTTON ================= */
+    .btn-action {
+      width: 100%;
+      border: none;
+      background: var(--accent-grad);
+      color: #ffffff;
+      padding: 13px 18px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-main);
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-glow);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Shimmer Sweep Animation */
+    .btn-action::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+      transform: skewX(-22deg);
+      animation: shimmerBtn 4s infinite ease-in-out;
+    }
+
+    @keyframes shimmerBtn {
+      0% { left: -100%; }
+      35%, 100% { left: 160%; }
+    }
+
+    .btn-action:hover {
+      background: var(--accent-grad-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(72, 164, 89, 0.42);
+    }
+
+    .btn-action:active {
+      transform: scale(0.985);
+    }
+
+    .btn-action-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action-badge {
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-action-arrow {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .btn-action:hover .btn-action-arrow {
+      transform: translate(2px, -2px);
+    }
+
+    /* ================= ACCORDION CARDS ================= */
+    .accordion-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .accordion-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .accordion-card.open {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-md);
+      background: var(--card-solid);
+    }
+
+    .accordion-header {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background-color 0.2s;
+    }
+
+    .accordion-header:hover {
+      background: var(--card-inner);
+    }
+
+    .acc-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .acc-chip {
+      font-size: 9.5px;
+      font-weight: 800;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .accordion-card.open .acc-chip {
+      background: var(--green-light);
+      border-color: var(--border-glow);
+      color: var(--green-dark);
+    }
+
+    .chevron-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+    }
+
+    .accordion-card.open .chevron-icon {
+      transform: rotate(180deg);
+      color: var(--green);
+    }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0 12px;
+    }
+
+    .accordion-card.open .accordion-body {
+      padding: 2px 12px 12px 12px;
+      max-height: 700px;
+    }
+
+    /* Feature Items List */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .feature-item {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .feature-item:hover {
+      border-color: var(--green);
+      background: var(--card-hover);
+      transform: translateX(3px);
+    }
+
+    .feature-sparkle-wrap {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: var(--green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green-dark);
+      flex-shrink: 0;
+    }
+
+    .feature-sparkle-wrap svg {
+      width: 11px;
+      height: 11px;
+      fill: currentColor;
+    }
+
+    /* Step Timeline List */
+    .timeline-list {
+      position: relative;
+      padding-left: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .timeline-list::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      bottom: 15px;
+      left: 10px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--green) 0%, var(--border) 100%);
+    }
+
+    .timeline-item {
+      position: relative;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 11px;
+      transition: all 0.2s;
+    }
+
+    .timeline-item:hover {
+      border-color: var(--green);
+      background: var(--card-hover);
+    }
+
+    .timeline-node {
+      position: absolute;
+      left: -26px;
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--card-solid);
+      border: 2px solid var(--green);
+      color: var(--green-dark);
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px var(--green-glow);
+    }
+
+    .timeline-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .timeline-desc {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    /* ================= FOOTER ================= */
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .btn-tiktok-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.22s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-tiktok-pill:hover {
+      border-color: var(--green);
+      color: var(--green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--green-glow-subtle);
+    }
+
+    .tiktok-svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    .footer-meta {
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Orbs -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <div class="container">
+
+    <!-- ================= TOP BAR ================= -->
+    <div class="top-bar">
+      <div class="engine-status-pill">
+        <span class="radar-dot"></span>
+        <span id="txtEngineStatus">Nullsanz Patcher Core Ready</span>
+      </div>
+      <div class="top-actions">
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn" id="btnLangEn">EN</button>
+          <button type="button" class="lang-btn active" id="btnLangId">ID</button>
+        </div>
+        <button type="button" class="theme-btn" id="btnThemeToggle" title="Ganti Tema (Light / Dark)">
+          <svg id="themeIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= HERO BRAND CARD ================= -->
+    <div class="hero-card">
+      <div class="hero-logo-container">
+        <img src="icon48.png" alt="Nullsanz Logo" class="hero-logo-img">
+      </div>
+      <div class="hero-info">
+        <div class="hero-title-wrap">
+          <span class="hero-title" id="txtAppName">Nullsanz Studio</span>
+          <span class="badge-tier">PRO v2.1.5</span>
+        </div>
+        <div class="hero-sub" id="txtAppSub">FastStart Calibration & Anti-Compress Engine</div>
+        <div class="hero-dev-tag">
+          <svg class="verified-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span id="txtDevSub">Develop by nullsanz / null.cloud</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= STUDIO HUD SPEC BAR ================= -->
+    <div class="studio-hud">
+      <div class="hud-col">
+        <span class="hud-label">CALIBRATION</span>
+        <span class="hud-val">4K 120FPS</span>
+      </div>
+      <div class="hud-col">
+        <span class="hud-label">SOUND SAFE</span>
+        <span class="hud-val">ANTI-MUTE</span>
+      </div>
+      <div class="hud-col">
+        <span class="hud-label">PROCESSING</span>
+        <span class="hud-val">100% LOKAL</span>
+      </div>
+    </div>
+
+    <!-- ================= TOGGLES SECTION ================= -->
+    <div class="toggles-group">
+      <!-- Toggle 1: Uploader -->
+      <div class="toggle-card active-card" id="cardUploader">
+        <div class="toggle-left">
+          <div class="toggle-icon-wrap">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="toggle-meta">
+            <span class="toggle-title" id="lblUploader">Auto-Patcher Uploader</span>
+            <span class="toggle-substatus on" id="valUploader">
+              <span class="substatus-dot"></span>
+              <span id="txtUploaderStatus">AKTIF</span>
+            </span>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="chkUploader" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Toggle 2: Watermark (Clean Caption Mode) -->
+      <div class="toggle-card" id="cardWatermark" style="opacity:0.85;">
+        <div class="toggle-left">
+          <div class="toggle-icon-wrap">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="toggle-meta">
+            <span class="toggle-title" id="lblWatermark">Caption Watermark</span>
+            <span class="toggle-substatus off" id="valWatermark">
+              <span class="substatus-dot"></span>
+              <span id="txtWatermarkStatus">NONAKTIF (BERSIH)</span>
+            </span>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="chkWatermark">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Toggle 3: Unlimited Mode -->
+      <div class="toggle-card active-card" id="cardPublicVersion">
+        <div class="toggle-left">
+          <div class="toggle-icon-wrap">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M3 12h18"></path>
+              <path d="M12 3a14 14 0 0 1 0 18"></path>
+              <path d="M12 3a14 14 0 0 0 0 18"></path>
+            </svg>
+          </div>
+          <div class="toggle-meta">
+            <span class="toggle-title" id="lblPublicVersion">Akses Full Unlimited <span class="public-limit-badge" style="background:#54be68;color:#fff;">UNLIMITED</span></span>
+            <span class="toggle-substatus on" id="valPublicVersion">
+              <span class="substatus-dot"></span>
+              <span id="txtPublicVersionStatus">AKTIF • TANPA BATAS</span>
+            </span>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="chkPublicVersion" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ================= HERO ACTION BUTTON ================= -->
+    <button type="button" class="btn-action" id="btnOpenStudio">
+      <div class="btn-action-left">
+        <span class="btn-action-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </span>
+        <span id="txtBtnOpenStudio">Buka TikTok Studio</span>
+      </div>
+      <span class="btn-action-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </span>
+    </button>
+
+    <!-- ================= ACCORDIONS ================= -->
+    <div class="accordion-group">
+      <!-- Accordion 1: Fitur Utama -->
+      <div class="accordion-card" id="accFeatures">
+        <button type="button" class="accordion-header" id="btnAccFeatures">
+          <div class="acc-header-left">
+            <span class="acc-chip">16 FITUR</span>
+            <span id="txtAccFeaturesTitle">Fitur Utama</span>
+          </div>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="accordion-body">
+          <div class="feature-list" id="featureListContainer">
+            <!-- Rendered dynamically by popup.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion 2: Panduan Langkah demi Langkah -->
+      <div class="accordion-card" id="accGuide">
+        <button type="button" class="accordion-header" id="btnAccGuide">
+          <div class="acc-header-left">
+            <span class="acc-chip">5 TAHAP</span>
+            <span id="txtAccGuideTitle">Panduan Langkah demi Langkah</span>
+          </div>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="accordion-body">
+          <div class="timeline-list" id="stepListContainer">
+            <!-- Rendered dynamically by popup.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <div class="footer">
+      <a href="https://www.tiktok.com/@nullsanz" target="_blank" rel="noopener noreferrer" class="btn-tiktok-pill" id="linkTikTok">
+        <svg class="tiktok-svg" viewBox="0 0 24 24">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
+        </svg>
+        <span>@nullsanz</span>
+      </a>
+      <div class="footer-meta" id="txtFooterSub">Nullsanz TikTok Studio • null.cloud</div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

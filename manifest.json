@@ -1,80 +1,95 @@
 {
   "manifest_version": 3,
-  "name": "Nullsanz TikTok Studio v2.1.0",
-  "version": "2.1.0",
-  "description": "Nullsanz TikTok Studio v2.1.0 — local video upload workflow with Nullsanz UI and local MP4/FFmpeg processing.",
-  "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png",
-    "256": "icons/icon256.png",
-    "512": "icons/icon512.png"
-  },
-  "action": {
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    },
-    "default_popup": "popup.html",
-    "default_title": "Nullsanz TikTok Studio v2.1.0"
-  },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "permissions": [
-    "storage",
-    "tabs"
-  ],
+  "name": "Nullsanz TikTok Studio — Video Calibration & Anti-Compress",
+  "version": "2.1.5",
+  "description": "Nullsanz TikTok Studio v2.1.5 (Ultra HD Engine) | Auto-Patch TikTok Studio & Sound Safe by nullsanz / null.cloud",
+  "minimum_chrome_version": "116",
   "host_permissions": [
+    "https://www.tiktok.com/*",
+    "https://studio.tiktok.com/*",
+    "https://*.tiktok.com/*",
     "*://*.tiktok.com/*"
   ],
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Nullsanz TikTok Studio v2.1.5",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
   "content_scripts": [
     {
       "matches": [
-        "*://www.tiktok.com/*",
+        "https://www.tiktok.com/*",
+        "https://studio.tiktok.com/*",
+        "https://*.tiktok.com/*",
         "*://*.tiktok.com/*"
       ],
       "js": [
-        "mp4-container-patcher.js",
-        "content.js"
+        "orion-compat.js",
+        "page-hook.js"
       ],
       "run_at": "document_start",
+      "world": "MAIN",
       "all_frames": false
     },
     {
       "matches": [
-        "*://www.tiktok.com/@*"
+        "https://www.tiktok.com/*",
+        "https://studio.tiktok.com/*",
+        "https://*.tiktok.com/*",
+        "*://*.tiktok.com/*"
       ],
       "js": [
-        "content_repost.js"
+        "orion-compat.js",
+        "adjn-mp4-core.js",
+        "processor.js",
+        "content.js"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_start",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "inject.js",
-        "repost_injected.js",
-        "mp4-container-patcher.js",
-        "page-hook.js",
-        "icons/pfpreins.jpg",
-        "icons/icon128.png",
-        "assets/processing-bg.mp4",
-        "assets/anime-ui-bg.mp4",
         "processor.html",
-        "processor.js"
+        "processor.js",
+        "adjn-mp4-core.js",
+        "orion-compat.js",
+        "icon16.png",
+        "icon32.png",
+        "icon48.png",
+        "icon128.png",
+        "icon256.png",
+        "icon512.png",
+        "page-hook.js",
+        "adjn-upload-banner.jpg",
+        "fry-logo-master.png",
+        "fry-logo-original.png"
       ],
       "matches": [
+        "https://www.tiktok.com/*",
+        "https://studio.tiktok.com/*",
         "*://*.tiktok.com/*"
       ]
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "author": "Nullsanz"
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png",
+    "256": "icon256.png",
+    "512": "icon512.png"
+  }
 }
