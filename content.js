@@ -26,7 +26,7 @@
     'TIKTOKNullsanz': { name: 'Nullsanz Studio', tier: 3, limit: 2000 * 1024 * 1024 }
   };
   const MAX_FILE_BYTES = 2000 * 1024 * 1024;
-  let selectedEngine = '3.0';
+  let selectedEngine = '3.0.5';
 
   let accessUnlocked = true;
   let activeAccess = {
@@ -69,7 +69,7 @@
     pill.innerHTML = `
       <span class="nullsanz-line1">
         <span class="nullsanz-dot"></span>
-        <span>Nullsanz Studio v3.0 • Engine ${selectedEngine}</span>
+        <span>Nullsanz Studio v3.0.5 • Engine ${selectedEngine}</span>
       </span>
       <span class="nullsanz-spec">Auto-Patch ACTIVE • ${accessLimitLabel(activeAccess.limit)} • Key ${maskKey(activeAccess.key)}</span>
     `;
@@ -842,9 +842,9 @@
             <span class="nullsanz-public-sub">Pilih engine sebelum Auto-Patch (Default 3.0 Dolby Vision &amp; HEVC)</span>
           </span>
           <div class="nullsanz-engine-buttons">
-            <button type="button" data-engine="2.1.5" class="nullsanz-engine-btn active">2.1.5</button>
-            <button type="button" data-engine="2.3" class="nullsanz-engine-btn">2.3</button>
+            <button type="button" data-engine="2.1.5" class="nullsanz-engine-btn">2.1.5</button>
             <button type="button" data-engine="3.0" class="nullsanz-engine-btn">3.0</button>
+            <button type="button" data-engine="3.0.5" class="nullsanz-engine-btn active">3.0.5</button>
           </div>
         </div>
         <div class="nullsanz-access-note">Akses Full Unlimited • Engine dapat diganti kapan saja sebelum memilih video.</div>
@@ -915,7 +915,7 @@
     } catch (_) {}
 
     // Regularly ensure upload zone is decorated on TikTok Studio
-    try { chrome.storage.local.get(['nullsanzEngine'], r => { if (r?.nullsanzEngine && ['2.1.5','2.3','3.0'].includes(r.nullsanzEngine)) { selectedEngine = r.nullsanzEngine; accessModal?.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b.dataset.engine === selectedEngine)); } }); } catch (_) {}
+    try { chrome.storage.local.get(['nullsanzEngine'], r => { if (r?.nullsanzEngine && ['2.1.5','3.0','3.0.5'].includes(r.nullsanzEngine)) { selectedEngine = r.nullsanzEngine; accessModal?.querySelectorAll('[data-engine]').forEach(b => b.classList.toggle('active', b.dataset.engine === selectedEngine)); } }); } catch (_) {}
     const restored = restoreAccessSession();
     updateAccessPill();
     decorateUploadZone();

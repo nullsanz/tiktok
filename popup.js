@@ -18,7 +18,7 @@
       watermarkOn: 'NYALA',
       watermarkOff: 'NONAKTIF (BERSIH)',
       publicVersionLabel: 'Engine Mode',
-      publicVersionOn: 'MULTI-ENGINE 2.1.5 / 2.3 / 3.0',
+      publicVersionOn: 'MULTI-ENGINE 2.1.5 / 3.0 / 3.0.5',
       publicVersionOff: 'FULL UNLIMITED',
       supportTitle: '',
       supportBadge: '',
@@ -28,7 +28,7 @@
       accordionGuide: 'Panduan Langkah demi Langkah',
       chipFeatures: '16 FITUR',
       chipGuide: '5 TAHAP',
-      footerSub: 'Nullsanz TikTok Studio • v3.0.0',
+      footerSub: 'Nullsanz TikTok Studio • v3.0.5',
       features: [
         'Kualitas Unggah TikTok yang Ditingkatkan',
         'Hingga 8K 60 FPS • 4K 120 FPS (Ultra Smooth)',

@@ -16,7 +16,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '6.0';
+  const VERSION = '6.5';
   const ENCODER_TAG = 'Nullsanz Ultra HD Studio Patcher';
   const FOURCC_TOO = new Uint8Array([0xa9, 0x74, 0x6f, 0x6f]); // '©too'
   const SENTINEL_FF = new Uint8Array([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]); // 64-bit Unknown Duration Sentinel
@@ -612,7 +612,7 @@
     if (moovBeforeMdat) {
       const traksWithOffsets = moov.findAll('trak').filter(t => getOffsetBox(t));
       const origOffsets = traksWithOffsets.map(t => parseStcoOrCo64(getOffsetBox(t)));
-      for (let iter = 0; iter < 6; iter++) {
+      for (let iter = 0; iter < 4; iter++) {
         const delta = moov.serialize().length - oldMoovSize;
         let changedType = false;
         traksWithOffsets.forEach((t, i) => {
@@ -621,7 +621,7 @@
           writeStcoOrCo64(box, origOffsets[i].map(o => o + delta));
           if (box.type !== prevType) changedType = true;
         });
-        if (!changedType && moov.serialize().length === oldMoovSize + delta) break;
+        if (!changedType) break;
       }
     }
 
@@ -633,7 +633,7 @@
     return concatBytes(finalChunks);
   }
 
-  function validateFinalOutput(bytes, originalBytes) {
+  function validateFinalOutput(bytes) {
     const top = parseTopLevel(bytes);
     if (!top.length || top[top.length - 1].end !== bytes.length) throwError('Hasil patch bukan box run lengkap.');
     const moovList = top.filter(b => b.type === 'moov');
@@ -661,24 +661,13 @@
       }
     }
 
-    if (originalBytes) {
-      const origTop = parseTopLevel(originalBytes);
-      const origMdatBox = origTop.find(b => b.type === 'mdat');
-      if (origMdatBox) {
-        const origMdat = originalBytes.subarray(origMdatBox.start + origMdatBox.header, origMdatBox.end);
-        const outMdat = bytes.subarray(mdatStart, mdatEnd);
-        if (!exactBytesEqual(origMdat, outMdat)) {
-          throwError('Nullsanz Core: Media payload (mdat) tidak identik setelah patch.');
-        }
-      }
-    }
   }
 
   function quickPatch(input) {
     const bytes = toU8Array(input);
     const parsed = parseMp4Structure(bytes);
     const patched = executePatch(bytes, parsed);
-    validateFinalOutput(patched, bytes);
+    validateFinalOutput(patched);
     return patched;
   }
 

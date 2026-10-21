@@ -306,7 +306,7 @@
       hdr: sourceHdr,
       outputHdr: sourceHdr,
       report: {
-        engine: 'Nullsanz Core • Universal Safe Passthrough 3.0',
+        engine: 'Nullsanz Core • Universal Safe Passthrough 3.0.5',
         passthrough: true,
         reason,
         container: sniff?.container || ext || 'unknown',
@@ -340,8 +340,8 @@
   }
 
   async function processVideo(data) {
-    const selectedEngine = ['2.1.5','2.3','3.0'].includes(String(data.engine || '')) ? String(data.engine) : '2.1.5';
-    const engineVersion = selectedEngine === '2.3' ? '5.5' : selectedEngine === '3.0' ? '6.0' : null;
+    const selectedEngine = ['2.1.5','3.0','3.0.5'].includes(String(data.engine || '')) ? String(data.engine) : '3.0.5';
+    const engineVersion = (selectedEngine === '3.0' || selectedEngine === '3.0.5') ? '6.0' : null;
     const requestId = data.requestId;
     const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core;
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {

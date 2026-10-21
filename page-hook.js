@@ -3,7 +3,7 @@
   if (window.__NULLSANZ_METHOD_PAGE_HOOK__) return;
   window.__NULLSANZ_METHOD_PAGE_HOOK__ = true;
 
-  console.info('[Nullsanz TikTok Studio v3.0] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
+  console.info('[Nullsanz TikTok Studio v3.0.5] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
 
   // ================= CONFIGURATION =================
   const MENTION_USERS = [];
@@ -418,64 +418,29 @@
   };
 
   // ================= AB CONFIG & POST FLAG HELPERS =================
-  const PHOTO_AB_URL = '/api/v1/web/project/get/ab/';
-  function unlockAbFeatures(node) {
+    const PHOTO_AB_URL = '/api/v1/web/project/get/ab/';
+  function enablePhotoPosting(node) {
     if (Array.isArray(node)) {
       let changed = false;
-      for (const item of node) changed = unlockAbFeatures(item) || changed;
+      for (const item of node) changed = enablePhotoPosting(item) || changed;
       return changed;
     }
     if (!node || typeof node !== 'object') return false;
     let changed = false;
-
-    const secondKey = String(node.second_key || '').toLowerCase();
-    if (secondKey) {
-      if (secondKey === 'web_crea_photo_posting' ||
-          secondKey.includes('hd_upload') ||
-          secondKey.includes('hd_video') ||
-          secondKey.includes('high_definition') ||
-          secondKey.includes('video_quality') ||
-          secondKey.includes('creator_60fps') ||
-          secondKey.includes('allow_hd')) {
-        if (node.ab_value !== '1') {
-          node.ab_value = '1';
-          changed = true;
-        }
-      } else if (secondKey.includes('cloud_canvas') ||
-                 secondKey.includes('video_canvas') ||
-                 secondKey.includes('video_reencode') ||
-                 secondKey.includes('auto_compress')) {
-        if (node.ab_value !== '0') {
-          node.ab_value = '0';
-          changed = true;
-        }
-      }
+    if (node.second_key === 'web_crea_photo_posting' && node.ab_value !== '1') {
+      node.ab_value = '1';
+      changed = true;
     }
-
     for (const key of Object.keys(node)) {
-      const lower = key.toLowerCase();
-      if (lower === 'web_crea_photo_posting' ||
-          lower.includes('hd_upload') ||
-          lower.includes('high_definition') ||
-          lower.includes('video_quality') ||
-          lower.includes('hd_video')) {
-        const val = node[key];
+      const val = node[key];
+      if (key === 'web_crea_photo_posting') {
         if (val && typeof val === 'object') {
           if ('ab_value' in val && val.ab_value !== '1') { val.ab_value = '1'; changed = true; }
         } else if (typeof val === 'string' && val !== '1') {
           node[key] = '1'; changed = true;
         }
-      } else if (lower.includes('cloud_canvas') || lower.includes('video_canvas')) {
-        const val = node[key];
-        if (val && typeof val === 'object') {
-          if ('ab_value' in val && val.ab_value !== '0') { val.ab_value = '0'; changed = true; }
-        } else if (typeof val === 'string' && val !== '0') {
-          node[key] = '0'; changed = true;
-        }
       }
-      if (node[key] && typeof node[key] === 'object') {
-        changed = unlockAbFeatures(node[key]) || changed;
-      }
+      if (val && typeof val === 'object') changed = enablePhotoPosting(val) || changed;
     }
     return changed;
   }
@@ -483,7 +448,7 @@
   function patchAbBody(text) {
     try {
       const json = JSON.parse(text);
-      if (unlockAbFeatures(json)) return JSON.stringify(json);
+      if (enablePhotoPosting(json)) return JSON.stringify(json);
     } catch (_) {}
     return text;
   }

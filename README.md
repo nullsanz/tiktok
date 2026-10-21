@@ -1,26 +1,24 @@
-# ⚡ Nullsanz TikTok Studio v3.0.0
+# ⚡ Nullsanz TikTok Studio v3.0.5
 > **Local Video Calibration, Multi-Engine Ultra HD & Lossless Anti-Compress for TikTok Studio**  
 > *Developed by [nullsanz](https://github.com/nullsanz) & [null.cloud](https://null.cloud)*
 
 ---
 
-## 🌟 Fitur Utama v3.0.0
+## 🌟 Fitur Utama v3.0.5
 
-- **🚀 Multi-Engine System (2.1.5, 2.3 & 3.0):**
-  - **Engine 2.1.5:** Standard Local Container Calibration.
-  - **Engine 2.3:** High-Precision Container & Layout Verification.
+- **🚀 Multi-Engine System (2.1.5, 3.0 & 3.0.5):**
+  - **Engine 2.1.5:** Standard Local Container Calibration (Universal Legacy).
   - **Engine 3.0:** Native **Dolby Vision** (`dvh1`, `dvhe`) & HEVC (`hvc1`, `hev1`) Verification!
+  - **Engine 3.0.5 (NEW):** Versi terbaru dengan **Anti-Softban Protection** & Fast 4-Pass Remuxer!
+- **🛡️ Anti-Softban AB Hook (Zero 0-Views Penalty):**
+  - Mengeliminasi override agresif pada AB Test endpoints TikTok yang sebelumnya dapat memicu shadow-flag/bot detection.
+  - Mempertahankan bypass Cloud Canvas secara native dan aman (`cloud_edit_is_use_video_canvas: false`, `psg_vsp_aud: true`).
+- **⚡ Fast 4-Pass Container Remuxer:**
+  - Optimasi perhitungan offset moov menjadi 4 iterasi cepat.
+  - Menghilangkan beban pemindaian byte-by-byte pada video besar sehingga browser tidak pernah freeze saat memproses file ratusan MB.
 - **📺 Resolusi Resmi Hingga 8K 60FPS & 4K 120FPS:**
   - Hingga 4K (4096×2160) @ 120 FPS.
   - Di atas 4K hingga 8K (8192×4320) @ 60 FPS (Ultra Smooth)!
-- **🛡️ 6-Pass Safe & Strict Byte-for-Byte Verification:**
-  - Perhitungan offset box moov menggunakan algoritma 6 putaran (*6-Pass Safe*).
-  - Pengecekan byte demi byte payload media (`mdat`) terhadap file sumber asli memastikan bitstream video tidak korup.
-  - *Output Size Guard* otomatis mencegah file mengecil/rusak saat di-patch.
-- **🎯 Cloud Canvas Bypass & Anti-Shadowflag Akun Besar:**
-  - Menghapus manipulasi `post_type = 3` yang memicu deteksi shadow-flag TikTok.
-  - Menginjeksi preferensi HD resmi: `allow_upload_hd: 1`, `is_high_quality: true`, `psg_vsp_aud: true`, `hd_post_enable: 1`.
-  - Membuka otomatis Creator Studio AB flags untuk upload 60fps & HD.
 - **✨ 100% Bersih (Zero Watermark):**
   - Seluruh injeksi watermark otomatis, auto-tag `@mention`, dan prefix teks bawaan telah dibersihkan total. Caption postingan Anda tetap 100% murni sesuai yang Anda ketik.
 - **🔓 Password Gate Dihilangkan (Full Unlimited):**
