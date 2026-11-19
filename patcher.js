@@ -5,7 +5,7 @@
   const $ = (id) => document.getElementById(id);
 
   let selectedFile = null;
-  let selectedEngine = '4.0'; // '4.0' | '4.0-pro' | '3.0.5'
+  let selectedEngine = '4.0'; // '4.0' | '4.0-ultra' | '4.0-pro' | '3.0.5'
   let proResolutionMode = '1080p'; // '1080p' | 'native'
   let currentPreviewUrl = null;
   let currentDownloadUrl = null;
@@ -19,10 +19,15 @@
       btn: 'Mulai Patch Cepat (4.0 Direct)',
       desc: 'Patch langsung tanpa encoding ulang (metode Dual-Audio sl-sr). Proses sangat cepat dan mempertahankan bitstream video 8K 60fps / 4K 120fps / HDR asli 100% utuh.'
     },
+    '4.0-ultra': {
+      hint: '4.0 Ultra • FastStart',
+      btn: 'Mulai Ultra Patch (True FastStart)',
+      desc: 'Menyusun ulang MP4 ke True FastStart (ftyp → moov → free → mdat → free), rescale timescale ke 1000, strip metadata encoder, & overwrite 4 sample tail audio tanpa re-encode. Kompatibel luas untuk audio mono, MOV, maupun iOS.'
+    },
     '4.0-pro': {
       hint: '4.0 Pro • Offline FFmpeg WASM',
       btn: 'Mulai Pro Encoding (FFmpeg Offline)',
-      desc: 'Encoding ulang H.264 High@4.2 + AAC 48kHz secara 100% offline dengan preservasi AMVE & HDR color matrix (HLG/PQ/BT.709) + Dual-Audio 3-track FastStart. Ideal untuk akun limit FPS atau input non-AAC / MKV / WebM.'
+      desc: 'Encoding ulang H.264 High + AAC 48kHz secara 100% offline dengan preservasi AMVE & HDR color matrix (HLG/PQ/BT.709) + Dual-Audio 3-track FastStart. Ideal untuk akun limit FPS atau input non-AAC / MKV / WebM.'
     },
     '3.0.5': {
       hint: '3.0.5 • 64-bit Sentinel',
@@ -94,7 +99,7 @@
 
   // Engine selector
   function selectEngine(mode) {
-    selectedEngine = ['4.0', '4.0-pro', '3.0.5'].includes(mode) ? mode : '4.0';
+    selectedEngine = ['4.0', '4.0-ultra', '4.0-pro', '3.0.5'].includes(mode) ? mode : '4.0';
     document.querySelectorAll('.engine-card-btn').forEach((btn) => {
       const active = btn.getAttribute('data-engine') === selectedEngine;
       btn.classList.toggle('active', active);
@@ -104,6 +109,7 @@
     $('engineHint').textContent = m.hint;
     $('engineModeDesc').textContent = m.desc;
     $('btnGoLabel').textContent = m.btn;
+    $('btnGo').disabled = !selectedFile;
     $('proOptionsRow').classList.toggle('show', selectedEngine === '4.0-pro');
     $('fallbackBox').classList.remove('show');
   }
@@ -118,6 +124,11 @@
       document.querySelectorAll('[data-res-mode]').forEach((b) => {
         b.classList.toggle('active', b.getAttribute('data-res-mode') === proResolutionMode);
       });
+      try {
+        if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+          chrome.storage.local.set({ nullsanzResolutionMode: proResolutionMode });
+        }
+      } catch (_) {}
     });
   });
 
@@ -348,6 +359,28 @@
           modeLabel = '4.0 Direct • 3T';
         }
         $('successSub').textContent = 'Bitstream video 100% utuh • Dual-Audio sl-sr siap upload ke TikTok Studio.';
+      } else if (selectedEngine === '4.0-ultra') {
+        log('Memulai Nullsanz Engine 4.0 Ultra • True FastStart Single-Audio…', 'info');
+        const fastStart = window.NullsanzFastStart;
+        if (!fastStart?.patchContainer) throw new Error('NullsanzFastStart tidak termuat.');
+
+        const origBuf = await selectedFile.arrayBuffer();
+        const inputU8 = new Uint8Array(origBuf);
+        setProgress(35, 'Menerapkan FastStart 4.0 Ultra…', 'Memindahkan moov ke depan, rescale timescale 1000 & membersihkan tail audio.');
+        const ultraRes = fastStart.patchContainer(inputU8);
+        const outU8 = new Uint8Array(ultraRes.bytes);
+
+        setProgress(88, 'Verifikasi Engine 4.0 Ultra…', 'Memverifikasi video bitstream 100% utuh & audio tail clean.');
+        if (!fastStart.verifyUntouched(inputU8, outU8)) {
+          throw new Error('Verifikasi Engine 4.0 Ultra gagal: data media berubah.');
+        }
+
+        log(`Verifikasi Ultra OK • moov sebelum mdat • Video 100% utuh • ${ultraRes.report.audioTailOverwritten} sample tail cleaned`, 'ok');
+        outputBlob = new Blob([outU8], { type: 'video/mp4' });
+        outputSize = outU8.byteLength;
+        modeLabel = '4.0 Ultra • FastStart';
+        suffix = '_Nullsanz_Ultra.mp4';
+        $('successSub').textContent = 'True FastStart single-audio • Video 100% utuh, siap upload cepat ke TikTok Studio.';
       } else if (selectedEngine === '4.0-pro') {
         log('Memulai Nullsanz Engine 4.0 Pro • Offline FFmpeg WASM…', 'info');
         const pro = window.NullsanzProCore;
@@ -436,6 +469,7 @@
       setProgress(100, 'Selesai ✓', 'Video terverifikasi & siap di-download.');
       hideProgressOverlay(650);
       $('successBanner').classList.add('show');
+      $('btnGo').disabled = false;
       log(`Selesai! Output: ${base + suffix} (${fmtSz(outputSize)})`, 'ok');
     } catch (err) {
       log(`Kesalahan: ${err?.message || err}`, 'err');
@@ -485,7 +519,7 @@
   loadTheme();
   const params = new URLSearchParams(location.search);
   const initialMode = params.get('mode');
-  if (initialMode && ['4.0', '4.0-pro', '3.0.5'].includes(initialMode)) {
+  if (initialMode && ['4.0', '4.0-ultra', '4.0-pro', '3.0.5'].includes(initialMode)) {
     selectEngine(initialMode);
   } else {
     selectEngine('4.0');

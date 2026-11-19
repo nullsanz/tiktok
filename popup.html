@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nullsanz TikTok Studio v4.0 Pro</title>
+  <title>Nullsanz TikTok Studio v4.1 Final</title>
   <style>
     :root {
       --bg: #f4ede1;
@@ -245,7 +245,7 @@
       padding: 2px 6px; border-radius: 6px;
     }
     .engine-seg-row {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
     }
     .engine-seg-btn {
       border: 1px solid var(--border); background: var(--card-inner);
@@ -392,7 +392,7 @@
     <div class="top-bar">
       <div class="engine-status-pill">
         <span class="radar-dot"></span>
-        <span id="txtEngineStatus">Patcher 4.0 &amp; Pro Core Ready</span>
+        <span id="txtEngineStatus">Inline Tri-Engine 4.0 / Ultra / Pro Ready</span>
       </div>
       <div class="top-actions">
         <div class="lang-switcher">
@@ -412,9 +412,9 @@
       <div class="hero-info">
         <div class="hero-title-wrap">
           <span class="hero-title" id="txtAppName">Nullsanz Studio</span>
-          <span class="badge-tier">v4.0 PRO</span>
+          <span class="badge-tier">v4.1 FINAL</span>
         </div>
-        <div class="hero-sub" id="txtAppSub">Dual Engine 4.0 Direct + FFmpeg WASM Offline</div>
+        <div class="hero-sub" id="txtAppSub">Inline 4.0 Direct • 4.0 Ultra FastStart • 4.0 Pro FFmpeg</div>
         <div class="hero-dev-tag">
           <svg class="verified-icon" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -472,7 +472,9 @@
         <span class="engine-picker-hint" id="txtEngineActiveHint">4.0 Direct</span>
       </div>
       <div class="engine-seg-row" role="group" aria-label="Inline Engine">
-        <button type="button" class="engine-seg-btn active" data-engine="4.0">4.0</button>
+        <button type="button" class="engine-seg-btn active" data-engine="4.0">4.0 Direct</button>
+        <button type="button" class="engine-seg-btn" data-engine="4.0-ultra">4.0 Ultra</button>
+        <button type="button" class="engine-seg-btn" data-engine="4.0-pro">4.0 Pro</button>
         <button type="button" class="engine-seg-btn" data-engine="3.0.5">3.0.5</button>
         <button type="button" class="engine-seg-btn" data-engine="3.0">3.0</button>
         <button type="button" class="engine-seg-btn" data-engine="2.1.5">2.1.5</button>
@@ -537,7 +539,7 @@
         <button type="button" class="accordion-header" id="btnAccFeatures">
           <div class="acc-header-left">
             <span class="acc-chip" id="chipFeatures">18 FITUR</span>
-            <span id="txtAccFeaturesTitle">Fitur Utama v4.0 Pro</span>
+            <span id="txtAccFeaturesTitle">Fitur Utama v4.1 Final</span>
           </div>
           <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -571,7 +573,7 @@
         </svg>
         <span>nullsanz/tiktok</span>
       </a>
-      <div class="footer-meta" id="txtFooterSub">Nullsanz TikTok Studio • v4.0.0 Pro</div>
+      <div class="footer-meta" id="txtFooterSub">Nullsanz TikTok Studio • v4.1.0 Final</div>
     </div>
   </div>
 

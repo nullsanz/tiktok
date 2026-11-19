@@ -1,7 +1,120 @@
 (() => {
   'use strict';
+  const BRIDGE_CHANNEL = 'nullsanz-ffmpeg-bridge';
   let busy = false;
   let stageCallback = null;
+  let ffmpegBridgeFrame = null;
+  let ffmpegBridgeReady = false;
+  let ffmpegBridgeSeq = 0;
+  const ffmpegBridgeJobs = new Map();
+
+  function getFfmpegBridgeUrl() {
+    if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+      return chrome.runtime.getURL('ffmpeg-bridge.html');
+    }
+    if (typeof location !== 'undefined' && location.protocol === 'chrome-extension:') {
+      return 'ffmpeg-bridge.html';
+    }
+    return '';
+  }
+
+  function ensureFfmpegBridgeFrame() {
+    if (typeof document === 'undefined' || !document.documentElement) {
+      throw new Error('FFmpeg Bridge offline hanya tersedia di browser.');
+    }
+    const bridgeUrl = getFfmpegBridgeUrl();
+    if (!bridgeUrl) {
+      throw new Error('URL ffmpeg-bridge.html tidak tersedia di context ini.');
+    }
+    if (ffmpegBridgeFrame && ffmpegBridgeFrame.isConnected) return ffmpegBridgeFrame;
+
+    ffmpegBridgeReady = false;
+    ffmpegBridgeFrame = document.createElement('iframe');
+    ffmpegBridgeFrame.src = bridgeUrl;
+    ffmpegBridgeFrame.setAttribute('aria-hidden', 'true');
+    ffmpegBridgeFrame.style.cssText = 'display:none!important;width:0;height:0;border:0;position:fixed;left:-9999px;top:-9999px;';
+    document.documentElement.appendChild(ffmpegBridgeFrame);
+    return ffmpegBridgeFrame;
+  }
+
+  async function waitFfmpegBridgeReady(timeoutMs = 25000) {
+    ensureFfmpegBridgeFrame();
+    const start = Date.now();
+    while (!ffmpegBridgeReady) {
+      if (Date.now() - start > timeoutMs) {
+        throw new Error('FFmpeg Bridge lokal tidak merespons. Coba reload extension & halaman.');
+      }
+      await new Promise((r) => setTimeout(r, 40));
+    }
+  }
+
+  async function runOfflineFfmpegJob(requestId, action, buffer, inputExt, ffmpegArgs) {
+    await waitFfmpegBridgeReady();
+    const jobId = `nspro-${Date.now()}-${++ffmpegBridgeSeq}`;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        ffmpegBridgeJobs.delete(jobId);
+        reject(new Error('Nullsanz 4.0 Pro: encoding FFmpeg WASM timeout (30 menit).'));
+      }, 30 * 60 * 1000);
+      ffmpegBridgeJobs.set(jobId, { resolve, reject, timer, requestId });
+      const targetWin = ffmpegBridgeFrame?.contentWindow;
+      if (!targetWin) {
+        clearTimeout(timer);
+        ffmpegBridgeJobs.delete(jobId);
+        reject(new Error('Iframe FFmpeg Bridge tidak memiliki contentWindow.'));
+        return;
+      }
+      const transfer = buffer instanceof ArrayBuffer ? [buffer] : [];
+      targetWin.postMessage(
+        {
+          channel: BRIDGE_CHANNEL,
+          action,
+          requestId: jobId,
+          buffer,
+          inputExt: inputExt || 'mp4',
+          ffmpegArgs: Array.isArray(ffmpegArgs) ? ffmpegArgs : []
+        },
+        '*',
+        transfer
+      );
+    });
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('message', (event) => {
+      const d = event.data;
+      if (!d || d.channel !== BRIDGE_CHANNEL) return;
+      if (ffmpegBridgeFrame?.contentWindow && event.source !== ffmpegBridgeFrame.contentWindow) return;
+
+      if (d.type === 'BRIDGE_READY') {
+        ffmpegBridgeReady = true;
+        return;
+      }
+
+      const job = d.requestId ? ffmpegBridgeJobs.get(d.requestId) : null;
+      if (!job) return;
+
+      if (d.type === 'PROGRESS') {
+        const pct = Math.max(10, Math.min(88, Number(d.value) || 20));
+        stage(job.requestId, 'patching', d.text || 'Nullsanz 4.0 Pro • Encoding H.264/AAC lokal…', pct, 'Offline FFmpeg WASM');
+        return;
+      }
+      if (d.type === 'READY') {
+        return;
+      }
+      if (d.type === 'ERROR') {
+        clearTimeout(job.timer);
+        ffmpegBridgeJobs.delete(d.requestId);
+        job.reject(new Error(d.message || 'FFmpeg WASM offline gagal memproses video.'));
+        return;
+      }
+      if (d.type === 'DONE') {
+        clearTimeout(job.timer);
+        ffmpegBridgeJobs.delete(d.requestId);
+        job.resolve(d.buffer);
+      }
+    });
+  }
 
   function send(type, payload = {}, transfer = []) {
     if (typeof parent !== 'undefined' && parent && parent !== window) {
@@ -328,11 +441,13 @@
   }
 
   async function processVideo(data) {
-    const supportedEngines = ['4.0', '3.0.5', '3.0', '2.1.5'];
+    const supportedEngines = ['4.0', '4.0-ultra', '4.0-pro', '3.0.5', '3.0', '2.1.5'];
     let selectedEngine = supportedEngines.includes(String(data.engine || '')) ? String(data.engine) : '4.0';
     const requestId = data.requestId;
     const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core;
     const direct40 = globalThis.NullsanzSlSrEngine || globalThis.NullsanzDirect40;
+    const fastStart40 = globalThis.NullsanzFastStart;
+    const pro40 = globalThis.NullsanzProCore;
 
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {
       throw new Error('Nullsanz Media Core tidak termuat.');
@@ -353,23 +468,241 @@
 
     let info = null;
     let hdr = null;
+    let limits = null;
     try {
       info = core.inspectMediaInfo(original);
-      validateMediaInfo(info);
+      limits = validateMediaInfo(info);
       hdr = detectHdrProfile(original, info);
     } catch (inspectError) {
-      stage(requestId, 'preparing', 'Universal Safe…', 35, 'Struktur kompleks • seluruh file dipertahankan byte-identical');
-      return passthroughResult(original, data, inspectError?.message || 'container/codec non-standar', info, hdr, sniff);
+      if (selectedEngine !== '4.0-pro') {
+        stage(requestId, 'preparing', 'Universal Safe…', 35, 'Struktur kompleks • seluruh file dipertahankan byte-identical');
+        return passthroughResult(original, data, inspectError?.message || 'container/codec non-standar', info, hdr, sniff);
+      }
+      info = {
+        width: 0,
+        height: 0,
+        codec: sniff.codec || '',
+        codecFamily: sniff.codecFamily || sniff.codec || '',
+        averageFps: 0,
+        maxFps: 0,
+        videoSamples: 0,
+        audioCodec: sniff.audioCodec || '',
+        audioSamples: 0,
+        fragmented: !!sniff.fragmented,
+        tracks: []
+      };
+      hdr = detectHdrProfile(original, info);
+      limits = { fps: 0, uhdHighLoad: false };
     }
 
-    const limits = validateMediaInfo(info);
     const loadText = limits.uhdHighLoad
       ? `UHD/High-FPS • ${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`
-      : `${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`;
+      : (info.width && info.height
+        ? `${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`
+        : `${sniff.container || 'video'} • auto-detect`);
     const hdrText = hdr?.label && hdr.label !== 'SDR / unknown' ? ` • ${hdr.label}` : '';
+    let fallbackWarning = '';
+
+    async function runEngine4Ultra(fallbackReason = '') {
+      if (!fastStart40?.patchContainer || !fastStart40?.verifyUntouched) {
+        throw new Error('Nullsanz Core 4.0 Ultra (FastStart) tidak termuat.');
+      }
+      stage(
+        requestId,
+        'preparing',
+        'Nullsanz Engine 4.0 Ultra…',
+        34,
+        `${loadText}${hdrText} • True FastStart Single-Audio`
+      );
+      await new Promise((r) => setTimeout(r, 0));
+
+      stage(requestId, 'patching', 'Apply FastStart Patch 4.0 Ultra…', 66, 'Bitstream video 100% utuh • Timescale 1000 • Tail Cleaner');
+      const ultraRes = fastStart40.patchContainer(original);
+      const output = asU8(ultraRes.bytes);
+      if (output.byteLength < 1024) throw new Error('Engine 4.0 Ultra: output kosong.');
+
+      stage(requestId, 'finalizing', 'Verifikasi Engine 4.0 Ultra…', 90, 'Cek FastStart + video/audio + HDR/Dolby Vision');
+      if (!fastStart40.verifyUntouched(original, output)) {
+        throw new Error('Verifikasi Engine 4.0 Ultra gagal: data video/audio berubah.');
+      }
+
+      const outputInfo = core.inspectMediaInfo(output);
+      const outputHdr = detectHdrProfile(output, outputInfo);
+      const mediaContract = verifyMediaContract(info, outputInfo, hdr, outputHdr);
+
+      return {
+        output,
+        info,
+        outputInfo,
+        hdr,
+        outputHdr,
+        report: {
+          ...(ultraRes.report || {}),
+          engine: fallbackReason
+            ? 'Nullsanz Ultra 4.0 (FastStart) [Auto-Fallback]'
+            : 'Nullsanz Ultra 4.0 (FastStart)',
+          passthrough: false,
+          fallbackReason: fallbackReason || undefined,
+          sourceResolution: `${info.width}x${info.height}`,
+          outputResolution: `${outputInfo.width}x${outputInfo.height}`,
+          resolutionPreserved: true,
+          fpsPreserved: true,
+          sourceCodecFamily: String(info.codecFamily || '').toLowerCase(),
+          outputCodecFamily: String(outputInfo.codecFamily || '').toLowerCase(),
+          sourceCodecTag: String(info.codec || '').toLowerCase(),
+          outputCodecTag: String(outputInfo.codec || '').toLowerCase(),
+          codecPreserved: true,
+          codecSampleEntryPreserved: true,
+          hdrPreserved: true,
+          dolbyVisionPreserved: hdr?.dolbyVision ? outputHdr?.dolbyVision === true : null
+        },
+        verification: {
+          ok: true,
+          videoBitstreamByteIdentical: true,
+          originalAudioTrackPreserved: true,
+          clonedAudioTrackAdded: false,
+          ...mediaContract
+        },
+        mode: 'nullsanz-ultra-4.0-faststart',
+        passthrough: false,
+        outputName: '',
+        outputMime: 'video/mp4',
+        inputBytes: original.byteLength,
+        warning: fallbackReason ? `Auto-Fallback ke 4.0 Ultra: ${fallbackReason}` : ''
+      };
+    }
+
+    async function runEngine4Pro(fallbackReason = '') {
+      if (!pro40?.buildProFfmpegArgs || !pro40?.patchProMp4 || !pro40?.verifyProMp4) {
+        throw new Error('Nullsanz Core 4.0 Pro tidak termuat.');
+      }
+
+      let sourceAmve = null;
+      try {
+        sourceAmve = pro40.extractAmveFromSource ? pro40.extractAmveFromSource(original) : null;
+      } catch (_) {
+        sourceAmve = null;
+      }
+
+      let proMeta = {
+        width: info?.width || 1080,
+        height: info?.height || 1920,
+        durationSec: info?.durationSec || 0,
+        avgFps: info?.averageFps || info?.maxFps || 60,
+        fpsNum: 60000,
+        fpsDen: 1001,
+        videoBitrateBps: 0,
+        hdrMode: hdr?.hlg ? 'hlg' : (hdr?.hdr10 ? 'pq' : 'sdr'),
+        hasAudio: (info?.audioSamples || 0) > 0 || !!sniff?.audioCodec
+      };
+      try {
+        proMeta = pro40.inspectMp4Source(original);
+      } catch (_) {}
+
+      const resolutionMode = data.resolutionMode === 'native' ? 'native' : '1080p';
+      const ffmpegArgs = pro40.buildProFfmpegArgs('__INPUT__', '__OUTPUT__', proMeta, {
+        wasm: true,
+        preset: 'veryfast',
+        threads: 1,
+        resolutionMode
+      });
+
+      stage(
+        requestId,
+        'preparing',
+        'Nullsanz Engine 4.0 Pro…',
+        16,
+        `${loadText}${hdrText} • Offline FFmpeg WASM (${resolutionMode === 'native' ? 'Native Res' : '1080p Safe'})`
+      );
+      const inputExt = extensionOf(data.fileName) || (sniff.container === 'mov' ? 'mov' : 'mp4');
+      const encodedBuffer = await runOfflineFfmpegJob(requestId, 'PRO_ENCODE', owned(original), inputExt, ffmpegArgs);
+      const encodedBytes = asU8(encodedBuffer);
+      if (encodedBytes.byteLength < 1024) {
+        throw new Error('Engine 4.0 Pro: output FFmpeg WASM kosong.');
+      }
+
+      stage(requestId, 'patching', 'Finalisasi Dual-Audio 4.0 Pro…', 89, 'Inject Dual-stsd + Silent Tail + Clean FastStart');
+      const patched = pro40.patchProMp4(encodedBytes, {
+        sourceAmve,
+        artist: 'Nullsanz Studio 4.0 Pro'
+      });
+      const output = asU8(patched);
+      const proCheck = pro40.verifyProMp4(output);
+      if (!proCheck?.ok) {
+        throw new Error(`Engine 4.0 Pro: verifikasi gagal (${proCheck?.reason || 'unknown'}).`);
+      }
+
+      let outputInfo = info;
+      try {
+        outputInfo = core.inspectMediaInfo(output);
+      } catch (_) {
+        try {
+          const m = pro40.inspectMp4Source(output);
+          outputInfo = {
+            width: m.width,
+            height: m.height,
+            codec: 'avc1',
+            codecFamily: 'avc',
+            averageFps: m.avgFps,
+            maxFps: m.avgFps,
+            videoSamples: 0,
+            audioCodec: 'mp4a',
+            audioSamples: 0,
+            fragmented: false,
+            tracks: []
+          };
+        } catch (_) {}
+      }
+      const outputHdr = detectHdrProfile(output, outputInfo);
+
+      return {
+        output,
+        info,
+        outputInfo,
+        hdr,
+        outputHdr,
+        report: {
+          engine: fallbackReason
+            ? 'Nullsanz Pro 4.0 (Offline FFmpeg WASM) [Auto-Fallback]'
+            : 'Nullsanz Pro 4.0 (Offline FFmpeg WASM)',
+          passthrough: false,
+          reencoded: true,
+          resolutionMode,
+          fallbackReason: fallbackReason || undefined,
+          sourceResolution: `${info.width || proMeta.width || '?'}x${info.height || proMeta.height || '?'}`,
+          outputResolution: `${outputInfo.width || '?'}x${outputInfo.height || '?'}`,
+          sourceCodecFamily: String(info.codecFamily || '').toLowerCase(),
+          outputCodecFamily: String(outputInfo.codecFamily || 'avc').toLowerCase(),
+          sourceCodecTag: String(info.codec || '').toLowerCase(),
+          outputCodecTag: String(outputInfo.codec || 'avc1').toLowerCase()
+        },
+        verification: proCheck,
+        mode: 'nullsanz-pro-4.0-wasm',
+        passthrough: false,
+        outputName: '',
+        outputMime: 'video/mp4',
+        inputBytes: original.byteLength,
+        warning: fallbackReason ? `Auto-Fallback ke 4.0 Pro: ${fallbackReason}` : ''
+      };
+    }
+
+    // ================= ENGINE 4.0 PRO (INLINE OFFLINE FFMPEG WASM) =================
+    if (selectedEngine === '4.0-pro') {
+      return await runEngine4Pro('');
+    }
+
+    // ================= ENGINE 4.0 ULTRA (TRUE FASTSTART SINGLE-AUDIO) =================
+    if (selectedEngine === '4.0-ultra') {
+      try {
+        return await runEngine4Ultra('');
+      } catch (ultraErr) {
+        fallbackWarning = `4.0 Ultra fallback → 3.0.5 (${ultraErr?.message || ultraErr})`;
+        stage(requestId, 'preparing', 'Auto-Fallback ke Engine 3.0.5…', 38, ultraErr?.message || 'Mencoba Engine 3.0.5 Sentinel');
+        selectedEngine = '3.0.5';
+      }
+    }
 
     // ================= ENGINE 4.0 DIRECT (sl-sr DUAL-AUDIO / DUAL-STSD) =================
-    let fallbackWarning = '';
     if (selectedEngine === '4.0' && direct40?.patchDirectBytes) {
       try {
         stage(requestId, 'preparing', 'Nullsanz Engine 4.0 Direct…', 32, `${loadText}${hdrText} • Dual-Audio sl-sr`);
@@ -426,10 +759,25 @@
           warning: ''
         };
       } catch (directErr) {
-        // Smart Auto-Fallback to Engine 3.0.5 (64-bit Sentinel) for mono/non-AAC/edts edge cases
-        fallbackWarning = `4.0 Direct fallback → 3.0.5 (${directErr?.message || directErr})`;
-        stage(requestId, 'preparing', 'Auto-Fallback ke Engine 3.0.5…', 38, directErr?.message || 'Mencoba Engine 3.0.5 Sentinel');
-        selectedEngine = '3.0.5';
+        const directReason = directErr?.message || String(directErr);
+        stage(requestId, 'preparing', 'Auto-Fallback ke Engine 4.0 Ultra…', 34, `${directReason} • mencoba True FastStart`);
+        try {
+          return await runEngine4Ultra(`4.0 Direct (${directReason})`);
+        } catch (ultraErr) {
+          const ultraReason = ultraErr?.message || String(ultraErr);
+          if (typeof document !== 'undefined' && getFfmpegBridgeUrl() && pro40?.buildProFfmpegArgs) {
+            try {
+              stage(requestId, 'preparing', 'Auto-Fallback ke Engine 4.0 Pro…', 36, `${ultraReason} • encoding FFmpeg lokal`);
+              return await runEngine4Pro(`4.0 Direct & Ultra (${ultraReason})`);
+            } catch (proErr) {
+              fallbackWarning = `4.0 Cascade → 3.0.5 (${proErr?.message || proErr})`;
+            }
+          } else {
+            fallbackWarning = `4.0 Cascade → 3.0.5 (${ultraReason})`;
+          }
+          stage(requestId, 'preparing', 'Auto-Fallback ke Engine 3.0.5…', 38, fallbackWarning);
+          selectedEngine = '3.0.5';
+        }
       }
     }
 

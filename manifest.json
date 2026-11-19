@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Nullsanz TikTok Studio — Patcher 4.0 Pro, SoundSafe & CoverSafe",
-  "version": "4.0.0",
-  "description": "Nullsanz TikTok Studio v4.0 Pro (Dual Engine 4.0 Direct sl-sr & 4.0 Pro Offline FFmpeg WASM + CoverSafe & SoundSafe Anti-Softban) by nullsanz / null.cloud",
+  "name": "Nullsanz TikTok Studio — Inline Tri-Engine 4.0 / Ultra / Pro, SoundSafe & CoverSafe",
+  "version": "4.1.0",
+  "description": "Nullsanz TikTok Studio v4.1 Final (Inline 4.0 Direct sl-sr, 4.0 Ultra FastStart & 4.0 Pro Offline FFmpeg WASM + CoverSafe & SoundSafe Anti-Softban) by nullsanz / null.cloud",
   "minimum_chrome_version": "116",
   "host_permissions": [
     "https://www.tiktok.com/*",
@@ -18,7 +18,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Nullsanz TikTok Studio v4.0 Pro",
+    "default_title": "Nullsanz TikTok Studio v4.1 Final",
     "default_icon": {
       "16": "icon16.png",
       "32": "icon32.png",
@@ -53,6 +53,8 @@
         "orion-compat.js",
         "nullsanz-mp4-core.js",
         "nullsanz-slsr-engine.js",
+        "nullsanz-faststart-core.js",
+        "nullsanz-pro-core.js",
         "nullsanz-engine.js",
         "processor.js",
         "content.js"
@@ -66,10 +68,13 @@
       "resources": [
         "processor.html",
         "processor.js",
+        "ffmpeg-bridge.html",
+        "ffmpeg-bridge.js",
         "patcher.html",
         "patcher.js",
         "nullsanz-mp4-core.js",
         "nullsanz-slsr-engine.js",
+        "nullsanz-faststart-core.js",
         "nullsanz-pro-core.js",
         "nullsanz-engine.js",
         "ffmpeg-worker.js",

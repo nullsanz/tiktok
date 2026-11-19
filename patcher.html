@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nullsanz Patcher Studio — v4.0 Direct &amp; Pro Offline</title>
+  <title>Nullsanz Patcher Studio — v4.1 Final Tri-Engine Offline</title>
   <style>
     :root {
       --bg: #f4ede1;
@@ -234,7 +234,7 @@
     .btn-reselect:hover { border-color: var(--green); color: var(--green-dark); }
 
     /* Engine Selector */
-    .engine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .engine-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     @media (max-width: 520px) { .engine-grid { grid-template-columns: 1fr; } }
     .engine-card-btn {
       text-align: left; border: 1.5px solid var(--border); background: var(--panel-inner);
@@ -410,7 +410,7 @@
   <div class="studio-wrap">
     <div class="top-strip">
       <div class="strip-left">
-        <span>Nullsanz TikTok Studio • Patcher 4.0 &amp; Pro Offline</span>
+        <span>Nullsanz TikTok Studio • Inline &amp; Standalone v4.1 Final</span>
         <span class="pill-tag">ZERO WATERMARK</span>
         <span class="pill-tag gold">UNLIMITED 2 GB</span>
       </div>
@@ -423,9 +423,9 @@
       <div class="brand-group">
         <img src="icon128.png" alt="Nullsanz Logo" class="brand-logo-img">
         <div class="brand-titles">
-          <h1>Nullsanz Patcher Studio <span class="badge-ver">v4.0 PRO</span></h1>
+          <h1>Nullsanz Patcher Studio <span class="badge-ver">v4.1 FINAL</span></h1>
           <div class="brand-meta">
-            <span><span class="pulse-dot"></span> Offline FFmpeg WASM + Dual-Audio sl-sr Ready</span>
+            <span><span class="pulse-dot"></span> Tri-Engine 4.0 Direct / 4.0 Ultra / 4.0 Pro Offline Ready</span>
             <span>•</span>
             <span>AMVE + HDR Color Matrix + FastStart</span>
           </div>
@@ -492,6 +492,14 @@
                 <span class="engine-tag">INSTAN</span>
               </div>
               <span class="engine-sub">Zero re-encode • Dual-Audio sl-sr • 8K/4K/HDR utuh</span>
+            </button>
+
+            <button type="button" class="engine-card-btn" data-engine="4.0-ultra" aria-pressed="false">
+              <div class="engine-card-top">
+                <span class="engine-name">4.0 Ultra</span>
+                <span class="engine-tag">FASTSTART</span>
+              </div>
+              <span class="engine-sub">True FastStart + Tail Cleaner • Single-Audio Universal</span>
             </button>
 
             <button type="button" class="engine-card-btn" data-engine="4.0-pro" aria-pressed="false">
@@ -633,6 +641,7 @@
 
   <script src="nullsanz-mp4-core.js"></script>
   <script src="nullsanz-slsr-engine.js"></script>
+  <script src="nullsanz-faststart-core.js"></script>
   <script src="nullsanz-pro-core.js"></script>
   <script src="patcher.js"></script>
 </body>

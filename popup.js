@@ -1,16 +1,20 @@
 (() => {
   'use strict';
 
-  const SUPPORTED_ENGINES = ['4.0', '3.0.5', '3.0', '2.1.5'];
+  const SUPPORTED_ENGINES = ['4.0', '4.0-ultra', '4.0-pro', '3.0.5', '3.0', '2.1.5'];
   const ENGINE_HINTS = {
     id: {
       '4.0': '4.0 Direct (sl-sr)',
+      '4.0-ultra': '4.0 Ultra (FastStart)',
+      '4.0-pro': '4.0 Pro (FFmpeg)',
       '3.0.5': '3.0.5 Sentinel',
       '3.0': '3.0 HEVC/DV',
       '2.1.5': '2.1.5 Classic'
     },
     en: {
       '4.0': '4.0 Direct (sl-sr)',
+      '4.0-ultra': '4.0 Ultra (FastStart)',
+      '4.0-pro': '4.0 Pro (FFmpeg)',
       '3.0.5': '3.0.5 Sentinel',
       '3.0': '3.0 HEVC/DV',
       '2.1.5': '2.1.5 Classic'
@@ -19,11 +23,11 @@
 
   const I18N = {
     id: {
-      engineReady: 'Patcher 4.0 & Pro Core Ready',
+      engineReady: 'Inline Tri-Engine 4.0 / Ultra / Pro Ready',
       appName: 'Nullsanz Studio',
-      appSub: 'Dual Engine 4.0 Direct + FFmpeg WASM Offline',
+      appSub: 'Inline 4.0 Direct • 4.0 Ultra FastStart • 4.0 Pro FFmpeg',
       devSub: 'Develop by nullsanz / null.cloud',
-      btnOpenPatcher: 'Buka Studio Patcher (4.0 & Pro)',
+      btnOpenPatcher: 'Buka Studio Standalone (Batch / Offline)',
       btnOpenTikTok: 'Buka TikTok Studio ↗',
       enginePicker: 'Inline Auto-Patch Engine',
       uploaderLabel: 'Inline Auto-Patcher',
@@ -33,27 +37,28 @@
       soundSafeOn: 'AKTIF (ANTI-MUTE + COVER)',
       soundSafeOff: 'NONAKTIF',
       cleanStatus: 'Zero Watermark • Anti-Softban',
-      accordionFeatures: 'Fitur Utama v4.0 Pro',
+      accordionFeatures: 'Fitur Utama v4.1 Final',
       accordionGuide: 'Panduan Penggunaan',
-      chipFeatures: '18 FITUR',
+      chipFeatures: '19 FITUR',
       chipGuide: '5 TAHAP',
-      footerSub: 'Nullsanz TikTok Studio • v4.0.0 Pro',
+      footerSub: 'Nullsanz TikTok Studio • v4.1.0 Final',
       features: [
         'Engine 4.0 Direct (sl-sr) Dual-Audio tanpa re-encode',
-        'Engine 4.0 Pro FFmpeg WASM 100% Offline (Zero CDN)',
-        'Hybrid Workflow: Inline Auto-Patcher + Standalone Studio',
+        'Engine 4.0 Ultra FastStart (Single-Audio Universal & Cepat Review)',
+        'Engine 4.0 Pro FFmpeg WASM Inline langsung di TikTok Studio (Zero CDN)',
+        'Smart 3-Stage Auto-Fallback (4.0 Direct → 4.0 Ultra → 4.0 Pro)',
         'CoverSafe Snapshot & Restore (Thumbnail Anti-Korup)',
-        'SoundSafe Anti-Mute & Music Info Preservation',
+        'SoundSafe Anti-Mute & Sinkronisasi has_original_audio Pintar',
         'Anti-Softban Protection (Tanpa paksa post_type/144fps)',
         'AMVE Metadata & HDR Color Matrix (HLG / PQ / BT.709)',
-        'Dual-Audio Track (Track 1 Dual-stsd + Track 2 Original)',
-        'Hingga 8K 60 FPS • 4K 120 FPS (Bitstream Utuh)',
-        'Smart Auto-Fallback (4.0 Direct → 3.0.5 Sentinel)',
+        'Hingga 8K 60 FPS • 4K 120 FPS (Bitstream Utuh di 4.0/Ultra)',
+        'Kompatibel Penuh Audio Mono, MOV QuickTime v1 & iOS Safari',
         'Dukungan H.264, H.265 / HEVC & Dolby Vision',
-        'Support MP4, MOV, MKV, WebM (via 4.0 Pro)',
+        'Support MP4, MOV, MKV, WebM langsung via 4.0 Pro Inline',
+        'Hybrid Workflow: Langsung di TikTok Studio + Studio Standalone',
         'Zero Watermark & Zero Third-Party Mention',
         'Zero Password Gate (Full Unlimited hingga 2 GB)',
-        'FastStart moov Optimizer (4.0 Pro)',
+        'True FastStart moov Optimizer + Trailing WebKit Guard',
         '100% Proses Lokal di Perangkat (Privasi Penuh)',
         'Dukungan Desktop & Android (Quetta / Kiwi / Lemur)',
         'Tema Light / Dark & Bahasa Indonesia / Inggris'
@@ -62,22 +67,22 @@
         {
           num: 1,
           title: 'Ekspor Video Master',
-          desc: 'Ekspor video dalam 1080p, 4K, atau 8K • 60 FPS dengan audio AAC-LC stereo dari CapCut, Premiere, Alight Motion, atau DaVinci.'
+          desc: 'Ekspor video dalam 1080p, 4K, atau 8K • 60 FPS dari CapCut, Premiere, Alight Motion, atau DaVinci (audio stereo, mono, maupun MOV didukung).'
         },
         {
           num: 2,
-          title: 'Pilih Jalur Cepat (Inline) atau Studio Pro',
-          desc: 'Untuk upload 1-klik: langsung buka TikTok Studio dengan Inline Auto-Patcher Engine 4.0 aktif. Untuk akun limit FPS / file non-AAC: buka Studio Patcher → pilih 4.0 Pro (FFmpeg).'
+          title: 'Pilih Engine Langsung di TikTok Studio',
+          desc: 'Semua engine kini jalan langsung di TikTok Studio tanpa pindah tab: 4.0 Direct (sl-sr), 4.0 Ultra (FastStart ringan & anti-stuck review), atau 4.0 Pro (FFmpeg WASM inline).'
         },
         {
           num: 3,
-          title: 'Kalibrasi 100% Lokal & Offline',
-          desc: 'Engine 4.0 Direct mem-patch container secara instan tanpa menyentuh bitstream video. Engine 4.0 Pro melakukan encode H.264/AAC lokal + AMVE + Dual Audio Track.'
+          title: 'Smart Auto-Fallback Otomatis',
+          desc: 'Jika memilih 4.0 Direct pada file mono/MOV, sistem otomatis beralih ke 4.0 Ultra (tanpa re-encode), lalu 4.0 Pro bila kontainer terfragmentasi.'
         },
         {
           num: 4,
           title: 'Aktifkan SoundSafe & CoverSafe',
-          desc: 'Pastikan toggle SoundSafe & CoverSafe AKTIF agar cover/thumbnail pilihanmu aman 100% dan audio/musik tidak terkena mute saat publish.'
+          desc: 'Pastikan toggle SoundSafe & CoverSafe AKTIF agar cover/thumbnail pilihanmu aman 100% dan has_original_audio akurat sesuai musik yang terpasang.'
         },
         {
           num: 5,
@@ -87,11 +92,11 @@
       ]
     },
     en: {
-      engineReady: 'Patcher 4.0 & Pro Core Ready',
+      engineReady: 'Inline Tri-Engine 4.0 / Ultra / Pro Ready',
       appName: 'Nullsanz Studio',
-      appSub: 'Dual Engine 4.0 Direct + Offline FFmpeg WASM',
+      appSub: 'Inline 4.0 Direct • 4.0 Ultra FastStart • 4.0 Pro FFmpeg',
       devSub: 'Develop by nullsanz / null.cloud',
-      btnOpenPatcher: 'Open Patcher Studio (4.0 & Pro)',
+      btnOpenPatcher: 'Open Standalone Studio (Batch / Offline)',
       btnOpenTikTok: 'Open TikTok Studio ↗',
       enginePicker: 'Inline Auto-Patch Engine',
       uploaderLabel: 'Inline Auto-Patcher',
@@ -101,27 +106,28 @@
       soundSafeOn: 'ACTIVE (ANTI-MUTE + COVER)',
       soundSafeOff: 'DISABLED',
       cleanStatus: 'Zero Watermark • Anti-Softban',
-      accordionFeatures: 'Key Features v4.0 Pro',
+      accordionFeatures: 'Key Features v4.1 Final',
       accordionGuide: 'Step-by-Step Guide',
-      chipFeatures: '18 FEATURES',
+      chipFeatures: '19 FEATURES',
       chipGuide: '5 STEPS',
-      footerSub: 'Nullsanz TikTok Studio • v4.0.0 Pro',
+      footerSub: 'Nullsanz TikTok Studio • v4.1.0 Final',
       features: [
         'Engine 4.0 Direct (sl-sr) Dual-Audio Zero Re-encode',
-        'Engine 4.0 Pro Offline FFmpeg WASM (Zero CDN)',
-        'Hybrid Workflow: Inline Auto-Patcher + Standalone Studio',
+        'Engine 4.0 Ultra FastStart (Single-Audio Universal & Fast Review)',
+        'Engine 4.0 Pro FFmpeg WASM Inline inside TikTok Studio (Zero CDN)',
+        'Smart 3-Stage Auto-Fallback (4.0 Direct → 4.0 Ultra → 4.0 Pro)',
         'CoverSafe Snapshot & Restore (Thumbnail Protection)',
-        'SoundSafe Anti-Mute & Music Info Preservation',
+        'SoundSafe Anti-Mute & Smart has_original_audio Sync',
         'Anti-Softban Protection (No forced post_type/144fps)',
         'AMVE Metadata & HDR Color Matrix (HLG / PQ / BT.709)',
-        'Dual-Audio Track (Track 1 Dual-stsd + Track 2 Original)',
-        'Up to 8K 60 FPS • 4K 120 FPS (Bitstream Untouched)',
-        'Smart Auto-Fallback (4.0 Direct → 3.0.5 Sentinel)',
+        'Up to 8K 60 FPS • 4K 120 FPS (Bitstream Untouched in 4.0/Ultra)',
+        'Full Mono Audio, QuickTime v1 MOV & iOS WebKit Compatibility',
         'H.264, H.265 / HEVC & Dolby Vision Support',
-        'MP4, MOV, MKV, WebM Support (via 4.0 Pro)',
+        'MP4, MOV, MKV, WebM Support directly via 4.0 Pro Inline',
+        'Hybrid Workflow: Inline TikTok Studio + Standalone Studio',
         'Zero Watermark & Zero Third-Party Mentions',
         'Zero Password Gate (Full Unlimited up to 2 GB)',
-        'FastStart moov Optimizer (4.0 Pro)',
+        'True FastStart moov Optimizer + Trailing WebKit Guard',
         '100% Local Processing (Complete Privacy)',
         'Desktop & Android Support (Quetta / Kiwi / Lemur)',
         'Light / Dark Mode & Bilingual ID / EN'
@@ -130,22 +136,22 @@
         {
           num: 1,
           title: 'Export Master Video',
-          desc: 'Export your video in 1080p, 4K, or 8K • 60 FPS with stereo AAC-LC audio from CapCut, Premiere, Alight Motion, or DaVinci.'
+          desc: 'Export your video in 1080p, 4K, or 8K • 60 FPS from CapCut, Premiere, Alight Motion, or DaVinci (stereo, mono, or MOV all supported).'
         },
         {
           num: 2,
-          title: 'Choose Inline Fast-Path or Pro Studio',
-          desc: 'For 1-click upload: open TikTok Studio with Inline Auto-Patcher Engine 4.0 ON. For FPS-limited accounts or non-AAC files: open Patcher Studio → choose 4.0 Pro (FFmpeg).'
+          title: 'Pick Engine Directly in TikTok Studio',
+          desc: 'Every engine now runs inline in TikTok Studio without switching tabs: 4.0 Direct (sl-sr), 4.0 Ultra (lightweight FastStart), or 4.0 Pro (FFmpeg WASM inline).'
         },
         {
           num: 3,
-          title: '100% Local & Offline Calibration',
-          desc: 'Engine 4.0 Direct patches the container instantly without touching video bitstream. Engine 4.0 Pro encodes locally with H.264/AAC + AMVE + Dual Audio Track.'
+          title: 'Automatic Smart 3-Stage Fallback',
+          desc: 'If 4.0 Direct hits mono/MOV inputs, it automatically steps down to lossless 4.0 Ultra first, then 4.0 Pro if needed.'
         },
         {
           num: 4,
           title: 'Keep SoundSafe & CoverSafe Active',
-          desc: 'Keep SoundSafe & CoverSafe ON so your custom cover/thumbnail stays intact and audio/music stays protected from muting.'
+          desc: 'Keep SoundSafe & CoverSafe ON so custom covers stay intact and has_original_audio matches whether TikTok library audio is attached.'
         },
         {
           num: 5,

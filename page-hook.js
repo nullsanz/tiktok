@@ -253,7 +253,8 @@
         if (!info || typeof info !== 'object') continue;
 
         setIfDifferent(info, 'cloud_edit_is_use_video_canvas', false);
-        setIfDifferent(info, 'has_original_audio', 1);
+        const itemHasMusic = !!(info.music_info?.music_id_string || info.music_info?.id);
+        setIfDifferent(info, 'has_original_audio', itemHasMusic ? 0 : 1);
         setIfDifferent(info, 'psg_vsp_aud', true);
         setIfDifferent(info, 'video_quality_score', 1.0);
         setIfDifferent(info, 'is_high_quality', true);

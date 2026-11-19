@@ -3,14 +3,22 @@
   if (window.__NULLSANZ_METHOD_V40__) return;
   window.__NULLSANZ_METHOD_V40__ = true;
 
-  const SUPPORTED_ENGINES = ['4.0', '3.0.5', '3.0', '2.1.5'];
+  const SUPPORTED_ENGINES = ['4.0', '4.0-ultra', '4.0-pro', '3.0.5', '3.0', '2.1.5'];
   const ENGINE_LABELS = {
     '4.0': '4.0 Direct (sl-sr)',
+    '4.0-ultra': '4.0 Ultra (FastStart)',
+    '4.0-pro': '4.0 Pro (FFmpeg)',
     '3.0.5': '3.0.5 Sentinel',
     '3.0': '3.0 HEVC/DV',
     '2.1.5': '2.1.5 Classic'
   };
   const MAX_FILE_BYTES = 2000 * 1024 * 1024; // 2 GB Unlimited Local
+
+  const isIOS = () => {
+    const ua = String(navigator?.userAgent || '');
+    return /iP(hone|ad|od)/.test(ua) ||
+           (navigator?.platform === 'MacIntel' && (navigator?.maxTouchPoints || 0) > 1);
+  };
 
   let processorReady = false;
   let pageHookReady = false;
@@ -30,7 +38,8 @@
   // Synced user settings
   let uploaderEnabled = true;
   let soundSafeEnabled = true;
-  let selectedEngine = '4.0';
+  let selectedEngine = isIOS() ? '4.0-ultra' : '4.0';
+  let resolutionMode = '1080p';
 
   const VIDEO_EXT_RE = /\.(mp4|m4v|mov|webm|mkv|avi|mpg|mpeg|ts|mts|m2ts|3gp|3g2|wmv|flv)$/i;
   const isVideoFile = (f) => !!f && (String(f.type || '').toLowerCase().startsWith('video/') || VIDEO_EXT_RE.test(f.name || ''));
@@ -43,12 +52,6 @@
            path.includes('/tiktokstudio') ||
            path.includes('/creator') ||
            path.includes('/upload');
-  };
-
-  const isIOS = () => {
-    const ua = String(navigator?.userAgent || '');
-    return /iP(hone|ad|od)/.test(ua) ||
-           (navigator?.platform === 'MacIntel' && (navigator?.maxTouchPoints || 0) > 1);
   };
 
   function openPatcherStudio(mode = '') {
@@ -115,7 +118,7 @@
         </span>
         <span class="nullsanz-spec" style="color:#a49a89">${shieldTxt}</span>
       `;
-      pill.title = 'Nullsanz Studio v4.0 • Klik icon ekstensi untuk mengubah mode';
+      pill.title = 'Nullsanz Studio v4.1 • Klik icon ekstensi untuk mengubah mode';
       return;
     }
 
@@ -124,11 +127,11 @@
     pill.innerHTML = `
       <span class="nullsanz-line1">
         <span class="nullsanz-dot"></span>
-        <span>Nullsanz Studio v4.0 • Engine ${engLabel}</span>
+        <span>Nullsanz Studio v4.1 • Engine ${engLabel}</span>
       </span>
       <span class="nullsanz-spec">8K60/4K120 • ${shieldBadge} • Zero Watermark</span>
     `;
-    pill.title = `Nullsanz TikTok Studio v4.0 Pro | Engine ${engLabel} | ${shieldBadge} | Full Unlimited`;
+    pill.title = `Nullsanz TikTok Studio v4.1 Final | Engine ${engLabel} | ${shieldBadge} | Full Unlimited`;
   }
 
   function refreshZoneEngineUI() {
@@ -162,12 +165,15 @@
 
   // Load & watch chrome.storage.local
   try {
-    chrome.storage?.local?.get(['uploaderActive', 'soundSafeActive', 'nullsanzEngine'], (res) => {
+    chrome.storage?.local?.get(['uploaderActive', 'soundSafeActive', 'nullsanzEngine', 'nullsanzResolutionMode'], (res) => {
       if (res) {
         if (res.uploaderActive !== undefined) uploaderEnabled = !!res.uploaderActive;
         if (res.soundSafeActive !== undefined) soundSafeEnabled = !!res.soundSafeActive;
         if (res.nullsanzEngine && SUPPORTED_ENGINES.includes(res.nullsanzEngine)) {
           selectedEngine = res.nullsanzEngine;
+        }
+        if (res.nullsanzResolutionMode === 'native' || res.nullsanzResolutionMode === '1080p') {
+          resolutionMode = res.nullsanzResolutionMode;
         }
       }
       syncSettingsToPage();
@@ -181,6 +187,9 @@
       if (changes.soundSafeActive !== undefined) soundSafeEnabled = !!changes.soundSafeActive.newValue;
       if (changes.nullsanzEngine?.newValue && SUPPORTED_ENGINES.includes(changes.nullsanzEngine.newValue)) {
         selectedEngine = changes.nullsanzEngine.newValue;
+      }
+      if (changes.nullsanzResolutionMode?.newValue) {
+        resolutionMode = changes.nullsanzResolutionMode.newValue === 'native' ? 'native' : '1080p';
       }
       syncSettingsToPage();
       refreshPillUI();
@@ -678,7 +687,7 @@
     overlay.innerHTML = `
       <div id="nullsanz-process-card">
         <img src="${chrome.runtime.getURL('icon128.png')}" alt="Nullsanz Logo" style="width:54px;height:54px;border-radius:14px;margin:0 auto 12px;display:block;box-shadow:0 6px 18px rgba(0,0,0,0.18);">
-        <div id="nullsanz-process-logo">Nullsanz TikTok Studio v4.0</div>
+        <div id="nullsanz-process-logo">Nullsanz TikTok Studio v4.1</div>
         <div id="nullsanz-process-title">Membaca video…</div>
         <div id="nullsanz-process-detail">TikTok ditahan sampai proses kalibrasi selesai.</div>
         <div id="nullsanz-process-track"><div id="nullsanz-process-bar"></div></div>
@@ -817,12 +826,14 @@
       <div class="nullsanz-zone-card" id="nullsanzZoneCard">
         <div class="nullsanz-idle-content">
           <img src="${chrome.runtime.getURL('icon48.png')}" class="nullsanz-card-logo-img" alt="Nullsanz Logo">
-          <div class="nullsanz-card-title">Nullsanz TikTok Studio v4.0 Pro</div>
+          <div class="nullsanz-card-title">Nullsanz TikTok Studio v4.1 Final</div>
           <div class="nullsanz-card-tag">✦ ENGINE 4.0 DIRECT (SL-SR) • SOUNDSAFE &amp; COVERSAFE ✦</div>
-          <div class="nullsanz-card-prompt" id="nullsanzCardPrompt">Tarik &amp; letakkan video di sini atau pilih engine di bawah untuk kalibrasi otomatis</div>
+          <div class="nullsanz-card-prompt" id="nullsanzCardPrompt">Tarik &amp; letakkan video di sini atau pilih engine di bawah untuk kalibrasi langsung di TikTok Studio</div>
 
           <div class="nullsanz-engine-bar" role="group" aria-label="Pilih Nullsanz Engine">
             <button type="button" class="nullsanz-eng-chip ${selectedEngine === '4.0' ? 'active' : ''}" data-nullsanz-engine="4.0" aria-pressed="${selectedEngine === '4.0'}">4.0 Direct</button>
+            <button type="button" class="nullsanz-eng-chip ${selectedEngine === '4.0-ultra' ? 'active' : ''}" data-nullsanz-engine="4.0-ultra" aria-pressed="${selectedEngine === '4.0-ultra'}">4.0 Ultra</button>
+            <button type="button" class="nullsanz-eng-chip ${selectedEngine === '4.0-pro' ? 'active' : ''}" data-nullsanz-engine="4.0-pro" aria-pressed="${selectedEngine === '4.0-pro'}">4.0 Pro</button>
             <button type="button" class="nullsanz-eng-chip ${selectedEngine === '3.0.5' ? 'active' : ''}" data-nullsanz-engine="3.0.5" aria-pressed="${selectedEngine === '3.0.5'}">3.0.5</button>
             <button type="button" class="nullsanz-eng-chip ${selectedEngine === '3.0' ? 'active' : ''}" data-nullsanz-engine="3.0" aria-pressed="${selectedEngine === '3.0'}">3.0</button>
             <button type="button" class="nullsanz-eng-chip ${selectedEngine === '2.1.5' ? 'active' : ''}" data-nullsanz-engine="2.1.5" aria-pressed="${selectedEngine === '2.1.5'}">2.1.5</button>
@@ -837,8 +848,8 @@
               </svg>
               <span>Pilih Video (Auto-Patch)</span>
             </button>
-            <button type="button" class="nullsanz-pro-btn" id="nullsanzOpenProStudioBtn" title="Buka Studio Patcher 4.0 Pro dengan FFmpeg WASM Offline">
-              <span>⚡ Studio 4.0 Pro</span>
+            <button type="button" class="nullsanz-pro-btn" id="nullsanzOpenProStudioBtn" title="Buka Studio Standalone untuk download/preview offline">
+              <span>⚡ Studio Standalone</span>
             </button>
           </div>
 
@@ -986,14 +997,19 @@
           fileName: file.name || 'video.mp4',
           fileType: file.type || '',
           fileSize: file.size || buffer.byteLength,
-          engine: selectedEngine
+          engine: selectedEngine,
+          resolutionMode
         }, (label, progress, detail) => {
           setStage(label, progress, detail);
         });
 
         const safeOriginalName = (file.name || 'video.mp4').replace(/[\\/:*?"<>|]+/g, '_');
         const base = safeOriginalName.replace(/\.[^.]+$/, '');
-        const suffix = result.mode === 'nullsanz-direct-4.0-slsr' ? '_Nullsanz_v4' : '_NullsanzStudio';
+        const suffix = result.mode === 'nullsanz-direct-4.0-slsr'
+          ? '_Nullsanz_v4'
+          : (result.mode === 'nullsanz-ultra-4.0-faststart'
+            ? '_Nullsanz_Ultra'
+            : (result.mode === 'nullsanz-pro-4.0-wasm' ? '_Nullsanz_Pro' : '_NullsanzStudio'));
         const finalName = result.passthrough
           ? (result.outputName || safeOriginalName)
           : `${base}${suffix}.mp4`;
@@ -1048,7 +1064,8 @@
         fileName: file.name || 'video.mp4',
         fileType: file.type || '',
         fileSize: file.size || buffer.byteLength,
-        engine: selectedEngine
+        engine: selectedEngine,
+        resolutionMode
       }, '*', [buffer]);
     } catch (e) {
       delete input.dataset.nullsanzProcessing;
@@ -1147,12 +1164,17 @@
       try {
         const safeOriginalName = (originalFile.name || 'video.mp4').replace(/[\\/:*?"<>|]+/g, '_');
         const base = safeOriginalName.replace(/\.[^.]+$/, '');
-        const suffix = data.mode === 'nullsanz-direct-4.0-slsr' ? '_Nullsanz_v4' : '_NullsanzStudio';
+        const suffix = data.mode === 'nullsanz-direct-4.0-slsr'
+          ? '_Nullsanz_v4'
+          : (data.mode === 'nullsanz-ultra-4.0-faststart'
+            ? '_Nullsanz_Ultra'
+            : (data.mode === 'nullsanz-pro-4.0-wasm' ? '_Nullsanz_Pro' : '_NullsanzStudio'));
         const finalName = data.passthrough ? (data.outputName || safeOriginalName) : `${base}${suffix}.mp4`;
         const finalType = data.passthrough ? (data.outputMime || originalFile.type || 'application/octet-stream') : (data.outputMime || 'video/mp4');
         const patched = new File([data.buffer], finalName, { type: finalType, lastModified: originalFile.lastModified || Date.now() });
-        if (!data.passthrough && patched.size < originalFile.size) {
-          throw new Error(`SIZE GUARD: output ${fmtBytes(patched.size)} lebih kecil dari source ${fmtBytes(originalFile.size)}.`);
+        const strictLargerCheck = data.mode === 'nullsanz-direct-4.0-slsr' || data.mode === 'nullsanz-core-resolution-codec-safe';
+        if (!data.passthrough && ((strictLargerCheck && patched.size < originalFile.size) || patched.size < 1024)) {
+          throw new Error(`SIZE GUARD: output ${fmtBytes(patched.size)} tidak valid (source ${fmtBytes(originalFile.size)}).`);
         }
         setStage('Siap upload', 100, `${data.mode || 'processed'} • ${fmtBytes(data.inputBytes)} → ${fmtBytes(data.outputBytes)}`);
         let targetInput = input.isConnected !== false ? input : findActiveFileInput();
