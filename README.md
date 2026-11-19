@@ -1,84 +1,54 @@
-# ⚡ Nullsanz TikTok Studio v3.0.5
-> **Local Video Calibration, Multi-Engine Ultra HD & Lossless Anti-Compress for TikTok Studio**  
-> *Developed by [nullsanz](https://github.com/nullsanz) & [null.cloud](https://null.cloud)*
+# Nullsanz TikTok Studio — Patcher 4.0 Pro, SoundSafe & CoverSafe
+
+Ekstensi browser (**Chrome / Edge / Brave / Android Quetta / Kiwi / Lemur**) untuk kalibrasi container MP4/MOV **100% lokal & offline** guna menjaga ketajaman video Ultra HD, 60–120 FPS, HDR/Dolby Vision, Cover/Thumbnail aman (**CoverSafe**), dan Anti-Mute Audio (**SoundSafe**) saat mengunggah ke TikTok Studio.
 
 ---
 
-## 🌟 Fitur Utama v3.0.5
+## ✨ Fitur Utama v4.0.0 Pro
 
-- **🚀 Multi-Engine System (2.1.5, 3.0 & 3.0.5):**
-  - **Engine 2.1.5:** Standard Local Container Calibration (Universal Legacy).
-  - **Engine 3.0:** Native **Dolby Vision** (`dvh1`, `dvhe`) & HEVC (`hvc1`, `hev1`) Verification!
-  - **Engine 3.0.5 (NEW):** Versi terbaru dengan **Anti-Softban Protection** & Fast 4-Pass Remuxer!
-- **🛡️ Anti-Softban AB Hook (Zero 0-Views Penalty):**
-  - Mengeliminasi override agresif pada AB Test endpoints TikTok yang sebelumnya dapat memicu shadow-flag/bot detection.
-  - Mempertahankan bypass Cloud Canvas secara native dan aman (`cloud_edit_is_use_video_canvas: false`, `psg_vsp_aud: true`).
-- **⚡ Fast 4-Pass Container Remuxer:**
-  - Optimasi perhitungan offset moov menjadi 4 iterasi cepat.
-  - Menghilangkan beban pemindaian byte-by-byte pada video besar sehingga browser tidak pernah freeze saat memproses file ratusan MB.
-- **📺 Resolusi Resmi Hingga 8K 60FPS & 4K 120FPS:**
-  - Hingga 4K (4096×2160) @ 120 FPS.
-  - Di atas 4K hingga 8K (8192×4320) @ 60 FPS (Ultra Smooth)!
-- **✨ 100% Bersih (Zero Watermark):**
-  - Seluruh injeksi watermark otomatis, auto-tag `@mention`, dan prefix teks bawaan telah dibersihkan total. Caption postingan Anda tetap 100% murni sesuai yang Anda ketik.
-- **🔓 Password Gate Dihilangkan (Full Unlimited):**
-  - Akses terbuka secara default tanpa batasan password atau ukuran file.
-- **🎵 Sound Safe Anti-Mute:** Original Audio dan musik TikTok tetap terjaga utuh dengan parameter audio `has_original_audio: 1` dan `psg_vsp_aud: true`.
-- **🔒 Privasi 100% Lokal:** Pemrosesan dijalankan langsung di browser lokal Anda tanpa upload ke server luar.
-
----
-
-## 📱 Panduan Mutlak Upload di Android (Anti-Kompres & Bebas Eror)
-
-> ⚠️ **ATURAN MUTLAK:** JANGAN upload lewat aplikasi TikTok HP biasa karena server TikTok otomatis mengompres paksa video jadi 720p 30 FPS dan memburamkan visual.
-
-1. **Gunakan Browser yang Mendukung Ekstensi Chrome:**
-   - Unduh **Quetta Browser**, **Lemur Browser**, atau **Kiwi Browser** dari Google Play Store.
-2. **Download File Ekstensi Ini:**
-   - Klik tombol hijau **Code** di atas, lalu pilih **Download ZIP** (atau klik [Direct Download ZIP](https://github.com/nullsanz/tiktok/archive/refs/heads/main.zip)).
-   - Ekstrak file ZIP tersebut di memori internal HP Anda.
-3. **Pasang Ekstensi di Browser:**
-   - Buka menu ekstensi di browser (atau ketik `chrome://extensions` di address bar).
-   - Aktifkan toggle **Developer Mode** (Mode Pengembang).
-   - Klik tombol **Load unpacked** / **from (.zip/.crx/.user.js)**, lalu pilih folder hasil ekstrak tadi.
-4. **Buka TikTok Studio dalam Mode Desktop:**
-   - Aktifkan centang **Situs Desktop / Desktop Site** pada pengaturan browser Anda.
-   - Buka link resmi [TikTok Studio Upload](https://www.tiktok.com/tiktokstudio/upload).
-   - Login ke akun TikTok Anda.
-   - Dropzone kustom **Nullsanz Studio** akan muncul otomatis. Unggah video Anda di sana dan video akan diproses tanpa kompresi server!
+- **Hybrid Workflow (2 Jalur Unggah):**
+  1. **Inline Auto-Patcher langsung di TikTok Studio:** Pilih atau drag & drop video langsung di halaman upload TikTok Studio, pilih engine (`4.0 Direct` / `3.0.5` / `3.0` / `2.1.5`) langsung dari kartu upload — otomatis dikalibrasi 1-klik sebelum masuk ke TikTok.
+  2. **Standalone Offline Patcher Studio (`patcher.html`):** Buka dari popup ekstensi untuk mengakses **Engine `4.0 Direct (sl-sr)`**, **Engine `4.0 Pro` (FFmpeg WASM 100% Offline)**, dan **Engine `3.0.5 Sentinel`** lengkap dengan live video preview, deteksi HDR/AMVE, telemetri ukuran & delta, serta terminal log.
+- **Engine `4.0 Direct` (`sl-sr` Dual-Audio / Dual-`stsd`):**
+  - Zero re-encoding — bitstream video **8K 60fps / 4K 120fps / H.264 / HEVC / HDR10 / HLG / Dolby Vision** dipertahankan **100% byte-identical**.
+  - Membangun **Dual Audio Track** (Track #1 Dual-`stsd` dengan silent tail AAC-LC + Track #2 kloning shared offset) tanpa menggeser offset video asli.
+  - Dilengkapi **Smart Auto-Fallback** di mode inline (otomatis turun aman ke Engine `3.0.5 Sentinel` jika input non-AAC stereo / mono).
+- **Engine `4.0 Pro` (FFmpeg WASM 100% Offline):**
+  - Membawa bundel `@ffmpeg/core@0.12.10` (`ffmpeg-core.js` + `ffmpeg-core.wasm.gz`) **100% lokal di dalam ekstensi — tanpa CDN, tanpa `eval()`, tanpa koneksi internet**.
+  - Ideal untuk akun yang kena pembatasan FPS atau file input non-standar (MOV/MKV/WebM/audio non-AAC).
+  - Mempertahankan metadata **AMVE** (termasuk ekstraksi dari HEVC SEI), **HDR Color Matrix (BT.2020 HLG / PQ / BT.709)**, FastStart `moov`, serta Dual-Audio 3-track terverifikasi.
+  - Pilihan target resolusi **1080p Fast (WASM)** atau **Native Resolution (Keep Source)**.
+- **CoverSafe & SoundSafe Protection (`page-hook.js` v4.0 — `world: "MAIN"`):**
+  - **CoverSafe Snapshot & Restore:** Melindungi seluruh field `cover / thumbnail / poster` pada payload publish agar thumbnail pilihan pengguna tidak pernah korup atau ter-reset.
+  - **SoundSafe Anti-Mute:** Normalisasi `vedit_common_info`, `psg_vsp_aud`, `has_original_audio`, dan `music_info.music_id_string` (toggleable dari Popup).
+  - **Anti-Softban Protection:** Tidak memanipulasi `post_type = 3`, `enter_post_page_from = 1`, atau memalsukan `144 FPS` yang memicu shadow-flag / Cloud Canvas 30fps downgrade pada akun besar.
+- **100% Clean & Full Unlimited:**
+  - **Zero Watermark & Zero Third-Party Mention** (caption & metadata `udta` bersih).
+  - **Zero Password Gate** (langsung aktif tanpa kunci, limit hingga **2 GB**).
+  - Tema **Light / Dark** & Bilingual **ID / EN**.
 
 ---
 
-## 💻 Panduan Instalasi di PC / Laptop (Chrome, Edge, Brave)
+## 📱 Cara Install & Pakai
 
-1. Unduh atau clone repository ini:
-   ```bash
-   git clone https://github.com/nullsanz/tiktok.git
-   ```
-   *Atau klik tombol **Code** > **Download ZIP** dan ekstrak foldernya.*
-2. Buka browser Chromium favorit Anda:
-   - **Google Chrome:** Buka `chrome://extensions`
-   - **Microsoft Edge:** Buka `edge://extensions`
-   - **Brave Browser:** Buka `brave://extensions`
-3. Aktifkan toggle **Developer Mode** (Mode Pengembang).
-4. Klik tombol **Load unpacked** (Muat yang belum dibongkar).
-5. Pilih folder repository ini.
-6. Buka [TikTok Studio Upload](https://www.tiktok.com/tiktokstudio/upload) dan unggah video Anda seperti biasa. Pill dan banner **Nullsanz TikTok Studio** akan aktif otomatis di layar upload!
+### 💻 Desktop (Chrome / Edge / Brave)
+1. Download / clone repo ini, lalu ekstrak jika berbentuk ZIP.
+2. Buka `chrome://extensions/` → aktifkan **Developer mode (Mode pengembang)**.
+3. Klik **Load unpacked (Muat yang belum dibuka)** → pilih folder `/tiktok`.
+4. Klik icon **Nullsanz Studio v4.0 Pro**:
+   - **Cara Cepat (1-Klik Inline):** Pastikan **Inline Auto-Patcher** & **SoundSafe & CoverSafe** aktif, pilih engine `4.0`, lalu klik **Buka TikTok Studio ↗** dan langsung pilih/drop video.
+   - **Cara Pro (Offline FFmpeg Studio):** Klik **Buka Studio Patcher (4.0 & Pro)**, pilih video, pilih `4.0 Direct` atau `4.0 Pro`, download hasil kalibrasi, lalu upload ke TikTok Studio.
 
----
-
-## 🛠️ File Arsitektur
-
-- `manifest.json` — Konfigurasi ekstensi Chrome Manifest V3 (v3.0.0).
-- `page-hook.js` — Script MAIN world yang mencegat `JSON.stringify`, `fetch`, dan `XMLHttpRequest` untuk menonaktifkan canvas recompression TikTok & membersihkan watermark.
-- `content.js` — Content script UI yang memasang HUD status, upload dropzone, progress bar, selector engine, dan komunikasi patcher.
-- `processor.js` & `processor.html` — Background worker sandbox untuk kalibrasi FastStart MP4 container.
-- `nullsanz-engine.js` — Multi-Engine verification module (Dolby Vision, HEVC, and multi-profile layout checks).
-- `nullsanz-mp4-core.js` — Engine biner pembedah atom dan box MP4 (ftyp, moov, mdat) secara lokal dengan 6-Pass Safe.
-- `popup.html` & `popup.js` — Dashboard interaktif bilingual (ID/EN) untuk kontrol fitur dan tema.
-- `icons/` & assets — Icon dan branding resmi Nullsanz.
+### 📱 Android (Quetta / Lemur / Kiwi Browser)
+1. Install **Quetta Browser** (rekomendasi), **Lemur Browser**, atau **Kiwi Browser**.
+2. Buka menu **Extensions** → aktifkan **Developer mode** → **Load / Import** folder/ZIP ekstensi ini.
+3. Buka `https://www.tiktok.com/tiktokstudio/upload` dalam mode **Desktop Site** untuk Inline Auto-Patcher, atau buka **Studio Patcher (4.0 & Pro)** dari popup ekstensi.
 
 ---
 
-## 📜 Lisensi
-MIT License © 2026 Nullsanz.
+## 🔒 Privasi & Keamanan
+Seluruh proses parsing MP4, penyusunan Dual-Audio Track, maupun encoding FFmpeg WASM berjalan **100% lokal & offline di perangkat pengguna**. Tidak ada file video, kredensial, atau data pribadi yang dikirim ke server eksternal.
+
+---
+
+**Develop by nullsanz / null.cloud** • `v4.0.0 Pro`

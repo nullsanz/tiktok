@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nullsanz Patcher Studio — v4.0 Direct &amp; Pro Offline</title>
+  <style>
+    :root {
+      --bg: #f4ede1;
+      --bg-grad: radial-gradient(circle at 12% 8%, rgba(72, 164, 89, 0.14) 0%, transparent 45%),
+                 radial-gradient(circle at 88% 92%, rgba(194, 149, 71, 0.14) 0%, transparent 45%),
+                 #f4ede1;
+      --panel: rgba(255, 255, 255, 0.90);
+      --panel-solid: #ffffff;
+      --panel-inner: #f6efe3;
+      --border: rgba(198, 184, 164, 0.55);
+      --border-strong: rgba(72, 164, 89, 0.5);
+      --text: #27221a;
+      --text-secondary: #574d3f;
+      --muted: #8c806e;
+      --green: #48a459;
+      --green-dark: #2d6b3a;
+      --green-light: #d6e8d9;
+      --green-glow: rgba(72, 164, 89, 0.32);
+      --gold: #c29547;
+      --gold-light: #f5eedf;
+      --danger: #d94b4b;
+      --danger-bg: #fdecec;
+      --accent-grad: linear-gradient(135deg, #52b865 0%, #2f753e 100%);
+      --terminal-bg: #171512;
+      --terminal-head: #201d19;
+      --terminal-text: #dfd8cc;
+      --shadow-sm: 0 2px 10px rgba(40, 34, 26, 0.05);
+      --shadow-md: 0 12px 32px rgba(40, 34, 26, 0.08);
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #110f0c;
+      --bg-grad: radial-gradient(circle at 12% 8%, rgba(84, 190, 104, 0.12) 0%, transparent 45%),
+                 radial-gradient(circle at 88% 92%, rgba(212, 167, 89, 0.10) 0%, transparent 45%),
+                 #110f0c;
+      --panel: rgba(26, 23, 19, 0.90);
+      --panel-solid: #1b1813;
+      --panel-inner: #231f19;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(84, 190, 104, 0.55);
+      --text: #f5efe4;
+      --text-secondary: #b4a996;
+      --muted: #847967;
+      --green: #54be68;
+      --green-dark: #7de290;
+      --green-light: rgba(84, 190, 104, 0.18);
+      --green-glow: rgba(84, 190, 104, 0.35);
+      --gold: #d4a759;
+      --gold-light: rgba(212, 167, 89, 0.16);
+      --danger: #f26c6c;
+      --danger-bg: rgba(242, 108, 108, 0.14);
+      --accent-grad: linear-gradient(135deg, #54be68 0%, #307a40 100%);
+      --terminal-bg: #0c0b09;
+      --terminal-head: #151310;
+      --terminal-text: #dfd8cc;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    html, body {
+      min-height: 100vh;
+      font-family: var(--font);
+      background: var(--bg-grad);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .studio-wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 20px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Strip */
+    .top-strip {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding: 8px 14px; border-radius: 14px;
+      background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      font-size: 11.5px; font-weight: 700; color: var(--text-secondary);
+    }
+    .strip-left { display: flex; align-items: center; gap: 8px; }
+    .strip-right { display: flex; align-items: center; gap: 8px; }
+    .pill-tag {
+      font-family: var(--mono); font-size: 10px; font-weight: 800;
+      padding: 3px 8px; border-radius: 999px;
+      background: var(--green-light); color: var(--green-dark); border: 1px solid var(--border-strong);
+    }
+    .pill-tag.gold { background: var(--gold-light); color: var(--gold); border-color: var(--border); }
+    .theme-toggle-btn {
+      border: 1px solid var(--border); background: var(--panel-inner); color: var(--text);
+      border-radius: 10px; padding: 5px 10px; font-family: var(--font); font-size: 11px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .theme-toggle-btn:hover { border-color: var(--green); color: var(--green-dark); }
+
+    /* Header */
+    .studio-header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+      padding: 16px 20px; border-radius: 20px;
+      background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-md);
+    }
+    .brand-group { display: flex; align-items: center; gap: 14px; }
+    .brand-logo-img {
+      width: 52px; height: 52px; border-radius: 14px; object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.16), 0 0 14px var(--green-glow);
+    }
+    .brand-titles h1 {
+      font-size: 20px; font-weight: 800; letter-spacing: -0.4px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .badge-ver {
+      font-family: var(--mono); font-size: 11px; font-weight: 800;
+      background: var(--accent-grad); color: #fff; padding: 2px 8px; border-radius: 8px;
+    }
+    .brand-meta {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-top: 4px; font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+      display: inline-block; box-shadow: 0 0 8px var(--green);
+    }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn-header-link {
+      text-decoration: none; border: 1px solid var(--border); background: var(--panel-inner);
+      color: var(--text); padding: 8px 13px; border-radius: 11px;
+      font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-header-link:hover { border-color: var(--green); color: var(--green-dark); }
+
+    /* Main 2-Column Grid */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 880px) {
+      .studio-grid { grid-template-columns: 1fr; }
+    }
+
+    .col-stack { display: flex; flex-direction: column; gap: 14px; }
+
+    .panel-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow-md);
+    }
+    .panel-title-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .panel-label {
+      font-size: 12px; font-weight: 800; letter-spacing: 0.4px;
+      text-transform: uppercase; color: var(--text);
+    }
+    .panel-badge {
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: 7px;
+      background: var(--panel-inner); border: 1px solid var(--border); color: var(--text-secondary);
+    }
+
+    /* Upload Dropzone */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 16px;
+      background: var(--panel-inner); padding: 26px 18px; text-align: center;
+      cursor: pointer; transition: all 0.22s ease;
+    }
+    .upload-zone:hover, .upload-zone.over {
+      border-color: var(--green); background: var(--panel-solid);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+    .upload-zone.loaded { border-style: solid; border-color: var(--border-strong); padding: 16px; }
+    .upload-icon {
+      width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 10px;
+      background: var(--green-light); color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .upload-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+    .upload-file {
+      display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 8px;
+      background: var(--panel-solid); border: 1px solid var(--border); color: var(--text-secondary);
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    #fi { display: none; }
+
+    /* Mini Video Preview */
+    #videoPreviewWrap { display: none; margin-top: 14px; text-align: left; }
+    .video-preview-box {
+      position: relative; border-radius: 14px; overflow: hidden;
+      background: #0d0c0a; border: 1px solid var(--border);
+      max-height: 250px; display: flex; align-items: center; justify-content: center;
+    }
+    .video-preview-player {
+      width: 100%; max-height: 250px; object-fit: contain; display: block;
+    }
+    .btn-preview-toggle {
+      position: absolute; right: 10px; bottom: 10px;
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(16, 15, 13, 0.78); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .video-meta-bar {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      margin-top: 10px;
+    }
+    .meta-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .meta-pill {
+      font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+      padding: 3px 8px; border-radius: 7px;
+      background: var(--panel-solid); border: 1px solid var(--border); color: var(--text-secondary);
+    }
+    .meta-pill.green { background: var(--green-light); border-color: var(--border-strong); color: var(--green-dark); }
+    .meta-pill.gold { background: var(--gold-light); color: var(--gold); }
+    .btn-reselect {
+      border: 1px solid var(--border); background: var(--panel-solid); color: var(--text);
+      padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-reselect:hover { border-color: var(--green); color: var(--green-dark); }
+
+    /* Engine Selector */
+    .engine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    @media (max-width: 520px) { .engine-grid { grid-template-columns: 1fr; } }
+    .engine-card-btn {
+      text-align: left; border: 1.5px solid var(--border); background: var(--panel-inner);
+      border-radius: 13px; padding: 11px 12px; cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; gap: 4px; color: var(--text);
+    }
+    .engine-card-btn:hover { border-color: var(--green); }
+    .engine-card-btn.active {
+      background: var(--green-light); border-color: var(--green);
+      box-shadow: 0 4px 14px var(--green-glow);
+    }
+    .engine-card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .engine-name { font-size: 12.5px; font-weight: 800; color: var(--text); }
+    .engine-tag {
+      font-family: var(--mono); font-size: 9px; font-weight: 800;
+      padding: 2px 6px; border-radius: 5px; background: var(--panel-solid); color: var(--green-dark);
+    }
+    .engine-sub { font-size: 10.5px; line-height: 1.35; color: var(--text-secondary); }
+    .engine-desc-box {
+      margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+      background: var(--panel-inner); border: 1px solid var(--border);
+      font-size: 11.5px; line-height: 1.5; color: var(--text-secondary);
+    }
+
+    /* Pro Resolution Selector */
+    .pro-options-row {
+      display: none; margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .pro-options-row.show { display: block; }
+    .opt-label { font-size: 11px; font-weight: 800; color: var(--text); margin-bottom: 7px; display: block; }
+    .seg-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .seg-btn {
+      border: 1px solid var(--border); background: var(--panel-inner); color: var(--text-secondary);
+      border-radius: 10px; padding: 8px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+    }
+    .seg-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+    /* Fallback Alert */
+    .fallback-box {
+      display: none; margin-top: 10px; padding: 11px 13px; border-radius: 12px;
+      background: var(--danger-bg); border: 1px solid var(--danger);
+      color: var(--text); font-size: 11.5px; line-height: 1.45;
+    }
+    .fallback-box.show { display: flex; flex-direction: column; gap: 8px; }
+    .btn-switch-pro {
+      align-self: flex-start; border: none; background: var(--accent-grad); color: #fff;
+      padding: 7px 12px; border-radius: 9px; font-size: 11.5px; font-weight: 800; cursor: pointer;
+    }
+
+    /* Progress & Success */
+    .progress-card {
+      display: none; background: var(--panel); border: 1px solid var(--border-strong);
+      border-radius: 14px; padding: 13px 15px;
+    }
+    .progress-card.show { display: block; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .progress-track { height: 8px; border-radius: 999px; background: var(--panel-inner); overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: var(--accent-grad); transition: width 0.2s ease; }
+
+    .success-banner {
+      display: none; align-items: center; gap: 12px;
+      background: var(--green-light); border: 1.5px solid var(--green);
+      border-radius: 14px; padding: 12px 15px;
+    }
+    .success-banner.show { display: flex; }
+    .success-icon-box {
+      width: 36px; height: 36px; border-radius: 10px; background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .success-text h4 { font-size: 13.5px; font-weight: 800; color: var(--green-dark); }
+    .success-text p { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* Action Buttons */
+    .action-buttons { display: flex; flex-direction: column; gap: 9px; }
+    .btn {
+      width: 100%; border-radius: 13px; padding: 13px 16px; font-family: var(--font);
+      font-size: 13.5px; font-weight: 800; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      transition: all 0.2s ease; border: none;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+    .btn-primary { background: var(--accent-grad); color: #fff; box-shadow: 0 8px 24px var(--green-glow); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+    .btn-success { display: none; background: #1e7c44; color: #fff; }
+    .btn-success.show { display: inline-flex; }
+    .btn-studio-run { display: none; background: var(--panel-solid); border: 1.5px solid var(--green); color: var(--green-dark); }
+    .btn-studio-run.show { display: inline-flex; }
+    .btn-ghost { display: none; background: var(--panel-inner); border: 1px solid var(--border); color: var(--text-secondary); }
+    .btn-ghost.show { display: inline-flex; }
+
+    /* Telemetry Stats */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 15px; padding: 13px 14px; box-shadow: var(--shadow-sm);
+    }
+    .stat-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); }
+    .stat-val { font-family: var(--mono); font-size: 17px; font-weight: 800; color: var(--text); margin-top: 6px; }
+    .stat-val.empty { color: var(--muted); }
+    .stat-delta { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--green-dark); margin-top: 4px; display: none; }
+
+    /* Terminal */
+    .terminal-card {
+      border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+      background: var(--terminal-bg); box-shadow: var(--shadow-md);
+      display: flex; flex-direction: column;
+    }
+    .terminal-head {
+      background: var(--terminal-head); padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .terminal-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: #f1ece1;
+    }
+    .terminal-tools { display: flex; align-items: center; gap: 6px; }
+    .btn-term-action {
+      border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06);
+      color: #d6cfc2; border-radius: 7px; padding: 4px 8px;
+      font-family: var(--mono); font-size: 10px; font-weight: 700; cursor: pointer;
+    }
+    .btn-term-action:hover { border-color: #54be68; color: #8ef0a0; }
+    .terminal-body {
+      padding: 13px 14px; height: 340px; overflow-y: auto;
+      font-family: var(--mono); font-size: 11px; line-height: 1.55; color: var(--terminal-text);
+    }
+    .terminal-body .info { color: #b7d7f7; }
+    .terminal-body .ok { color: #6ee787; }
+    .terminal-body .warn { color: #fbbf24; }
+    .terminal-body .err { color: #f87171; }
+
+    /* Process Overlay Dialog */
+    #processOverlay {
+      position: fixed; inset: 0; z-index: 9999; display: none;
+      align-items: center; justify-content: center; padding: 20px;
+      background: rgba(14, 13, 11, 0.72); backdrop-filter: blur(10px);
+    }
+    #processOverlay.show { display: flex; }
+    .process-dialog {
+      width: min(470px, 100%); background: var(--panel-solid);
+      border: 1.5px solid var(--border-strong); border-radius: 20px; padding: 22px 24px;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.45);
+    }
+    .proc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .proc-brand { font-family: var(--mono); font-size: 10px; font-weight: 800; color: var(--green-dark); letter-spacing: 0.5px; }
+    .proc-title { font-size: 16px; font-weight: 800; color: var(--text); margin-top: 2px; }
+    .proc-pct { font-family: var(--mono); font-size: 20px; font-weight: 800; color: var(--green); }
+    .proc-detail { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; min-height: 18px; }
+    .proc-track { height: 8px; border-radius: 999px; background: var(--panel-inner); overflow: hidden; margin-bottom: 12px; }
+    .proc-bar { height: 100%; width: 0%; background: var(--accent-grad); transition: width 0.2s ease; }
+    .proc-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
+    .proc-step {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 800;
+      padding: 5px 4px; border-radius: 7px;
+      background: var(--panel-inner); color: var(--muted); border: 1px solid var(--border);
+    }
+    .proc-step.active { background: var(--green-light); color: var(--green-dark); border-color: var(--green); }
+    .proc-note { margin-top: 12px; text-align: center; font-size: 10.5px; color: var(--muted); }
+
+    .studio-footer {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding: 12px 16px; border-radius: 14px;
+      background: var(--panel); border: 1px solid var(--border);
+      font-size: 11.5px; color: var(--text-secondary);
+    }
+    .studio-footer a { color: var(--green-dark); font-weight: 700; text-decoration: none; }
+    .studio-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="studio-wrap">
+    <div class="top-strip">
+      <div class="strip-left">
+        <span>Nullsanz TikTok Studio • Patcher 4.0 &amp; Pro Offline</span>
+        <span class="pill-tag">ZERO WATERMARK</span>
+        <span class="pill-tag gold">UNLIMITED 2 GB</span>
+      </div>
+      <div class="strip-right">
+        <button type="button" class="theme-toggle-btn" id="btnThemeToggle">Ganti Tema</button>
+      </div>
+    </div>
+
+    <header class="studio-header">
+      <div class="brand-group">
+        <img src="icon128.png" alt="Nullsanz Logo" class="brand-logo-img">
+        <div class="brand-titles">
+          <h1>Nullsanz Patcher Studio <span class="badge-ver">v4.0 PRO</span></h1>
+          <div class="brand-meta">
+            <span><span class="pulse-dot"></span> Offline FFmpeg WASM + Dual-Audio sl-sr Ready</span>
+            <span>•</span>
+            <span>AMVE + HDR Color Matrix + FastStart</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a class="btn-header-link" href="https://www.tiktok.com/tiktokstudio/upload" target="_blank" rel="noopener noreferrer">Buka TikTok Studio ↗</a>
+        <a class="btn-header-link" href="https://github.com/nullsanz/tiktok" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+      </div>
+    </header>
+
+    <main class="studio-grid">
+      <!-- LEFT COLUMN -->
+      <section class="col-stack">
+        <div class="panel-card">
+          <div class="panel-title-bar">
+            <span class="panel-label">Media Source</span>
+            <span class="panel-badge">MP4 • MOV • MKV • WEBM</span>
+          </div>
+
+          <div class="upload-zone" id="drop">
+            <div class="upload-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="upload-title" id="uploadTitle">Pilih atau Seret Video ke Sini</div>
+            <div class="upload-desc" id="uploadDesc">4.0 Direct: MP4 (AVC/HEVC + AAC Stereo) • 4.0 Pro: Semua format video</div>
+            <div class="upload-file" id="uploadFile">Belum ada file dipilih</div>
+
+            <div id="videoPreviewWrap">
+              <div class="video-preview-box">
+                <video id="videoPreviewPlayer" class="video-preview-player" muted playsinline loop></video>
+                <button type="button" class="btn-preview-toggle" id="btnPreviewPlay" title="Putar / Jeda Preview">
+                  <svg id="playIconSvg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </button>
+              </div>
+              <div class="video-meta-bar">
+                <div class="meta-pills">
+                  <span class="meta-pill green" id="metaResolution">---</span>
+                  <span class="meta-pill" id="metaFps">---</span>
+                  <span class="meta-pill" id="metaDuration">---</span>
+                  <span class="meta-pill gold" id="metaHdr">SDR</span>
+                </div>
+                <button type="button" class="btn-reselect" id="btnChangeVideo">Ganti Video</button>
+              </div>
+            </div>
+          </div>
+          <input type="file" id="fi" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv,.avi,.mpeg,.mpg,.ts,.mts,.m2ts,.3gp,.3g2,.flv,.wmv">
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-title-bar">
+            <span class="panel-label">Nullsanz Engine Selector</span>
+            <span class="panel-badge" id="engineHint">4.0 Direct (sl-sr)</span>
+          </div>
+
+          <div class="engine-grid" role="group" aria-label="Nullsanz Engine">
+            <button type="button" class="engine-card-btn active" data-engine="4.0" aria-pressed="true">
+              <div class="engine-card-top">
+                <span class="engine-name">4.0 Direct</span>
+                <span class="engine-tag">INSTAN</span>
+              </div>
+              <span class="engine-sub">Zero re-encode • Dual-Audio sl-sr • 8K/4K/HDR utuh</span>
+            </button>
+
+            <button type="button" class="engine-card-btn" data-engine="4.0-pro" aria-pressed="false">
+              <div class="engine-card-top">
+                <span class="engine-name">4.0 Pro</span>
+                <span class="engine-tag">FFMPEG</span>
+              </div>
+              <span class="engine-sub">Offline WASM H.264/AAC + AMVE + HDR + FastStart</span>
+            </button>
+
+            <button type="button" class="engine-card-btn" data-engine="3.0.5" aria-pressed="false">
+              <div class="engine-card-top">
+                <span class="engine-name">3.0.5</span>
+                <span class="engine-tag">SENTINEL</span>
+              </div>
+              <span class="engine-sub">64-bit Duration Sentinel klasik • Dolby Vision safe</span>
+            </button>
+          </div>
+
+          <div class="engine-desc-box" id="engineModeDesc">
+            Patch langsung tanpa encoding ulang (metode Dual-Audio sl-sr). Proses sangat cepat dan mempertahankan bitstream video 8K 60fps / 4K 120fps / HDR asli 100% utuh.
+          </div>
+
+          <div class="pro-options-row" id="proOptionsRow">
+            <span class="opt-label">Target Resolusi 4.0 Pro (FFmpeg WASM Offline)</span>
+            <div class="seg-pair" role="group" aria-label="Pro Resolution">
+              <button type="button" class="seg-btn active" data-res-mode="1080p">1080p Fast (Recommended)</button>
+              <button type="button" class="seg-btn" data-res-mode="native">Native Resolution (Keep Source)</button>
+            </div>
+          </div>
+
+          <div class="fallback-box" id="fallbackBox">
+            <div id="fallbackReason">Input tidak memenuhi syarat 4.0 Direct.</div>
+            <button type="button" class="btn-switch-pro" id="btnSwitchToPro">⚡ Switch ke 4.0 Pro (Auto-Convert FFmpeg)</button>
+          </div>
+        </div>
+
+        <div class="progress-card" id="progressCard">
+          <div class="progress-header">
+            <span id="progressLabel">Memproses kalibrasi video…</span>
+            <span id="progressPct" style="font-family:var(--mono);">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="success-banner" id="successBanner">
+          <div class="success-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div class="success-text">
+            <h4>Kalibrasi Berhasil 100% Diverifikasi!</h4>
+            <p id="successSub">Container &amp; Dual-Audio terverifikasi bersih tanpa watermark pihak ketiga.</p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button type="button" class="btn btn-primary" id="btnGo" disabled>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span id="btnGoLabel">Mulai Patch Cepat (4.0 Direct)</span>
+          </button>
+
+          <a class="btn btn-success" id="btnDl" href="#">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download Video Hasil Kalibrasi</span>
+          </a>
+
+          <a class="btn btn-studio-run" id="btnGoStudio" href="https://www.tiktok.com/tiktokstudio/upload" target="_blank" rel="noopener noreferrer">
+            <span>Lanjut Upload ke TikTok Studio ↗</span>
+          </a>
+
+          <button type="button" class="btn btn-ghost" id="btnReset">Reset &amp; Kalibrasi Video Baru</button>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <section class="col-stack">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Original Size</div>
+            <div class="stat-val empty" id="sOrig">---</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Final Size</div>
+            <div class="stat-val empty" id="sSize">---</div>
+            <div class="stat-delta" id="sDelta"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Engine &amp; Tracks</div>
+            <div class="stat-val empty" id="sMode">---</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Verification</div>
+            <div class="stat-val empty" id="sVerify">---</div>
+          </div>
+        </div>
+
+        <div class="terminal-card">
+          <div class="terminal-head">
+            <div class="terminal-title"><span>&gt;_ Activity Terminal</span></div>
+            <div class="terminal-tools">
+              <button type="button" class="btn-term-action" id="btnCopyLog">Salin</button>
+              <button type="button" class="btn-term-action" id="btnClearLog">Hapus</button>
+            </div>
+          </div>
+          <div class="terminal-body" id="logBody">
+            <div class="info">[System] Nullsanz Patcher Studio v4.0 Pro siap (100% lokal &amp; offline).</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="studio-footer">
+      <span>Nullsanz TikTok Studio v4.0.0 Pro • 100% Client-Side Local Processing</span>
+      <span>Develop by <a href="https://github.com/nullsanz/tiktok" target="_blank" rel="noopener noreferrer">nullsanz / null.cloud</a></span>
+    </footer>
+  </div>
+
+  <!-- Live Processing Modal -->
+  <div id="processOverlay" aria-live="polite" aria-busy="true">
+    <div class="process-dialog" role="dialog" aria-label="Nullsanz Processing">
+      <div class="proc-head">
+        <div>
+          <div class="proc-brand">NULLSANZ STUDIO • LOCAL ENGINE</div>
+          <div class="proc-title" id="procTitle">Menyiapkan video…</div>
+        </div>
+        <div class="proc-pct" id="procPct">0%</div>
+      </div>
+      <div class="proc-detail" id="procDetail">Memuat video ke memori lokal…</div>
+      <div class="proc-track"><div class="proc-bar" id="procBar"></div></div>
+      <div class="proc-steps">
+        <span class="proc-step" id="stepRead">READ</span>
+        <span class="proc-step" id="stepInspect">INSPECT</span>
+        <span class="proc-step" id="stepProcess">PATCH</span>
+        <span class="proc-step" id="stepVerify">VERIFY</span>
+      </div>
+      <div class="proc-note">Jangan tutup halaman selama proses berlangsung • 100% lokal &amp; offline</div>
+    </div>
+  </div>
+
+  <script src="nullsanz-mp4-core.js"></script>
+  <script src="nullsanz-slsr-engine.js"></script>
+  <script src="nullsanz-pro-core.js"></script>
+  <script src="patcher.js"></script>
+</body>
+</html>

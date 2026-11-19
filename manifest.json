@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Nullsanz TikTok Studio — Video Calibration & Anti-Compress",
-  "version": "3.0.5",
-  "description": "Nullsanz TikTok Studio v3.0.5 (Ultra HD Multi-Engine 2.1.5 / 3.0 / 3.0.5) | Auto-Patch TikTok Studio & Sound Safe by nullsanz / null.cloud",
+  "name": "Nullsanz TikTok Studio — Patcher 4.0 Pro, SoundSafe & CoverSafe",
+  "version": "4.0.0",
+  "description": "Nullsanz TikTok Studio v4.0 Pro (Dual Engine 4.0 Direct sl-sr & 4.0 Pro Offline FFmpeg WASM + CoverSafe & SoundSafe Anti-Softban) by nullsanz / null.cloud",
   "minimum_chrome_version": "116",
   "host_permissions": [
     "https://www.tiktok.com/*",
@@ -13,9 +13,12 @@
   "permissions": [
     "storage"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Nullsanz TikTok Studio v3.0.5",
+    "default_title": "Nullsanz TikTok Studio v4.0 Pro",
     "default_icon": {
       "16": "icon16.png",
       "32": "icon32.png",
@@ -49,6 +52,8 @@
       "js": [
         "orion-compat.js",
         "nullsanz-mp4-core.js",
+        "nullsanz-slsr-engine.js",
+        "nullsanz-engine.js",
         "processor.js",
         "content.js"
       ],
@@ -61,8 +66,15 @@
       "resources": [
         "processor.html",
         "processor.js",
+        "patcher.html",
+        "patcher.js",
         "nullsanz-mp4-core.js",
+        "nullsanz-slsr-engine.js",
+        "nullsanz-pro-core.js",
         "nullsanz-engine.js",
+        "ffmpeg-worker.js",
+        "ffmpeg-core.js",
+        "ffmpeg-core.wasm.gz",
         "orion-compat.js",
         "icon16.png",
         "icon32.png",
@@ -83,7 +95,7 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
   "icons": {
     "16": "icon16.png",

@@ -1,7 +1,6 @@
 (() => {
   'use strict';
   let busy = false;
-
   let stageCallback = null;
 
   function send(type, payload = {}, transfer = []) {
@@ -26,7 +25,7 @@
   }
 
   function findAscii(bytes, text, from = 0) {
-    const pat = [...text].map(ch => ch.charCodeAt(0));
+    const pat = [...text].map((ch) => ch.charCodeAt(0));
     outer: for (let i = from; i <= bytes.length - pat.length; i++) {
       for (let j = 0; j < pat.length; j++) if (bytes[i + j] !== pat[j]) continue outer;
       return i;
@@ -44,7 +43,7 @@
   function detectHdrProfile(bytes, info) {
     const codec = String(info?.codecFamily || info?.codec || '').toLowerCase();
     const result = {
-      hevc: codec.includes('hevc') || codec.includes('hvc1') || codec.includes('hev1'),
+      hevc: codec.includes('hevc') || codec.includes('hvc1') || codec.includes('hev1') || codec.includes('dvh1') || codec.includes('dvhe'),
       main10: false,
       hdr10: false,
       hdr10plus: false,
@@ -61,10 +60,7 @@
       result.main10 = profileIdc === 2;
     }
 
-    // Dolby Vision configuration record in ISO-BMFF/QuickTime HEVC sample entries.
     result.dolbyVision = findAscii(bytes, 'dvvC') >= 0 || findAscii(bytes, 'dvcC') >= 0;
-
-    // HDR10+ registered user-data signature carried inside HEVC SEI.
     result.hdr10plus = hasBytePattern(bytes, [0xB5, 0x00, 0x3C, 0x00, 0x01, 0x04]);
 
     for (const colorType of ['nclx', 'nclc']) {
@@ -95,23 +91,16 @@
     if (!info || !Number.isFinite(info.width) || !Number.isFinite(info.height)) {
       throw new Error('Resolusi video tidak terbaca.');
     }
-
     const width = Math.round(Number(info.width));
     const height = Math.round(Number(info.height));
     if (width < 16 || height < 16) throw new Error(`Resolusi ${width}×${height} tidak valid.`);
 
-    // Universal-resolution path: never snap/resize to 1080p, 1440p, or any preset.
-    // Preserve native resolution/aspect ratio with two validated ceilings:
-    //   - up to 4K/DCI 4K (4096×2160): max 120 FPS
-    //   - above 4K up to 8K/DCI 8K (8192×4320): max 60 FPS
     const shortSide = Math.min(width, height);
     const longSide = Math.max(width, height);
     const within4K = longSide <= 4096 && shortSide <= 2160;
     const within8K = longSide <= 8192 && shortSide <= 4320;
     if (!within8K) {
-      throw new Error(
-        `Resolusi ${width}×${height} di atas batas Nullsanz 8K60 (maks. 8192×4320 atau 4320×8192).`
-      );
+      throw new Error(`Resolusi ${width}×${height} di atas batas Nullsanz 8K60 (maks. 8192×4320 atau 4320×8192).`);
     }
 
     const fps = Number(info.maxFps || info.averageFps || 0);
@@ -146,9 +135,7 @@
 
     if (Math.round(inputInfo.width) !== Math.round(outputInfo.width) ||
         Math.round(inputInfo.height) !== Math.round(outputInfo.height)) {
-      problems.push(
-        `resolusi berubah ${inputInfo.width}×${inputInfo.height} → ${outputInfo.width}×${outputInfo.height}`
-      );
+      problems.push(`resolusi berubah ${inputInfo.width}×${inputInfo.height} → ${outputInfo.width}×${outputInfo.height}`);
     }
 
     const inCodecFamily = String(inputInfo.codecFamily || '').toLowerCase();
@@ -164,9 +151,7 @@
     }
 
     if (Number(inputInfo.videoSamples || 0) !== Number(outputInfo.videoSamples || 0)) {
-      problems.push(
-        `jumlah frame/sample berubah ${inputInfo.videoSamples} → ${outputInfo.videoSamples}`
-      );
+      problems.push(`jumlah frame/sample berubah ${inputInfo.videoSamples} → ${outputInfo.videoSamples}`);
     }
 
     if (!nearlyEqual(inputInfo.averageFps, outputInfo.averageFps, 0.02) ||
@@ -231,7 +216,8 @@
     const ascii = (start, len) => {
       let s = '';
       for (let i = start; i < Math.min(bytes.length, start + len); i++) {
-        const c = bytes[i]; s += (c >= 32 && c <= 126) ? String.fromCharCode(c) : ' ';
+        const c = bytes[i];
+        s += (c >= 32 && c <= 126) ? String.fromCharCode(c) : ' ';
       }
       return s;
     };
@@ -242,17 +228,18 @@
     else if (head.startsWith('RIFF') && head.slice(8, 12) === 'AVI ') container = 'avi';
 
     const tags = [
-      ['hvc1','hevc'], ['hev1','hevc'], ['dvhe','dolby-vision'], ['dvh1','dolby-vision'],
-      ['avc1','avc'], ['avc3','avc'], ['av01','av1'], ['vp09','vp9'], ['vp08','vp8'],
-      ['ap4h','prores'], ['ap4x','prores'], ['apch','prores'], ['apcn','prores'], ['apcs','prores'], ['apco','prores']
+      ['hvc1', 'hevc'], ['hev1', 'hevc'], ['dvhe', 'dolby-vision'], ['dvh1', 'dolby-vision'],
+      ['avc1', 'avc'], ['avc3', 'avc'], ['av01', 'av1'], ['vp09', 'vp9'], ['vp08', 'vp8'],
+      ['ap4h', 'prores'], ['ap4x', 'prores'], ['apch', 'prores'], ['apcn', 'prores'], ['apcs', 'prores'], ['apco', 'prores']
     ];
-    let codec = '', codecFamily = '';
+    let codec = '';
+    let codecFamily = '';
     for (const [tag, fam] of tags) {
       if (head.includes(tag)) { codec = tag; codecFamily = fam; break; }
     }
-    const audioTags = ['mp4a','ac-3','ec-3','alac','Opus','opus','lpcm','sowt','twos','flac','fLaC'];
-    let audioCodec='';
-    for (const tag of audioTags) if (head.includes(tag)) { audioCodec=tag; break; }
+    const audioTags = ['mp4a', 'ac-3', 'ec-3', 'alac', 'Opus', 'opus', 'lpcm', 'sowt', 'twos', 'flac', 'fLaC'];
+    let audioCodec = '';
+    for (const tag of audioTags) if (head.includes(tag)) { audioCodec = tag; break; }
     const fragmented = head.includes('moof');
     return { container, ext, mime, codec, codecFamily, audioCodec, fragmented };
   }
@@ -260,15 +247,16 @@
   function scanIsoTopLevel(bytes) {
     const boxes = [];
     let p = 0;
-    const read32 = o => ((bytes[o] * 0x1000000) + ((bytes[o + 1] << 16) | (bytes[o + 2] << 8) | bytes[o + 3])) >>> 0;
-    const typeAt = o => String.fromCharCode(bytes[o], bytes[o + 1], bytes[o + 2], bytes[o + 3]);
+    const read32 = (o) => ((bytes[o] * 0x1000000) + ((bytes[o + 1] << 16) | (bytes[o + 2] << 8) | bytes[o + 3])) >>> 0;
+    const typeAt = (o) => String.fromCharCode(bytes[o], bytes[o + 1], bytes[o + 2], bytes[o + 3]);
     while (p + 8 <= bytes.length) {
       let size = read32(p);
       const type = typeAt(p + 4);
       let header = 8;
       if (size === 1) {
         if (p + 16 > bytes.length) break;
-        const hi = read32(p + 8), lo = read32(p + 12);
+        const hi = read32(p + 8);
+        const lo = read32(p + 12);
         size = hi * 0x100000000 + lo;
         header = 16;
       } else if (size === 0) {
@@ -306,7 +294,7 @@
       hdr: sourceHdr,
       outputHdr: sourceHdr,
       report: {
-        engine: 'Nullsanz Core • Universal Safe Passthrough 3.0.5',
+        engine: 'Nullsanz Core v4.0 • Universal Safe Passthrough',
         passthrough: true,
         reason,
         container: sniff?.container || ext || 'unknown',
@@ -340,10 +328,12 @@
   }
 
   async function processVideo(data) {
-    const selectedEngine = ['2.1.5','3.0','3.0.5'].includes(String(data.engine || '')) ? String(data.engine) : '3.0.5';
-    const engineVersion = (selectedEngine === '3.0' || selectedEngine === '3.0.5') ? '6.0' : null;
+    const supportedEngines = ['4.0', '3.0.5', '3.0', '2.1.5'];
+    let selectedEngine = supportedEngines.includes(String(data.engine || '')) ? String(data.engine) : '4.0';
     const requestId = data.requestId;
     const core = globalThis.NullsanzOriginalMp4Core || globalThis.NullsanzMp4Core;
+    const direct40 = globalThis.NullsanzSlSrEngine || globalThis.NullsanzDirect40;
+
     if (!core?.patchWithReport || !core?.verifyOutput || !core?.inspectMediaInfo) {
       throw new Error('Nullsanz Media Core tidak termuat.');
     }
@@ -353,11 +343,99 @@
     if (original.byteLength < 64) throw new Error('File video kosong/tidak valid.');
 
     const sniff = sniffMedia(original, data);
+    stage(
+      requestId,
+      'checking',
+      'Cek container, codec & metadata…',
+      15,
+      `Engine ${selectedEngine} • ${sniff.container || 'video'} • ${sniff.codec || 'codec auto'} • ${sniff.audioCodec || 'audio auto'}`
+    );
 
-    // Engine 2.3/3.0: use the supplied engine source as a strict
-    // compatibility/layout validator, while keeping the actual mutation local
-    // in Nullsanz Core. No external engine watermark/branding is written by this extension.
-    let engineProfile = { id: selectedEngine, source: 'Nullsanz Core v6.0' };
+    let info = null;
+    let hdr = null;
+    try {
+      info = core.inspectMediaInfo(original);
+      validateMediaInfo(info);
+      hdr = detectHdrProfile(original, info);
+    } catch (inspectError) {
+      stage(requestId, 'preparing', 'Universal Safe…', 35, 'Struktur kompleks • seluruh file dipertahankan byte-identical');
+      return passthroughResult(original, data, inspectError?.message || 'container/codec non-standar', info, hdr, sniff);
+    }
+
+    const limits = validateMediaInfo(info);
+    const loadText = limits.uhdHighLoad
+      ? `UHD/High-FPS • ${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`
+      : `${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`;
+    const hdrText = hdr?.label && hdr.label !== 'SDR / unknown' ? ` • ${hdr.label}` : '';
+
+    // ================= ENGINE 4.0 DIRECT (sl-sr DUAL-AUDIO / DUAL-STSD) =================
+    let fallbackWarning = '';
+    if (selectedEngine === '4.0' && direct40?.patchDirectBytes) {
+      try {
+        stage(requestId, 'preparing', 'Nullsanz Engine 4.0 Direct…', 32, `${loadText}${hdrText} • Dual-Audio sl-sr`);
+        await new Promise((r) => setTimeout(r, 0));
+
+        stage(requestId, 'patching', 'Apply Direct Patch 4.0 (sl-sr)…', 64, 'Bitstream video 100% utuh • Dual-stsd + Silent Tail');
+        const directRes = await direct40.patchDirectBytes(original, { artist: 'Nullsanz Studio 4.0' });
+        const output = asU8(directRes.bytes);
+
+        if (output.byteLength < original.byteLength) {
+          throw new Error(`SIZE GUARD: hasil ${output.byteLength} byte lebih kecil dari source ${original.byteLength} byte.`);
+        }
+
+        stage(requestId, 'finalizing', 'Verifikasi Engine 4.0…', 90, 'Cek mdat bitstream + Dual-Audio + HDR/Dolby Vision');
+        const verification = direct40.verifyDirectOutput(original, output);
+        if (!verification.ok) {
+          throw new Error(verification.reason || 'Verifikasi Engine 4.0 Direct gagal.');
+        }
+
+        const outputInfo = core.inspectMediaInfo(output);
+        const outputHdr = detectHdrProfile(output, outputInfo);
+        const mediaContract = verifyMediaContract(info, outputInfo, hdr, outputHdr);
+        Object.assign(verification, mediaContract);
+
+        return {
+          output,
+          info,
+          outputInfo,
+          hdr,
+          outputHdr,
+          report: {
+            ...(directRes.report || {}),
+            engine: 'Nullsanz Direct 4.0 (sl-sr Dual-Audio)',
+            passthrough: false,
+            sourceResolution: `${info.width}x${info.height}`,
+            outputResolution: `${outputInfo.width}x${outputInfo.height}`,
+            resolutionPreserved: true,
+            fpsPreserved: true,
+            sourceCodecFamily: String(info.codecFamily || '').toLowerCase(),
+            outputCodecFamily: String(outputInfo.codecFamily || '').toLowerCase(),
+            sourceCodecTag: String(info.codec || '').toLowerCase(),
+            outputCodecTag: String(outputInfo.codec || '').toLowerCase(),
+            codecPreserved: true,
+            codecSampleEntryPreserved: true,
+            hdrPreserved: true,
+            dolbyVisionPreserved: hdr?.dolbyVision ? outputHdr?.dolbyVision === true : null
+          },
+          verification,
+          mode: 'nullsanz-direct-4.0-slsr',
+          passthrough: false,
+          outputName: '',
+          outputMime: 'video/mp4',
+          inputBytes: original.byteLength,
+          warning: ''
+        };
+      } catch (directErr) {
+        // Smart Auto-Fallback to Engine 3.0.5 (64-bit Sentinel) for mono/non-AAC/edts edge cases
+        fallbackWarning = `4.0 Direct fallback → 3.0.5 (${directErr?.message || directErr})`;
+        stage(requestId, 'preparing', 'Auto-Fallback ke Engine 3.0.5…', 38, directErr?.message || 'Mencoba Engine 3.0.5 Sentinel');
+        selectedEngine = '3.0.5';
+      }
+    }
+
+    // ================= LEGACY / SENTINEL ENGINES (3.0.5 / 3.0 / 2.1.5) =================
+    const engineVersion = (selectedEngine === '3.0' || selectedEngine === '3.0.5') ? '6.0' : null;
+    let engineProfile = { id: selectedEngine, source: `Nullsanz Core ${selectedEngine} (64-bit Sentinel)` };
     const engineChecker = globalThis.NullsanzEngines;
     if (engineVersion && engineChecker?.[engineVersion]?.checkLayout) {
       try {
@@ -368,48 +446,23 @@
         engineProfile = { id: selectedEngine, source: `Nullsanz Core ${selectedEngine} • compatibility profile ${engineVersion}` };
       } catch (engineError) {
         stage(requestId, 'checking', 'Engine compatibility…', 18, engineError?.message || String(engineError));
-        return passthroughResult(original, data, engineError?.message || 'engine compatibility check gagal', null, null, sniff);
+        return passthroughResult(original, data, engineError?.message || 'engine compatibility check gagal', info, hdr, sniff);
       }
     }
-    stage(requestId, 'checking', 'Cek container, codec & metadata…', 15,
-      `${sniff.container || 'video'} • ${sniff.codec || 'codec auto'} • ${sniff.audioCodec || 'audio auto'}`);
 
-    let info = null;
-    let hdr = null;
-    let compat = null;
-
-    try {
-      info = core.inspectMediaInfo(original);
-      validateMediaInfo(info);
-      hdr = detectHdrProfile(original, info);
-      compat = core.inspectCompatibility(original);
-    } catch (inspectError) {
-      // Fragmented MP4, WebM/MKV, unusual MOV atoms, and other structures are
-      // deliberately preserved byte-for-byte instead of being rejected.
-      stage(requestId, 'preparing', 'Universal Safe…', 35, 'Struktur kompleks • seluruh file dipertahankan byte-identical');
-      return passthroughResult(original, data, inspectError?.message || 'container/codec tidak memakai jalur patch MP4 klasik', info, hdr, sniff);
-    }
-
-    const limits = validateMediaInfo(info);
-    const loadText = limits.uhdHighLoad
-      ? `UHD/High-FPS • ${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`
-      : `${info.width}×${info.height} • ${limits.fps ? limits.fps.toFixed(2) : '?'} FPS`;
-    const hdrText = hdr?.label && hdr.label !== 'SDR / unknown' ? ` • ${hdr.label}` : '';
-
-    // Preserve multi-track media, subtitles/timecode, alternate audio/video tracks,
-    // and extra top-level metadata boxes exactly instead of letting the classic
-    // patch discard or reorder them.
+    const compat = core.inspectCompatibility(original);
     const trackList = Array.isArray(info?.tracks) ? info.tracks : [];
-    const videoTracks = trackList.filter(t => t.handler === 'vide');
-    const audioTracks = trackList.filter(t => t.handler === 'soun');
-    const otherTracks = trackList.filter(t => !['vide', 'soun'].includes(t.handler));
+    const videoTracks = trackList.filter((t) => t.handler === 'vide');
+    const audioTracks = trackList.filter((t) => t.handler === 'soun');
+    const otherTracks = trackList.filter((t) => !['vide', 'soun'].includes(t.handler));
     const topLevelBoxes = (sniff.container === 'mp4' || sniff.container === 'mov') ? scanIsoTopLevel(original) : [];
-    const extraTopLevel = topLevelBoxes.filter(t => !['ftyp', 'moov', 'mdat', 'free', 'skip', 'wide'].includes(t));
+    const extraTopLevel = topLevelBoxes.filter((t) => !['ftyp', 'moov', 'mdat', 'free', 'skip', 'wide'].includes(t));
+
     if (videoTracks.length !== 1 || audioTracks.length !== 1 || otherTracks.length || extraTopLevel.length) {
       const why = [
         videoTracks.length !== 1 ? `video-tracks:${videoTracks.length}` : '',
         audioTracks.length !== 1 ? `audio-tracks:${audioTracks.length}` : '',
-        otherTracks.length ? `extra-tracks:${otherTracks.map(t => t.handler || '?').join('/')}` : '',
+        otherTracks.length ? `extra-tracks:${otherTracks.map((t) => t.handler || '?').join('/')}` : '',
         extraTopLevel.length ? `extra-boxes:${[...new Set(extraTopLevel)].join('/')}` : ''
       ].filter(Boolean).join(', ');
       stage(requestId, 'preparing', 'Universal Safe…', 35, `${loadText}${hdrText} • metadata/track kompleks dipertahankan`);
@@ -417,32 +470,21 @@
     }
 
     if (compat?.needsRefinery) {
-      stage(requestId, 'preparing', 'Universal Safe…', 35,
-        `${loadText}${hdrText} • ${String((compat.reasons || []).join(', ') || 'complex media')}`);
-      return passthroughResult(
-        original, data,
-        String((compat.reasons || []).join(', ') || 'struktur/codec kompleks'),
-        info, hdr, sniff
-      );
+      stage(requestId, 'preparing', 'Universal Safe…', 35, `${loadText}${hdrText} • ${String((compat.reasons || []).join(', ') || 'complex media')}`);
+      return passthroughResult(original, data, String((compat.reasons || []).join(', ') || 'struktur/codec kompleks'), info, hdr, sniff);
     }
 
-    // Nullsanz Method v6.0: The clean 64-bit Duration Sentinel leaves bitstream and audio samples 100% intact,
-    // which is fully compatible with Apple AVFoundation and iOS/Orion without crashing!
-
-
-    // Only the proven-safe classic path is modified. Everything else above
-    // is exact-byte passthrough, which preserves every metadata atom/track.
-    stage(requestId, 'preparing', 'Siapin media…', 28, `${loadText}${hdrText} • Nullsanz full patch`);
-    stage(requestId, 'remuxing', 'Lagi remux…', 45, 'Menata container • video bitstream tidak disentuh');
-    await new Promise(r => setTimeout(r, 0));
+    stage(requestId, 'preparing', 'Siapin media…', 42, `${loadText}${hdrText} • Nullsanz Sentinel Patch`);
+    stage(requestId, 'remuxing', 'Menata container…', 54, 'Video bitstream 100% utuh');
+    await new Promise((r) => setTimeout(r, 0));
 
     let result;
     try {
-      stage(requestId, 'patching', 'Lagi apply Nullsanz patch…', 66, engineProfile.source);
+      stage(requestId, 'patching', 'Lagi apply Nullsanz patch…', 70, engineProfile.source);
       result = core.patchWithReport(original);
       if (result?.report) result.report.engine = engineProfile.source;
     } catch (patchError) {
-      stage(requestId, 'patching', 'Fallback Universal Safe…', 72, 'Patch klasik tidak aman untuk file ini • pakai byte-identical passthrough');
+      stage(requestId, 'patching', 'Fallback Universal Safe…', 76, 'Patch klasik tidak aman • pakai byte-identical passthrough');
       return passthroughResult(original, data, patchError?.message || 'full patch gagal', info, hdr, sniff);
     }
 
@@ -452,7 +494,7 @@
       throw new Error(`SIZE GUARD: hasil ${output.byteLength} byte lebih kecil dari source ${original.byteLength} byte.`);
     }
 
-    stage(requestId, 'finalizing', 'Lagi nyelesaiin…', 90, 'Verifikasi resolusi + FPS + codec + HDR/Dolby Vision + bitstream');
+    stage(requestId, 'finalizing', 'Verifikasi hasil…', 90, 'Cek resolusi + FPS + codec + HDR/Dolby Vision + bitstream');
     const verification = core.verifyOutput(original, output);
     if (verification.videoBitstreamByteIdentical !== true) {
       return passthroughResult(original, data, 'verifikasi video patch tidak identik', info, hdr, sniff);
@@ -501,7 +543,7 @@
       outputName: '',
       outputMime: 'video/mp4',
       inputBytes: original.byteLength,
-      warning: ''
+      warning: fallbackWarning
     };
   }
 

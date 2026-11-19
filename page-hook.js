@@ -3,136 +3,71 @@
   if (window.__NULLSANZ_METHOD_PAGE_HOOK__) return;
   window.__NULLSANZ_METHOD_PAGE_HOOK__ = true;
 
-  console.info('[Nullsanz TikTok Studio v3.0.5] Sound Safe, Canvas Bypass & Anti-Compress Engine Activated.');
+  console.info('[Nullsanz TikTok Studio v4.0 Pro] SoundSafe, CoverSafe, Canvas Bypass & Anti-Softban Engine Activated.');
 
   // ================= CONFIGURATION =================
-  const MENTION_USERS = [];
-  const PREFIX = '';
-  let resolved = true;
-  let watermarkEnabled = false;
+  // Nullsanz Edition: 100% Zero Watermark, Zero Forced Mentions, Anti-Softban Safe
+  let soundSafeEnabled = true;
 
-  function getMentionText(user) {
-    return '@' + String(user?.handle || '').replace(/^@/, '');
-  }
+  // Regexes for cleaning any leftover third-party signatures
+  const sigRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher|Ekstension)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?(?:\s*(?:<m[^>]*>)?\s*@[A-Za-z0-9._]+\s*(?:<\/m>)?)+)/gi;
+  const prefixRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher|Ekstension)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?\s*)/gi;
 
-  function getFullSignature() {
-    return PREFIX + MENTION_USERS.map(getMentionText).filter(Boolean).join(' ');
-  }
+  // CoverSafe field matcher (protects cover/thumbnail/poster fields from accidental mutation)
+  const COVER_FIELD_RE = /(?:^|_)(?:cover|thumbnail|poster)(?:_|$)/i;
 
-  // Regexes for detecting and cleaning signatures
-  const sigRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?(?:\s*(?:<m[^>]*>)?\s*@[A-Za-z0-9._]+\s*(?:<\/m>)?)+)/gi;
-  const prefixRegex = /(?:\s*✦?\s*(?:(?:Method|Patcher)\s*)?by\s*[A-Za-z0-9._\s]+\s*60fps\s*✦?\s*)/gi;
-
-  // WeakSets for payload deduplication
+  // WeakSet for payload deduplication
   const processedWeakSet = new WeakSet();
 
-  // Map to store original files for safe preview (iOS crash prevention)
+  // Map to store original files for safe preview (iOS AVPlayer crash prevention)
   const originalFilesMap = new Map();
 
+  // Capture native JSON.stringify early so internal cloning never recurses
+  const nativeStringify = JSON.stringify;
+
   // ================= SETTINGS SYNC =================
-  function isWatermarkActive() {
-    return false;
+  function isSoundSafeActive() {
+    try {
+      const ds = document.documentElement?.dataset?.nullsanzSoundSafe;
+      if (ds === '0') return false;
+      if (ds === '1') return true;
+    } catch (_) {}
+    return soundSafeEnabled;
   }
 
-  window.addEventListener('message', event => {
+  window.addEventListener('message', (event) => {
     const data = event.data;
-    if (!data) return;
-    if (data.source === 'NULLSANZ_METHOD' && data.type === 'NULLSANZ_SETTINGS' && data.settings) {
-      if (data.settings.watermarkEnabled !== undefined) {
-        watermarkEnabled = !!data.settings.watermarkEnabled;
+    if (!data || typeof data !== 'object') return;
+    if (
+      (data.source === 'NULLSANZ_METHOD' || data.source === 'Nullsanz_METHOD') &&
+      (data.type === 'NULLSANZ_SETTINGS' || data.type === 'Nullsanz_SETTINGS') &&
+      data.settings
+    ) {
+      if (data.settings.soundSafeEnabled !== undefined) {
+        soundSafeEnabled = !!data.settings.soundSafeEnabled;
       }
     }
     if (data.source === 'NULLSANZ_CONTENT' && data.type === 'STORE_ORIGINAL_FILE') {
       originalFilesMap.set(data.patchedName, data.originalFile);
-      console.info('[Nullsanz Inject] Stored original file for safe preview:', data.patchedName);
+      console.info('[Nullsanz v4.0] Stored original file for safe preview:', data.patchedName);
     }
   });
 
   // ================= 0. HOOK URL.createObjectURL (Preview Fix) =================
   const nativeCreateObjectURL = URL.createObjectURL;
-  URL.createObjectURL = function(obj) {
-    if (obj instanceof File && originalFilesMap.has(obj.name)) {
-      console.info('[Nullsanz Inject] Bypassing video preview to prevent iOS AVPlayer crash. Serving original file.');
-      return nativeCreateObjectURL.call(this, originalFilesMap.get(obj.name));
-    }
-    return nativeCreateObjectURL.apply(this, arguments);
-  };
-
-  // ================= MENTION & UID RESOLUTION =================
-  async function resolveMention() {
-    if (resolved) return;
-    try {
-      await Promise.all(MENTION_USERS.map(async user => {
-        if (!user || !user.handle) return;
-        try {
-          const endpoints = [
-            '/api/upload/search/user/?aid=1988&keyword=' + encodeURIComponent(user.handle),
-            '/api/search/user/full/?aid=1988&keyword=' + encodeURIComponent(user.handle)
-          ];
-          for (const ep of endpoints) {
-            try {
-              const res = await fetch(ep, {
-                credentials: 'include',
-                headers: { 'Accept': 'application/json' }
-              });
-              if (!res.ok) continue;
-              const json = await res.json();
-              const userList = json?.user_list || json?.data?.user_list || json?.user_list_info || [];
-              let found = null;
-              for (const item of userList) {
-                const u = item?.user_info || item?.user || item;
-                const uname = String(u?.unique_id || u?.uniqueId || '').toLowerCase();
-                if (uname === String(user.handle).toLowerCase()) {
-                  found = u;
-                  break;
-                }
-              }
-              if (!found && userList.length) {
-                const first = userList[0]?.user_info || userList[0]?.user || userList[0];
-                const uname = String(first?.unique_id || first?.uniqueId || '').toLowerCase();
-                if (uname === String(user.handle).toLowerCase()) found = first;
-              }
-              if (found) {
-                const uid = found.uid || found.user_id || found.id;
-                const secUid = found.sec_uid || found.secUid || found.sec_user_id || '';
-                const uniqueId = found.unique_id || found.uniqueId;
-                if (uid) user.uid = String(uid);
-                if (secUid) user.secUid = String(secUid);
-                if (uniqueId) user.handle = String(uniqueId);
-                console.info('[Nullsanz Inject] Mention UID resolved:', {
-                  HANDLE: user.handle,
-                  UID: user.uid,
-                  SEC_UID: user.secUid
-                });
-                return;
-              }
-            } catch (_) {}
-          }
-        } catch (_) {}
-      }));
-    } catch (err) {
-      console.warn('[Nullsanz Inject] resolveMention error:', err);
-    }
-    resolved = true;
+  if (typeof nativeCreateObjectURL === 'function') {
+    URL.createObjectURL = function (obj) {
+      if (typeof File !== 'undefined' && obj instanceof File && originalFilesMap.has(obj.name)) {
+        console.info('[Nullsanz v4.0] Bypassing video preview for smooth playback. Serving original file.');
+        return nativeCreateObjectURL.call(this, originalFilesMap.get(obj.name));
+      }
+      return nativeCreateObjectURL.apply(this, arguments);
+    };
   }
 
-  // Pre-resolve mention immediately
-  try { resolveMention(); } catch (_) {}
-
-  // ================= STRING & MARKUP HELPERS =================
+  // ================= STRING HELPERS =================
   function stripTags(str) {
     return String(str || '').replace(/<\/?[hm][^>]*>/g, '');
-  }
-
-  function escapeHtml(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
-
-  function escapeAttr(str) {
-    return escapeHtml(str).replace(/"/g, '&quot;');
   }
 
   function cleanSignature(str, isMarkup) {
@@ -145,103 +80,6 @@
       .replace(prefixRegex, '')
       .replace(/\n{3,}/g, '\n\n')
       .trimEnd();
-  }
-
-  function appendSignature(rawText) {
-    const cleaned = cleanSignature(rawText, false);
-    const fullSignature = getFullSignature();
-    if (cleaned.endsWith(fullSignature)) return cleaned;
-    return cleaned ? (cleaned + '\n\n' + fullSignature) : fullSignature;
-  }
-
-  function isOurMention(extra, fullText) {
-    if (!extra || Number(extra.type) !== 0) return false;
-    const textStr = String(fullText || '');
-    const start = Number(extra.start);
-    const end = Number(extra.end);
-    if (!Number.isFinite(start) || !Number.isFinite(end)) return false;
-    const slice = textStr.slice(start, end).toLowerCase();
-    const uidStr = String(extra.user_id || extra.userId || '');
-    const hashName = String(extra.hashtag_name || '').replace(/^@/, '').toLowerCase();
-    return MENTION_USERS.some(user => {
-      const mention = getMentionText(user).toLowerCase();
-      const uid = String(user?.uid || '0');
-      const handle = String(user?.handle || '').replace(/^@/, '').toLowerCase();
-      return (
-        (uid && uid !== '0' && uidStr === uid) ||
-        hashName === handle ||
-        slice === mention
-      );
-    });
-  }
-
-  function getNextTagId(extrasList) {
-    const existingIds = new Set((Array.isArray(extrasList) ? extrasList : [])
-      .filter(e => e && e.tag_id !== undefined && e.tag_id !== null)
-      .map(e => String(e.tag_id)));
-    let id = 0;
-    while (existingIds.has(String(id))) id++;
-    return String(id);
-  }
-
-  function buildTextExtra(existingExtras, originalText, finalPlainText) {
-    const filtered = (Array.isArray(existingExtras) ? existingExtras : [])
-      .filter(e => !isOurMention(e, originalText));
-    const text = String(finalPlainText || '');
-    const signature = getFullSignature();
-    const signatureStart = text.lastIndexOf(signature);
-    if (signatureStart === -1) return filtered;
-
-    let cursor = signatureStart + PREFIX.length;
-    for (const user of MENTION_USERS) {
-      const mention = getMentionText(user);
-      if (!mention) continue;
-      const mentionIdx = text.indexOf(mention, cursor);
-      if (mentionIdx === -1) continue;
-      const mentionExtra = {
-        start: mentionIdx,
-        end: mentionIdx + mention.length,
-        user_id: String(user?.uid || '0'),
-        type: 0,
-        hashtag_name: String(user?.handle || '').replace(/^@/, ''),
-        tag_id: getNextTagId(filtered)
-      };
-      if (user?.secUid) mentionExtra.sec_uid = String(user.secUid);
-      filtered.push(mentionExtra);
-      cursor = mentionIdx + mention.length;
-    }
-    return filtered;
-  }
-
-  function findTagIds(textExtras, finalPlainText) {
-    const text = String(finalPlainText || '');
-    return MENTION_USERS.map(user => {
-      const mention = getMentionText(user);
-      const mentionIdx = text.lastIndexOf(mention);
-      const mentionEnd = mentionIdx + mention.length;
-      const found = Array.isArray(textExtras) ? textExtras.find(e =>
-        e && Number(e.type) === 0 &&
-        String(e.user_id || e.userId || '') === String(user?.uid || '0') &&
-        Number(e.start) === mentionIdx &&
-        Number(e.end) === mentionEnd
-      ) : null;
-      return {
-        mention,
-        start: mentionIdx,
-        tagId: (found && found.tag_id !== undefined) ? String(found.tag_id) : '0'
-      };
-    });
-  }
-
-  function buildMarkupText(currentMarkup, textExtras, finalPlainText) {
-    const cleaned = cleanSignature(currentMarkup, true);
-    const tagInfo = findTagIds(textExtras, finalPlainText);
-    const signatureMarkup = escapeHtml(PREFIX) + tagInfo.map(info =>
-      '<m id="' + escapeAttr(info.tagId) + '">' + escapeHtml(info.mention) + '</m>'
-    ).join(' ');
-    if (!cleaned) return signatureMarkup;
-    if (cleaned.indexOf(PREFIX.trim()) !== -1) return cleaned;
-    return cleaned + '\n\n' + signatureMarkup;
   }
 
   // ================= PAYLOAD RECOGNITION =================
@@ -266,121 +104,234 @@
 
   function hasMusic(payload) {
     try {
-      const info = payload?.single_post_req_list?.[0]?.single_post_feature_info;
-      return !!(info?.music_info?.music_id_string || info?.music_info?.id);
+      const list = Array.isArray(payload?.single_post_req_list) ? payload.single_post_req_list : [];
+      return list.some((req) => {
+        const music = req?.single_post_feature_info?.music_info;
+        return !!(music?.music_id_string || music?.id);
+      });
     } catch (_) {
       return false;
     }
   }
 
-  // ================= PAYLOAD NORMALIZATION =================
-  function stripCanvasConfigs(obj) {
-    if (!obj || typeof obj !== 'object') return;
-    if (Array.isArray(obj)) {
-      obj.forEach(stripCanvasConfigs);
-      return;
+  // ================= COVERSAFE SNAPSHOT / RESTORE =================
+  function cloneJsonSafe(val) {
+    if (val === null || val === undefined || typeof val !== 'object') return val;
+    try {
+      return JSON.parse(nativeStringify(val));
+    } catch (_) {
+      return val;
     }
-    
-    // Delete any canvas related configs safely
-    ['draft', 'canvas_config', 'vedit_segment_info', 'tiktok_snap_shot_lite_params'].forEach(k => {
-      if (obj[k] !== undefined) delete obj[k];
-    });
+  }
 
-    if (obj.cloud_edit_is_use_video_canvas !== undefined) obj.cloud_edit_is_use_video_canvas = false;
-    if (obj.is_canvas_video !== undefined) obj.is_canvas_video = false;
-    
-    for (const key in obj) {
-      if (typeof obj[key] === 'object') stripCanvasConfigs(obj[key]);
+  function snapshotCoverFields(payload) {
+    const snapshot = [];
+    const seen = new WeakSet();
+    const walk = (node) => {
+      if (!node || typeof node !== 'object' || seen.has(node)) return;
+      seen.add(node);
+      if (Array.isArray(node)) {
+        for (const item of node) walk(item);
+        return;
+      }
+      for (const key of Object.keys(node)) {
+        const value = node[key];
+        if (COVER_FIELD_RE.test(key)) {
+          snapshot.push({ owner: node, key, value: cloneJsonSafe(value) });
+          continue;
+        }
+        if (value && typeof value === 'object') walk(value);
+      }
+    };
+    walk(payload);
+    return snapshot;
+  }
+
+  function restoreCoverFields(snapshot) {
+    let restored = false;
+    for (const item of snapshot) {
+      const next = cloneJsonSafe(item.value);
+      try {
+        if (nativeStringify(item.owner[item.key]) !== nativeStringify(next)) {
+          item.owner[item.key] = next;
+          restored = true;
+        }
+      } catch (_) {
+        item.owner[item.key] = next;
+        restored = true;
+      }
     }
+    return restored;
+  }
+
+  // ================= PAYLOAD NORMALIZATION (SOUNDSAFE + ANTI-SOFTBAN) =================
+  function stripCanvasConfigs(obj, seen = new WeakSet()) {
+    if (!obj || typeof obj !== 'object' || seen.has(obj)) return false;
+    seen.add(obj);
+    let changed = false;
+    if (Array.isArray(obj)) {
+      for (const item of obj) {
+        if (stripCanvasConfigs(item, seen)) changed = true;
+      }
+      return changed;
+    }
+
+    for (const key of ['draft', 'canvas_config', 'vedit_segment_info', 'tiktok_snap_shot_lite_params']) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        delete obj[key];
+        changed = true;
+      }
+    }
+    if (obj.cloud_edit_is_use_video_canvas !== undefined && obj.cloud_edit_is_use_video_canvas !== false) {
+      obj.cloud_edit_is_use_video_canvas = false;
+      changed = true;
+    }
+    if (obj.is_canvas_video !== undefined && obj.is_canvas_video !== false) {
+      obj.is_canvas_video = false;
+      changed = true;
+    }
+
+    for (const key of Object.keys(obj)) {
+      if (COVER_FIELD_RE.test(key)) continue;
+      if (obj[key] && typeof obj[key] === 'object') {
+        if (stripCanvasConfigs(obj[key], seen)) changed = true;
+      }
+    }
+    return changed;
   }
 
   function normalizePayload(payload) {
-    if (!payload || typeof payload !== 'object') return;
+    if (!payload || typeof payload !== 'object') return false;
+    let changed = false;
+    const setIfDifferent = (obj, key, value) => {
+      if (obj && obj[key] !== value) {
+        obj[key] = value;
+        changed = true;
+      }
+    };
+    const musicPresent = hasMusic(payload);
 
-    // 1. Recursively strip all canvas properties that trigger 30fps fallback on big accounts
-    stripCanvasConfigs(payload);
+    // 1. Recursively strip canvas/draft configs that trigger 30fps cloud fallback (skipping cover fields)
+    if (stripCanvasConfigs(payload)) changed = true;
 
-    // 2. Inject HD quality preferences
-    payload.allow_upload_hd = 1;
-    payload.is_high_quality = true;
-    payload.psg_vsp_aud = true;
+    // 2. Safe HD quality & SoundSafe preferences (Anti-Softban: NEVER force post_type=3, enter_post_page_from=1, or fake 144fps)
+    setIfDifferent(payload, 'allow_upload_hd', 1);
+    setIfDifferent(payload, 'is_high_quality', true);
+    setIfDifferent(payload, 'high_quality_video', 1);
+    setIfDifferent(payload, 'disable_auto_bitrate', true);
+    setIfDifferent(payload, 'cloud_edit_is_use_video_canvas', false);
+    setIfDifferent(payload, 'psg_vsp_aud', true);
 
     if (payload.post_common_info && typeof payload.post_common_info === 'object') {
-      payload.post_common_info.allow_upload_hd = 1;
-      payload.post_common_info.is_high_quality = 1;
-      payload.post_common_info.psg_vsp_aud = true;
-      // DO NOT force post_type = 3 or enter_post_page_from = 1 here.
-      // Big accounts get shadow-flagged into Cloud Canvas re-encoding if these are manipulated.
+      setIfDifferent(payload.post_common_info, 'allow_upload_hd', 1);
+      setIfDifferent(payload.post_common_info, 'is_high_quality', 1);
+      setIfDifferent(payload.post_common_info, 'psg_vsp_aud', true);
     }
 
+    // 3. vedit_common_info normalization when music is attached (prevents audio mute/canvas wrap)
+    if (musicPresent && Array.isArray(payload.feature_common_info_list)) {
+      for (const item of payload.feature_common_info_list) {
+        const vedit = item?.vedit_common_info;
+        if (!vedit || typeof vedit !== 'object') continue;
+        if (Object.prototype.hasOwnProperty.call(vedit, 'tiktok_snap_shot_lite_params')) {
+          delete vedit.tiktok_snap_shot_lite_params;
+          changed = true;
+        }
+        if (Object.prototype.hasOwnProperty.call(vedit, 'application')) {
+          setIfDifferent(vedit, 'application', 1);
+        }
+      }
+    }
+
+    // 4. Per-item feature normalization
     if (Array.isArray(payload.single_post_req_list)) {
-      payload.single_post_req_list.forEach(req => {
-        req.psg_vsp_aud = true;
-        req.allow_upload_hd = 1;
-        const info = req?.single_post_feature_info;
-        if (!info || typeof info !== 'object') return;
-        info.has_original_audio = 1;
-        info.psg_vsp_aud = true;
-        info.video_quality_score = 1.0;
-        info.is_high_quality = true;
-        info.allow_upload_hd = 1;
-        info.hd_post_enable = 1;
+      for (const req of payload.single_post_req_list) {
+        if (!req || typeof req !== 'object') continue;
+        setIfDifferent(req, 'psg_vsp_aud', true);
+        setIfDifferent(req, 'allow_upload_hd', 1);
+        const info = req.single_post_feature_info;
+        if (!info || typeof info !== 'object') continue;
+
+        setIfDifferent(info, 'cloud_edit_is_use_video_canvas', false);
+        setIfDifferent(info, 'has_original_audio', 1);
+        setIfDifferent(info, 'psg_vsp_aud', true);
+        setIfDifferent(info, 'video_quality_score', 1.0);
+        setIfDifferent(info, 'is_high_quality', true);
+        setIfDifferent(info, 'is_high_quality_video', 1);
+        setIfDifferent(info, 'upload_high_quality', true);
+        setIfDifferent(info, 'disable_auto_bitrate', true);
+        setIfDifferent(info, 'allow_upload_hd', 1);
+        setIfDifferent(info, 'hd_post_enable', 1);
+
         if (info.music_info && typeof info.music_info === 'object') {
           if (!info.music_info.music_id_string && info.music_info.id) {
             info.music_info.music_id_string = String(info.music_info.id);
+            changed = true;
           }
         }
-      });
+      }
     }
+
+    return changed;
   }
 
-  // ================= SIGNATURE INJECTION & STRIPPING =================
-  function injectSignature(payload) {
-    return false;
-  }
-
+  // ================= ZERO-WATERMARK CLEANUP =================
   function stripSignature(payload) {
-    if (!payload || typeof payload !== 'object') return;
+    if (!payload || typeof payload !== 'object') return false;
+    let changed = false;
     if (Array.isArray(payload.single_post_req_list)) {
-      payload.single_post_req_list.forEach(req => {
+      for (const req of payload.single_post_req_list) {
         const feat = req?.single_post_feature_info;
-        if (!feat || typeof feat !== 'object') return;
-        const textStr = String(feat.text || cleanSignature(feat.markup_text || '', false));
-        if (Array.isArray(feat.text_extra)) {
-          feat.text_extra = feat.text_extra.filter(e => !isOurMention(e, textStr));
-        }
-        if (Array.isArray(req.text_extra)) {
-          req.text_extra = req.text_extra.filter(e => !isOurMention(e, textStr));
-        }
-        ['text', 'markup_text', 'caption', 'desc', 'description', 'title'].forEach(key => {
+        if (!feat || typeof feat !== 'object') continue;
+        for (const key of ['text', 'markup_text', 'caption', 'desc', 'description', 'title']) {
           if (typeof feat[key] === 'string' && feat[key]) {
-            feat[key] = (key === 'markup_text') ? cleanSignature(feat[key], true) : cleanSignature(feat[key], false);
+            const next = key === 'markup_text' ? cleanSignature(feat[key], true) : cleanSignature(feat[key], false);
+            if (next !== feat[key]) {
+              feat[key] = next;
+              changed = true;
+            }
           }
           if (typeof req[key] === 'string' && req[key]) {
-            req[key] = (key === 'markup_text') ? cleanSignature(req[key], true) : cleanSignature(req[key], false);
+            const next = key === 'markup_text' ? cleanSignature(req[key], true) : cleanSignature(req[key], false);
+            if (next !== req[key]) {
+              req[key] = next;
+              changed = true;
+            }
           }
-        });
-      });
+        }
+      }
     }
+    return changed;
   }
 
   function processPayload(obj) {
-    if (!obj || typeof obj !== 'object') return obj;
-    if (!isPublishPayload(obj)) return obj;
-    if (processedWeakSet.has(obj)) return obj;
+    if (!obj || typeof obj !== 'object') return false;
+    if (!isPublishPayload(obj)) return false;
+    if (processedWeakSet.has(obj)) return false;
     processedWeakSet.add(obj);
 
-    normalizePayload(obj);
-    stripSignature(obj);
-    return obj;
+    // CoverSafe: Snapshot all cover/thumbnail/poster fields BEFORE any modification
+    const coverSnapshot = snapshotCoverFields(obj);
+
+    let changed = false;
+    if (isSoundSafeActive()) {
+      changed = normalizePayload(obj) || changed;
+    }
+    changed = stripSignature(obj) || changed;
+
+    // CoverSafe: Guarantee cover/thumbnail/poster fields remain 100% intact
+    if (restoreCoverFields(coverSnapshot)) changed = true;
+
+    return changed;
   }
 
   function transformJsonString(jsonStr) {
-    if (typeof jsonStr !== 'string') return jsonStr;
+    if (typeof jsonStr !== 'string' || !jsonStr) return jsonStr;
     try {
       const parsed = JSON.parse(jsonStr);
-      processPayload(parsed);
-      return JSON.stringify(parsed);
+      const changed = processPayload(parsed);
+      if (!changed) return jsonStr;
+      return nativeStringify(parsed);
     } catch (_) {
       return jsonStr;
     }
@@ -393,32 +344,33 @@
         type: 'PUBLISH_NORMALIZED',
         transport,
         changed: !!changed,
+        soundSafe: isSoundSafeActive(),
+        coverSafe: true,
         url: String(url || '').slice(0, 240)
       }, '*');
     } catch (_) {}
   }
 
   // ================= 1. HOOK JSON.stringify =================
-  const nativeStringify = JSON.stringify;
-  JSON.stringify = function(value, replacer, space) {
+  JSON.stringify = function (value, replacer, space) {
     if (value && typeof value === 'object') {
-      if (value.hasOwnProperty('video_quality_score') || value.hasOwnProperty('is_high_quality')) {
-        value.video_quality_score = 1.0;
-        value.is_high_quality = true;
-      }
-      if (isPublishPayload(value)) {
-        try {
-          processPayload(value);
-        } catch (e) {
-          console.warn('[Nullsanz Inject] JSON.stringify processPayload error:', e);
+      try {
+        if (isSoundSafeActive() && (Object.prototype.hasOwnProperty.call(value, 'video_quality_score') || Object.prototype.hasOwnProperty.call(value, 'is_high_quality'))) {
+          value.video_quality_score = 1.0;
+          value.is_high_quality = true;
         }
+        if (isPublishPayload(value)) {
+          processPayload(value);
+        }
+      } catch (e) {
+        console.warn('[Nullsanz v4.0] JSON.stringify processPayload error:', e);
       }
     }
     return nativeStringify.apply(this, arguments);
   };
 
-  // ================= AB CONFIG & POST FLAG HELPERS =================
-    const PHOTO_AB_URL = '/api/v1/web/project/get/ab/';
+  // ================= AB CONFIG (ANTI-SOFTBAN SAFE: PHOTO POSTING ONLY) =================
+  const PHOTO_AB_URL = '/api/v1/web/project/get/ab/';
   function enablePhotoPosting(node) {
     if (Array.isArray(node)) {
       let changed = false;
@@ -435,9 +387,13 @@
       const val = node[key];
       if (key === 'web_crea_photo_posting') {
         if (val && typeof val === 'object') {
-          if ('ab_value' in val && val.ab_value !== '1') { val.ab_value = '1'; changed = true; }
+          if ('ab_value' in val && val.ab_value !== '1') {
+            val.ab_value = '1';
+            changed = true;
+          }
         } else if (typeof val === 'string' && val !== '1') {
-          node[key] = '1'; changed = true;
+          node[key] = '1';
+          changed = true;
         }
       }
       if (val && typeof val === 'object') changed = enablePhotoPosting(val) || changed;
@@ -448,7 +404,7 @@
   function patchAbBody(text) {
     try {
       const json = JSON.parse(text);
-      if (enablePhotoPosting(json)) return JSON.stringify(json);
+      if (enablePhotoPosting(json)) return nativeStringify(json);
     } catch (_) {}
     return text;
   }
@@ -456,29 +412,25 @@
   // ================= 2. HOOK window.fetch =================
   const nativeFetch = window.fetch;
   if (typeof nativeFetch === 'function') {
-    window.fetch = async function(input, init = {}) {
+    window.fetch = async function (input, init = {}) {
       let nextInput = input;
       let nextInit = init;
       const url = typeof input === 'string' ? input : (input?.url || '');
 
-      // Intercept AB config
       if (typeof url === 'string' && url.includes(PHOTO_AB_URL)) {
         const p = nativeFetch.call(this, nextInput, nextInit);
-        return p.then(res => {
+        return p.then((res) => {
           if (!res.ok) return res;
-          return res.clone().text().then(text => {
+          return res.clone().text().then((text) => {
             const patched = patchAbBody(text);
             if (patched === text) return res;
-            console.info('[Nullsanz Inject] Photo posting & high-res features enabled ✓');
+            console.info('[Nullsanz v4.0] Photo posting feature enabled ✓');
             return new Response(patched, { status: res.status, statusText: res.statusText, headers: res.headers });
           }).catch(() => res);
         });
       }
 
       if (isPublishUrl(url)) {
-        if (!resolved) {
-          try { await resolveMention(); } catch (_) {}
-        }
         let changed = false;
         try {
           if (typeof nextInit?.body === 'string') {
@@ -511,7 +463,7 @@
     const nativeOpen = proto.open;
     const nativeSend = proto.send;
 
-    proto.open = function(method, url) {
+    proto.open = function (method, url) {
       this.__nullsanzUrl = url;
       if (typeof url === 'string' && url.includes(PHOTO_AB_URL)) {
         this.addEventListener('readystatechange', function () {
@@ -524,7 +476,7 @@
                 if (patched !== raw) {
                   Object.defineProperty(this, 'responseText', { configurable: true, get: () => patched });
                   Object.defineProperty(this, 'response', { configurable: true, get: () => patched });
-                  console.info('[Nullsanz Inject] Photo posting & high-res enabled (XHR) ✓');
+                  console.info('[Nullsanz v4.0] Photo posting enabled (XHR) ✓');
                 }
               }
             } catch (_) {}
@@ -534,7 +486,7 @@
       return nativeOpen.apply(this, arguments);
     };
 
-    proto.send = function(body) {
+    proto.send = function (body) {
       let nextBody = body;
       const url = this.__nullsanzUrl || '';
       if (isPublishUrl(url)) {
@@ -554,5 +506,19 @@
     };
   }
 
-  window.postMessage({ source: 'NULLSANZ_PAGE_HOOK', type: 'HOOK_READY' }, '*');
+  // Expose testable helpers on window.__NULLSANZ_HOOK_API__ (read-only internal diagnostics)
+  try {
+    Object.defineProperty(window, '__NULLSANZ_HOOK_API__', {
+      configurable: true,
+      enumerable: false,
+      value: {
+        version: '4.0.0',
+        processPayload,
+        transformJsonString,
+        isSoundSafeActive
+      }
+    });
+  } catch (_) {}
+
+  window.postMessage({ source: 'NULLSANZ_PAGE_HOOK', type: 'HOOK_READY', version: '4.0.0' }, '*');
 })();

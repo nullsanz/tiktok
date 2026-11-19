@@ -279,7 +279,7 @@
         size = readU64(bytes, p + 8);
         header = 16;
       } else if (size === 0) {
-        size = end - p;
+        size = bytes.length - p;
       }
       if (size < header || p + size > bytes.length) break;
       list.push({
